@@ -1,4 +1,4 @@
-// Generated from com/parisoft/ca65/lsp/grammar/CA65.g4 by ANTLR 4.9.2
+// Generated from /home/paris/git/ca65-language-server/src/main/antlr4/com/parisoft/ca65/lsp/grammar/CA65.g4 by ANTLR 4.9.1
 package com.parisoft.ca65.lsp.grammar;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -17,6 +17,16 @@ public interface CA65Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitProgram(CA65Parser.ProgramContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CA65Parser#line}.
+	 * @param ctx the parse tree
+	 */
+	void enterLine(CA65Parser.LineContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CA65Parser#line}.
+	 * @param ctx the parse tree
+	 */
+	void exitLine(CA65Parser.LineContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CA65Parser#labelEqu}.
 	 * @param ctx the parse tree
@@ -38,6 +48,16 @@ public interface CA65Listener extends ParseTreeListener {
 	 */
 	void exitLabelDef(CA65Parser.LabelDefContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link CA65Parser#inlineLabel}.
+	 * @param ctx the parse tree
+	 */
+	void enterInlineLabel(CA65Parser.InlineLabelContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CA65Parser#inlineLabel}.
+	 * @param ctx the parse tree
+	 */
+	void exitInlineLabel(CA65Parser.InlineLabelContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link CA65Parser#instruction}.
 	 * @param ctx the parse tree
 	 */
@@ -47,6 +67,46 @@ public interface CA65Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitInstruction(CA65Parser.InstructionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CA65Parser#implicitInstruction}.
+	 * @param ctx the parse tree
+	 */
+	void enterImplicitInstruction(CA65Parser.ImplicitInstructionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CA65Parser#implicitInstruction}.
+	 * @param ctx the parse tree
+	 */
+	void exitImplicitInstruction(CA65Parser.ImplicitInstructionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CA65Parser#immediateInstruction}.
+	 * @param ctx the parse tree
+	 */
+	void enterImmediateInstruction(CA65Parser.ImmediateInstructionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CA65Parser#immediateInstruction}.
+	 * @param ctx the parse tree
+	 */
+	void exitImmediateInstruction(CA65Parser.ImmediateInstructionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CA65Parser#absoluteInstruction}.
+	 * @param ctx the parse tree
+	 */
+	void enterAbsoluteInstruction(CA65Parser.AbsoluteInstructionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CA65Parser#absoluteInstruction}.
+	 * @param ctx the parse tree
+	 */
+	void exitAbsoluteInstruction(CA65Parser.AbsoluteInstructionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CA65Parser#indirectInstruction}.
+	 * @param ctx the parse tree
+	 */
+	void enterIndirectInstruction(CA65Parser.IndirectInstructionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CA65Parser#indirectInstruction}.
+	 * @param ctx the parse tree
+	 */
+	void exitIndirectInstruction(CA65Parser.IndirectInstructionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CA65Parser#constantExpression}.
 	 * @param ctx the parse tree
@@ -318,6 +378,16 @@ public interface CA65Listener extends ParseTreeListener {
 	 */
 	void exitPositiveExpression(CA65Parser.PositiveExpressionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link CA65Parser#reference}.
+	 * @param ctx the parse tree
+	 */
+	void enterReference(CA65Parser.ReferenceContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CA65Parser#reference}.
+	 * @param ctx the parse tree
+	 */
+	void exitReference(CA65Parser.ReferenceContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link CA65Parser#labelRef}.
 	 * @param ctx the parse tree
 	 */
@@ -328,23 +398,13 @@ public interface CA65Listener extends ParseTreeListener {
 	 */
 	void exitLabelRef(CA65Parser.LabelRefContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CA65Parser#args}.
+	 * Enter a parse tree produced by {@link CA65Parser#identifier}.
 	 * @param ctx the parse tree
 	 */
-	void enterArgs(CA65Parser.ArgsContext ctx);
+	void enterIdentifier(CA65Parser.IdentifierContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link CA65Parser#args}.
+	 * Exit a parse tree produced by {@link CA65Parser#identifier}.
 	 * @param ctx the parse tree
 	 */
-	void exitArgs(CA65Parser.ArgsContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CA65Parser#opcode}.
-	 * @param ctx the parse tree
-	 */
-	void enterOpcode(CA65Parser.OpcodeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CA65Parser#opcode}.
-	 * @param ctx the parse tree
-	 */
-	void exitOpcode(CA65Parser.OpcodeContext ctx);
+	void exitIdentifier(CA65Parser.IdentifierContext ctx);
 }

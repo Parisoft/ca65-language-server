@@ -1,4 +1,4 @@
-// Generated from com/parisoft/ca65/lsp/grammar/CA65.g4 by ANTLR 4.9.2
+// Generated from /home/paris/git/ca65-language-server/src/main/antlr4/com/parisoft/ca65/lsp/grammar/CA65.g4 by ANTLR 4.9.1
 package com.parisoft.ca65.lsp.grammar;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,67 +11,73 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class CA65Parser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.9.2", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.9.1", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		T__0=1, T__1=2, T__2=3, T__3=4, T__4=5, Identifier=6, Diretive=7, CheapLabel=8, 
-		UnnamedLabel=9, Label=10, ADC=11, AND=12, ASL=13, BCC=14, BCS=15, BEQ=16, 
-		BIT=17, BMI=18, BNE=19, BPL=20, BRK=21, BVC=22, BVS=23, CLC=24, CLD=25, 
-		CLI=26, CLV=27, CMP=28, CPX=29, CPY=30, DEC=31, DEX=32, DEY=33, EOR=34, 
-		INC=35, INX=36, INY=37, JMP=38, JSR=39, LDA=40, LDX=41, LDY=42, LSR=43, 
-		NOP=44, ORA=45, PHA=46, PHP=47, PLA=48, PLP=49, ROL=50, ROR=51, RTI=52, 
-		RTS=53, SBC=54, SEC=55, SED=56, SEI=57, STA=58, STX=59, STY=60, TAX=61, 
-		TAY=62, TSX=63, TXA=64, TXS=65, TYA=66, BRA=67, PHX=68, PHY=69, PLX=70, 
-		PLY=71, STZ=72, TRB=73, TSB=74, BBR0=75, BBR1=76, BBR2=77, BBR3=78, BBR4=79, 
-		BBR5=80, BBR6=81, BBR7=82, BBS0=83, BBS1=84, BBS2=85, BBS3=86, BBS4=87, 
-		BBS5=88, BBS6=89, BBS7=90, RMB0=91, RMB1=92, RMB2=93, RMB3=94, RMB4=95, 
-		RMB5=96, RMB6=97, RMB7=98, SMB0=99, SMB1=100, SMB2=101, SMB3=102, SMB4=103, 
-		SMB5=104, SMB6=105, SMB7=106, ALR=107, ANC=108, ARR=109, AXS=110, DCP=111, 
-		ISC=112, LAS=113, LAX=114, RLA=115, RRA=116, SAX=117, SLO=118, SRE=119, 
-		BRL=120, COP=121, JML=122, JSL=123, MVN=124, MVP=125, PEA=126, PEI=127, 
-		PER=128, PHB=129, PHD=130, PHK=131, PLB=132, PLD=133, REP=134, RTL=135, 
-		SEP=136, STP=137, TCD=138, TCS=139, TDC=140, TSC=141, TXY=142, TYX=143, 
-		WAI=144, WDM=145, XBA=146, XCE=147, CPA=148, DEA=149, INA=150, SWA=151, 
-		TAD=152, TAS=153, TDA=154, TSA=155, LBCC=156, LBCS=157, LBEQ=158, LBMI=159, 
-		LBNE=160, LBPL=161, LBVC=162, LBVS=163, ADD=164, SUB=165, BGE=166, BLT=167, 
-		BGT=168, BLE=169, BNZ=170, BZE=171, JEQ=172, JNE=173, JMI=174, JPL=175, 
-		JCS=176, JCC=177, JVS=178, JVC=179, PLUS=180, MINUS=181, BITNOT=182, LOBYTE=183, 
-		HIBYTE=184, BANKBYTE=185, MUL=186, DIV=187, MOD=188, BITAND=189, BITXOR=190, 
-		SHL=191, SHR=192, BITOR=193, EQ=194, NE=195, LT=196, LE=197, GT=198, GE=199, 
-		BAND=200, XOR=201, OR=202, NOT=203, DOT=204, PC=205, IMMEDIATE=206, INDEX=207, 
-		ACC=208, COMMENT=209, C_COMMENT=210, STRING=211, EOL=212, WS=213;
+		T__0=1, Addressing=2, Opcode=3, Diretive=4, CheapLabel=5, UnnamedLabel=6, 
+		Label=7, Number=8, ADC=9, AND=10, ASL=11, BCC=12, BCS=13, BEQ=14, BIT=15, 
+		BMI=16, BNE=17, BPL=18, BRK=19, BVC=20, BVS=21, CLC=22, CLD=23, CLI=24, 
+		CLV=25, CMP=26, CPX=27, CPY=28, DEC=29, DEX=30, DEY=31, EOR=32, INC=33, 
+		INX=34, INY=35, JMP=36, JSR=37, LDA=38, LDX=39, LDY=40, LSR=41, NOP=42, 
+		ORA=43, PHA=44, PHP=45, PLA=46, PLP=47, ROL=48, ROR=49, RTI=50, RTS=51, 
+		SBC=52, SEC=53, SED=54, SEI=55, STA=56, STX=57, STY=58, TAX=59, TAY=60, 
+		TSX=61, TXA=62, TXS=63, TYA=64, BRA=65, PHX=66, PHY=67, PLX=68, PLY=69, 
+		STZ=70, TRB=71, TSB=72, BBR0=73, BBR1=74, BBR2=75, BBR3=76, BBR4=77, BBR5=78, 
+		BBR6=79, BBR7=80, BBS0=81, BBS1=82, BBS2=83, BBS3=84, BBS4=85, BBS5=86, 
+		BBS6=87, BBS7=88, RMB0=89, RMB1=90, RMB2=91, RMB3=92, RMB4=93, RMB5=94, 
+		RMB6=95, RMB7=96, SMB0=97, SMB1=98, SMB2=99, SMB3=100, SMB4=101, SMB5=102, 
+		SMB6=103, SMB7=104, ALR=105, ANC=106, ARR=107, AXS=108, DCP=109, ISC=110, 
+		LAS=111, LAX=112, RLA=113, RRA=114, SAX=115, SLO=116, SRE=117, BRL=118, 
+		COP=119, JML=120, JSL=121, MVN=122, MVP=123, PEA=124, PEI=125, PER=126, 
+		PHB=127, PHD=128, PHK=129, PLB=130, PLD=131, REP=132, RTL=133, SEP=134, 
+		STP=135, TCD=136, TCS=137, TDC=138, TSC=139, TXY=140, TYX=141, WAI=142, 
+		WDM=143, XBA=144, XCE=145, CPA=146, DEA=147, INA=148, SWA=149, TAD=150, 
+		TAS=151, TDA=152, TSA=153, LBCC=154, LBCS=155, LBEQ=156, LBMI=157, LBNE=158, 
+		LBPL=159, LBVC=160, LBVS=161, ADD=162, SUB=163, BGE=164, BLT=165, BGT=166, 
+		BLE=167, BNZ=168, BZE=169, JEQ=170, JNE=171, JMI=172, JPL=173, JCS=174, 
+		JCC=175, JVS=176, JVC=177, PLUS=178, MINUS=179, BITNOT=180, LOBYTE=181, 
+		HIBYTE=182, BANKBYTE=183, MUL=184, DIV=185, MOD=186, BITAND=187, BITXOR=188, 
+		SHL=189, SHR=190, BITOR=191, EQ=192, NE=193, LT=194, LE=195, GT=196, GE=197, 
+		BAND=198, XOR=199, OR=200, NOT=201, DIGIT=202, HEX=203, BIN=204, LPAREN=205, 
+		RPAREN=206, LBRACE=207, RBRACE=208, LBRACK=209, RBRACK=210, COMMA=211, 
+		DOT=212, COLON=213, COLONCOLON=214, PC=215, IMMEDIATE=216, LOCALCHAR=217, 
+		INDEX=218, ACC=219, COMMENT=220, C_COMMENT=221, STRING=222, CHAR=223, 
+		EOL=224, WS=225;
 	public static final int
-		RULE_program = 0, RULE_labelEqu = 1, RULE_labelDef = 2, RULE_instruction = 3, 
-		RULE_constantExpression = 4, RULE_notExpression = 5, RULE_orExpression = 6, 
-		RULE_xorExpression = 7, RULE_andExpression = 8, RULE_geExpression = 9, 
-		RULE_leExpression = 10, RULE_gtExpression = 11, RULE_ltExpression = 12, 
-		RULE_neExpression = 13, RULE_eqExpression = 14, RULE_bitorExpression = 15, 
-		RULE_subExpression = 16, RULE_addExpression = 17, RULE_mulExpression = 18, 
-		RULE_divExpression = 19, RULE_modExpression = 20, RULE_bitandExpression = 21, 
-		RULE_bitxorExpression = 22, RULE_shlExpression = 23, RULE_shrExpression = 24, 
-		RULE_bankbyteExpression = 25, RULE_hibyteExpression = 26, RULE_lobyteExpression = 27, 
-		RULE_bitnotExpression = 28, RULE_negativeExpression = 29, RULE_positiveExpression = 30, 
-		RULE_labelRef = 31, RULE_args = 32, RULE_opcode = 33;
+		RULE_program = 0, RULE_line = 1, RULE_labelEqu = 2, RULE_labelDef = 3, 
+		RULE_inlineLabel = 4, RULE_instruction = 5, RULE_implicitInstruction = 6, 
+		RULE_immediateInstruction = 7, RULE_absoluteInstruction = 8, RULE_indirectInstruction = 9, 
+		RULE_constantExpression = 10, RULE_notExpression = 11, RULE_orExpression = 12, 
+		RULE_xorExpression = 13, RULE_andExpression = 14, RULE_geExpression = 15, 
+		RULE_leExpression = 16, RULE_gtExpression = 17, RULE_ltExpression = 18, 
+		RULE_neExpression = 19, RULE_eqExpression = 20, RULE_bitorExpression = 21, 
+		RULE_subExpression = 22, RULE_addExpression = 23, RULE_mulExpression = 24, 
+		RULE_divExpression = 25, RULE_modExpression = 26, RULE_bitandExpression = 27, 
+		RULE_bitxorExpression = 28, RULE_shlExpression = 29, RULE_shrExpression = 30, 
+		RULE_bankbyteExpression = 31, RULE_hibyteExpression = 32, RULE_lobyteExpression = 33, 
+		RULE_bitnotExpression = 34, RULE_negativeExpression = 35, RULE_positiveExpression = 36, 
+		RULE_reference = 37, RULE_labelRef = 38, RULE_identifier = 39;
 	private static String[] makeRuleNames() {
 		return new String[] {
-			"program", "labelEqu", "labelDef", "instruction", "constantExpression", 
-			"notExpression", "orExpression", "xorExpression", "andExpression", "geExpression", 
-			"leExpression", "gtExpression", "ltExpression", "neExpression", "eqExpression", 
-			"bitorExpression", "subExpression", "addExpression", "mulExpression", 
-			"divExpression", "modExpression", "bitandExpression", "bitxorExpression", 
-			"shlExpression", "shrExpression", "bankbyteExpression", "hibyteExpression", 
-			"lobyteExpression", "bitnotExpression", "negativeExpression", "positiveExpression", 
-			"labelRef", "args", "opcode"
+			"program", "line", "labelEqu", "labelDef", "inlineLabel", "instruction", 
+			"implicitInstruction", "immediateInstruction", "absoluteInstruction", 
+			"indirectInstruction", "constantExpression", "notExpression", "orExpression", 
+			"xorExpression", "andExpression", "geExpression", "leExpression", "gtExpression", 
+			"ltExpression", "neExpression", "eqExpression", "bitorExpression", "subExpression", 
+			"addExpression", "mulExpression", "divExpression", "modExpression", "bitandExpression", 
+			"bitxorExpression", "shlExpression", "shrExpression", "bankbyteExpression", 
+			"hibyteExpression", "lobyteExpression", "bitnotExpression", "negativeExpression", 
+			"positiveExpression", "reference", "labelRef", "identifier"
 		};
 	}
 	public static final String[] ruleNames = makeRuleNames();
 
 	private static String[] makeLiteralNames() {
 		return new String[] {
-			null, "':'", "'('", "')'", "'^'", "','", null, null, null, null, null, 
+			null, "'^'", null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, null, null, null, 
@@ -85,38 +91,41 @@ public class CA65Parser extends Parser {
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, null, null, null, 
 			null, null, null, null, null, null, null, null, null, null, null, null, 
-			null, null, null, null, null, null, null, null, null, null, null, null, 
-			null, "'+'", "'-'", null, null, null, null, "'*'", "'/'", null, null, 
-			null, null, null, null, "'='", "'<>'", "'<'", "'<='", "'>'", "'>='", 
-			null, null, null, null, "'.'", null, "'#'"
+			null, null, null, null, null, null, null, null, null, null, "'+'", "'-'", 
+			null, null, null, null, "'*'", "'/'", null, null, null, null, null, null, 
+			"'='", "'<>'", "'<'", "'<='", "'>'", "'>='", null, null, null, null, 
+			null, null, null, "'('", "')'", "'{'", "'}'", "'['", "']'", "','", "'.'", 
+			"':'", "'::'", null, "'#'", "'@'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
 	private static String[] makeSymbolicNames() {
 		return new String[] {
-			null, null, null, null, null, null, "Identifier", "Diretive", "CheapLabel", 
-			"UnnamedLabel", "Label", "ADC", "AND", "ASL", "BCC", "BCS", "BEQ", "BIT", 
-			"BMI", "BNE", "BPL", "BRK", "BVC", "BVS", "CLC", "CLD", "CLI", "CLV", 
-			"CMP", "CPX", "CPY", "DEC", "DEX", "DEY", "EOR", "INC", "INX", "INY", 
-			"JMP", "JSR", "LDA", "LDX", "LDY", "LSR", "NOP", "ORA", "PHA", "PHP", 
-			"PLA", "PLP", "ROL", "ROR", "RTI", "RTS", "SBC", "SEC", "SED", "SEI", 
-			"STA", "STX", "STY", "TAX", "TAY", "TSX", "TXA", "TXS", "TYA", "BRA", 
-			"PHX", "PHY", "PLX", "PLY", "STZ", "TRB", "TSB", "BBR0", "BBR1", "BBR2", 
-			"BBR3", "BBR4", "BBR5", "BBR6", "BBR7", "BBS0", "BBS1", "BBS2", "BBS3", 
-			"BBS4", "BBS5", "BBS6", "BBS7", "RMB0", "RMB1", "RMB2", "RMB3", "RMB4", 
-			"RMB5", "RMB6", "RMB7", "SMB0", "SMB1", "SMB2", "SMB3", "SMB4", "SMB5", 
-			"SMB6", "SMB7", "ALR", "ANC", "ARR", "AXS", "DCP", "ISC", "LAS", "LAX", 
-			"RLA", "RRA", "SAX", "SLO", "SRE", "BRL", "COP", "JML", "JSL", "MVN", 
-			"MVP", "PEA", "PEI", "PER", "PHB", "PHD", "PHK", "PLB", "PLD", "REP", 
-			"RTL", "SEP", "STP", "TCD", "TCS", "TDC", "TSC", "TXY", "TYX", "WAI", 
-			"WDM", "XBA", "XCE", "CPA", "DEA", "INA", "SWA", "TAD", "TAS", "TDA", 
-			"TSA", "LBCC", "LBCS", "LBEQ", "LBMI", "LBNE", "LBPL", "LBVC", "LBVS", 
-			"ADD", "SUB", "BGE", "BLT", "BGT", "BLE", "BNZ", "BZE", "JEQ", "JNE", 
-			"JMI", "JPL", "JCS", "JCC", "JVS", "JVC", "PLUS", "MINUS", "BITNOT", 
-			"LOBYTE", "HIBYTE", "BANKBYTE", "MUL", "DIV", "MOD", "BITAND", "BITXOR", 
-			"SHL", "SHR", "BITOR", "EQ", "NE", "LT", "LE", "GT", "GE", "BAND", "XOR", 
-			"OR", "NOT", "DOT", "PC", "IMMEDIATE", "INDEX", "ACC", "COMMENT", "C_COMMENT", 
-			"STRING", "EOL", "WS"
+			null, null, "Addressing", "Opcode", "Diretive", "CheapLabel", "UnnamedLabel", 
+			"Label", "Number", "ADC", "AND", "ASL", "BCC", "BCS", "BEQ", "BIT", "BMI", 
+			"BNE", "BPL", "BRK", "BVC", "BVS", "CLC", "CLD", "CLI", "CLV", "CMP", 
+			"CPX", "CPY", "DEC", "DEX", "DEY", "EOR", "INC", "INX", "INY", "JMP", 
+			"JSR", "LDA", "LDX", "LDY", "LSR", "NOP", "ORA", "PHA", "PHP", "PLA", 
+			"PLP", "ROL", "ROR", "RTI", "RTS", "SBC", "SEC", "SED", "SEI", "STA", 
+			"STX", "STY", "TAX", "TAY", "TSX", "TXA", "TXS", "TYA", "BRA", "PHX", 
+			"PHY", "PLX", "PLY", "STZ", "TRB", "TSB", "BBR0", "BBR1", "BBR2", "BBR3", 
+			"BBR4", "BBR5", "BBR6", "BBR7", "BBS0", "BBS1", "BBS2", "BBS3", "BBS4", 
+			"BBS5", "BBS6", "BBS7", "RMB0", "RMB1", "RMB2", "RMB3", "RMB4", "RMB5", 
+			"RMB6", "RMB7", "SMB0", "SMB1", "SMB2", "SMB3", "SMB4", "SMB5", "SMB6", 
+			"SMB7", "ALR", "ANC", "ARR", "AXS", "DCP", "ISC", "LAS", "LAX", "RLA", 
+			"RRA", "SAX", "SLO", "SRE", "BRL", "COP", "JML", "JSL", "MVN", "MVP", 
+			"PEA", "PEI", "PER", "PHB", "PHD", "PHK", "PLB", "PLD", "REP", "RTL", 
+			"SEP", "STP", "TCD", "TCS", "TDC", "TSC", "TXY", "TYX", "WAI", "WDM", 
+			"XBA", "XCE", "CPA", "DEA", "INA", "SWA", "TAD", "TAS", "TDA", "TSA", 
+			"LBCC", "LBCS", "LBEQ", "LBMI", "LBNE", "LBPL", "LBVC", "LBVS", "ADD", 
+			"SUB", "BGE", "BLT", "BGT", "BLE", "BNZ", "BZE", "JEQ", "JNE", "JMI", 
+			"JPL", "JCS", "JCC", "JVS", "JVC", "PLUS", "MINUS", "BITNOT", "LOBYTE", 
+			"HIBYTE", "BANKBYTE", "MUL", "DIV", "MOD", "BITAND", "BITXOR", "SHL", 
+			"SHR", "BITOR", "EQ", "NE", "LT", "LE", "GT", "GE", "BAND", "XOR", "OR", 
+			"NOT", "DIGIT", "HEX", "BIN", "LPAREN", "RPAREN", "LBRACE", "RBRACE", 
+			"LBRACK", "RBRACK", "COMMA", "DOT", "COLON", "COLONCOLON", "PC", "IMMEDIATE", 
+			"LOCALCHAR", "INDEX", "ACC", "COMMENT", "C_COMMENT", "STRING", "CHAR", 
+			"EOL", "WS"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -171,28 +180,15 @@ public class CA65Parser extends Parser {
 	}
 
 	public static class ProgramContext extends ParserRuleContext {
-		public TerminalNode EOF() { return getToken(CA65Parser.EOF, 0); }
 		public List<TerminalNode> EOL() { return getTokens(CA65Parser.EOL); }
 		public TerminalNode EOL(int i) {
 			return getToken(CA65Parser.EOL, i);
 		}
-		public List<LabelEquContext> labelEqu() {
-			return getRuleContexts(LabelEquContext.class);
+		public List<LineContext> line() {
+			return getRuleContexts(LineContext.class);
 		}
-		public LabelEquContext labelEqu(int i) {
-			return getRuleContext(LabelEquContext.class,i);
-		}
-		public List<LabelDefContext> labelDef() {
-			return getRuleContexts(LabelDefContext.class);
-		}
-		public LabelDefContext labelDef(int i) {
-			return getRuleContext(LabelDefContext.class,i);
-		}
-		public List<InstructionContext> instruction() {
-			return getRuleContexts(InstructionContext.class);
-		}
-		public InstructionContext instruction(int i) {
-			return getRuleContext(InstructionContext.class,i);
+		public LineContext line(int i) {
+			return getRuleContext(LineContext.class,i);
 		}
 		public ProgramContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -220,44 +216,100 @@ public class CA65Parser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(77);
+			setState(84); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << Identifier) | (1L << UnnamedLabel) | (1L << ADC) | (1L << AND) | (1L << ASL) | (1L << BCC) | (1L << BCS) | (1L << BEQ) | (1L << BIT) | (1L << BMI) | (1L << BNE) | (1L << BPL) | (1L << BRK) | (1L << BVC) | (1L << BVS) | (1L << CLC) | (1L << CLD) | (1L << CLI) | (1L << CLV) | (1L << CMP) | (1L << CPX) | (1L << CPY) | (1L << DEC) | (1L << DEX) | (1L << DEY) | (1L << EOR) | (1L << INC) | (1L << INX) | (1L << INY) | (1L << JMP) | (1L << JSR) | (1L << LDA) | (1L << LDX) | (1L << LDY) | (1L << LSR) | (1L << NOP) | (1L << ORA) | (1L << PHA) | (1L << PHP) | (1L << PLA) | (1L << PLP) | (1L << ROL) | (1L << ROR) | (1L << RTI) | (1L << RTS) | (1L << SBC) | (1L << SEC) | (1L << SED) | (1L << SEI) | (1L << STA) | (1L << STX) | (1L << STY) | (1L << TAX) | (1L << TAY) | (1L << TSX))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (TXA - 64)) | (1L << (TXS - 64)) | (1L << (TYA - 64)) | (1L << (BRA - 64)) | (1L << (PHX - 64)) | (1L << (PHY - 64)) | (1L << (PLX - 64)) | (1L << (PLY - 64)) | (1L << (STZ - 64)) | (1L << (TRB - 64)) | (1L << (TSB - 64)) | (1L << (BBR0 - 64)) | (1L << (BBR1 - 64)) | (1L << (BBR2 - 64)) | (1L << (BBR3 - 64)) | (1L << (BBR4 - 64)) | (1L << (BBR5 - 64)) | (1L << (BBR6 - 64)) | (1L << (BBR7 - 64)) | (1L << (BBS0 - 64)) | (1L << (BBS1 - 64)) | (1L << (BBS2 - 64)) | (1L << (BBS3 - 64)) | (1L << (BBS4 - 64)) | (1L << (BBS5 - 64)) | (1L << (BBS6 - 64)) | (1L << (BBS7 - 64)) | (1L << (RMB0 - 64)) | (1L << (RMB1 - 64)) | (1L << (RMB2 - 64)) | (1L << (RMB3 - 64)) | (1L << (RMB4 - 64)) | (1L << (RMB5 - 64)) | (1L << (RMB6 - 64)) | (1L << (RMB7 - 64)) | (1L << (SMB0 - 64)) | (1L << (SMB1 - 64)) | (1L << (SMB2 - 64)) | (1L << (SMB3 - 64)) | (1L << (SMB4 - 64)) | (1L << (SMB5 - 64)) | (1L << (SMB6 - 64)) | (1L << (SMB7 - 64)) | (1L << (ALR - 64)) | (1L << (ANC - 64)) | (1L << (ARR - 64)) | (1L << (AXS - 64)) | (1L << (DCP - 64)) | (1L << (ISC - 64)) | (1L << (LAS - 64)) | (1L << (LAX - 64)) | (1L << (RLA - 64)) | (1L << (RRA - 64)) | (1L << (SAX - 64)) | (1L << (SLO - 64)) | (1L << (SRE - 64)) | (1L << (BRL - 64)) | (1L << (COP - 64)) | (1L << (JML - 64)) | (1L << (JSL - 64)) | (1L << (MVN - 64)) | (1L << (MVP - 64)) | (1L << (PEA - 64)) | (1L << (PEI - 64)))) != 0) || ((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & ((1L << (PER - 128)) | (1L << (PHB - 128)) | (1L << (PHD - 128)) | (1L << (PHK - 128)) | (1L << (PLB - 128)) | (1L << (PLD - 128)) | (1L << (REP - 128)) | (1L << (RTL - 128)) | (1L << (SEP - 128)) | (1L << (STP - 128)) | (1L << (TCD - 128)) | (1L << (TCS - 128)) | (1L << (TDC - 128)) | (1L << (TSC - 128)) | (1L << (TXY - 128)) | (1L << (TYX - 128)) | (1L << (WAI - 128)) | (1L << (WDM - 128)) | (1L << (XBA - 128)) | (1L << (XCE - 128)) | (1L << (CPA - 128)) | (1L << (DEA - 128)) | (1L << (INA - 128)) | (1L << (SWA - 128)) | (1L << (TAD - 128)) | (1L << (TAS - 128)) | (1L << (TDA - 128)) | (1L << (TSA - 128)) | (1L << (LBCC - 128)) | (1L << (LBCS - 128)) | (1L << (LBEQ - 128)) | (1L << (LBMI - 128)) | (1L << (LBNE - 128)) | (1L << (LBPL - 128)) | (1L << (LBVC - 128)) | (1L << (LBVS - 128)) | (1L << (ADD - 128)) | (1L << (SUB - 128)) | (1L << (BGE - 128)) | (1L << (BLT - 128)) | (1L << (BGT - 128)) | (1L << (BLE - 128)) | (1L << (BNZ - 128)) | (1L << (BZE - 128)) | (1L << (JEQ - 128)) | (1L << (JNE - 128)) | (1L << (JMI - 128)) | (1L << (JPL - 128)) | (1L << (JCS - 128)) | (1L << (JCC - 128)) | (1L << (JVS - 128)) | (1L << (JVC - 128)))) != 0) || _la==IMMEDIATE) {
+			do {
 				{
 				{
-				setState(71);
+				setState(81);
 				_errHandler.sync(this);
 				switch ( getInterpreter().adaptivePredict(_input,0,_ctx) ) {
 				case 1:
 					{
-					setState(68);
-					labelEqu();
-					}
-					break;
-				case 2:
-					{
-					setState(69);
-					labelDef();
-					}
-					break;
-				case 3:
-					{
-					setState(70);
-					instruction();
+					setState(80);
+					line();
 					}
 					break;
 				}
-				setState(73);
+				setState(83);
 				match(EOL);
 				}
 				}
-				setState(79);
+				setState(86); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << Addressing) | (1L << Opcode) | (1L << Diretive) | (1L << CheapLabel) | (1L << UnnamedLabel) | (1L << Label) | (1L << Number) | (1L << ADC) | (1L << AND) | (1L << ASL) | (1L << BCC) | (1L << BCS) | (1L << BEQ) | (1L << BIT) | (1L << BMI) | (1L << BNE) | (1L << BPL) | (1L << BRK) | (1L << BVC) | (1L << BVS) | (1L << CLC) | (1L << CLD) | (1L << CLI) | (1L << CLV) | (1L << CMP) | (1L << CPX) | (1L << CPY) | (1L << DEC) | (1L << DEX) | (1L << DEY) | (1L << EOR) | (1L << INC) | (1L << INX) | (1L << INY) | (1L << JMP) | (1L << JSR) | (1L << LDA) | (1L << LDX) | (1L << LDY) | (1L << LSR) | (1L << NOP) | (1L << ORA) | (1L << PHA) | (1L << PHP) | (1L << PLA) | (1L << PLP) | (1L << ROL) | (1L << ROR) | (1L << RTI) | (1L << RTS) | (1L << SBC) | (1L << SEC) | (1L << SED) | (1L << SEI) | (1L << STA) | (1L << STX) | (1L << STY) | (1L << TAX) | (1L << TAY) | (1L << TSX) | (1L << TXA) | (1L << TXS))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (TYA - 64)) | (1L << (BRA - 64)) | (1L << (PHX - 64)) | (1L << (PHY - 64)) | (1L << (PLX - 64)) | (1L << (PLY - 64)) | (1L << (STZ - 64)) | (1L << (TRB - 64)) | (1L << (TSB - 64)) | (1L << (BBR0 - 64)) | (1L << (BBR1 - 64)) | (1L << (BBR2 - 64)) | (1L << (BBR3 - 64)) | (1L << (BBR4 - 64)) | (1L << (BBR5 - 64)) | (1L << (BBR6 - 64)) | (1L << (BBR7 - 64)) | (1L << (BBS0 - 64)) | (1L << (BBS1 - 64)) | (1L << (BBS2 - 64)) | (1L << (BBS3 - 64)) | (1L << (BBS4 - 64)) | (1L << (BBS5 - 64)) | (1L << (BBS6 - 64)) | (1L << (BBS7 - 64)) | (1L << (RMB0 - 64)) | (1L << (RMB1 - 64)) | (1L << (RMB2 - 64)) | (1L << (RMB3 - 64)) | (1L << (RMB4 - 64)) | (1L << (RMB5 - 64)) | (1L << (RMB6 - 64)) | (1L << (RMB7 - 64)) | (1L << (SMB0 - 64)) | (1L << (SMB1 - 64)) | (1L << (SMB2 - 64)) | (1L << (SMB3 - 64)) | (1L << (SMB4 - 64)) | (1L << (SMB5 - 64)) | (1L << (SMB6 - 64)) | (1L << (SMB7 - 64)) | (1L << (ALR - 64)) | (1L << (ANC - 64)) | (1L << (ARR - 64)) | (1L << (AXS - 64)) | (1L << (DCP - 64)) | (1L << (ISC - 64)) | (1L << (LAS - 64)) | (1L << (LAX - 64)) | (1L << (RLA - 64)) | (1L << (RRA - 64)) | (1L << (SAX - 64)) | (1L << (SLO - 64)) | (1L << (SRE - 64)) | (1L << (BRL - 64)) | (1L << (COP - 64)) | (1L << (JML - 64)) | (1L << (JSL - 64)) | (1L << (MVN - 64)) | (1L << (MVP - 64)) | (1L << (PEA - 64)) | (1L << (PEI - 64)) | (1L << (PER - 64)) | (1L << (PHB - 64)))) != 0) || ((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & ((1L << (PHD - 128)) | (1L << (PHK - 128)) | (1L << (PLB - 128)) | (1L << (PLD - 128)) | (1L << (REP - 128)) | (1L << (RTL - 128)) | (1L << (SEP - 128)) | (1L << (STP - 128)) | (1L << (TCD - 128)) | (1L << (TCS - 128)) | (1L << (TDC - 128)) | (1L << (TSC - 128)) | (1L << (TXY - 128)) | (1L << (TYX - 128)) | (1L << (WAI - 128)) | (1L << (WDM - 128)) | (1L << (XBA - 128)) | (1L << (XCE - 128)) | (1L << (CPA - 128)) | (1L << (DEA - 128)) | (1L << (INA - 128)) | (1L << (SWA - 128)) | (1L << (TAD - 128)) | (1L << (TAS - 128)) | (1L << (TDA - 128)) | (1L << (TSA - 128)) | (1L << (LBCC - 128)) | (1L << (LBCS - 128)) | (1L << (LBEQ - 128)) | (1L << (LBMI - 128)) | (1L << (LBNE - 128)) | (1L << (LBPL - 128)) | (1L << (LBVC - 128)) | (1L << (LBVS - 128)) | (1L << (ADD - 128)) | (1L << (SUB - 128)) | (1L << (BGE - 128)) | (1L << (BLT - 128)) | (1L << (BGT - 128)) | (1L << (BLE - 128)) | (1L << (BNZ - 128)) | (1L << (BZE - 128)) | (1L << (JEQ - 128)) | (1L << (JNE - 128)) | (1L << (JMI - 128)) | (1L << (JPL - 128)) | (1L << (JCS - 128)) | (1L << (JCC - 128)) | (1L << (JVS - 128)) | (1L << (JVC - 128)) | (1L << (PLUS - 128)) | (1L << (MINUS - 128)) | (1L << (BITNOT - 128)) | (1L << (LOBYTE - 128)) | (1L << (HIBYTE - 128)) | (1L << (BANKBYTE - 128)) | (1L << (MUL - 128)) | (1L << (DIV - 128)) | (1L << (MOD - 128)) | (1L << (BITAND - 128)) | (1L << (BITXOR - 128)) | (1L << (SHL - 128)) | (1L << (SHR - 128)) | (1L << (BITOR - 128)))) != 0) || ((((_la - 192)) & ~0x3f) == 0 && ((1L << (_la - 192)) & ((1L << (EQ - 192)) | (1L << (NE - 192)) | (1L << (LT - 192)) | (1L << (LE - 192)) | (1L << (GT - 192)) | (1L << (GE - 192)) | (1L << (BAND - 192)) | (1L << (XOR - 192)) | (1L << (OR - 192)) | (1L << (NOT - 192)) | (1L << (DIGIT - 192)) | (1L << (HEX - 192)) | (1L << (BIN - 192)) | (1L << (LPAREN - 192)) | (1L << (RPAREN - 192)) | (1L << (LBRACE - 192)) | (1L << (RBRACE - 192)) | (1L << (LBRACK - 192)) | (1L << (RBRACK - 192)) | (1L << (COMMA - 192)) | (1L << (DOT - 192)) | (1L << (COLON - 192)) | (1L << (COLONCOLON - 192)) | (1L << (PC - 192)) | (1L << (IMMEDIATE - 192)) | (1L << (LOCALCHAR - 192)) | (1L << (INDEX - 192)) | (1L << (ACC - 192)) | (1L << (COMMENT - 192)) | (1L << (C_COMMENT - 192)) | (1L << (STRING - 192)) | (1L << (CHAR - 192)) | (1L << (EOL - 192)) | (1L << (WS - 192)))) != 0) );
 			}
-			setState(80);
-			match(EOF);
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class LineContext extends ParserRuleContext {
+		public LabelEquContext labelEqu() {
+			return getRuleContext(LabelEquContext.class,0);
+		}
+		public LabelDefContext labelDef() {
+			return getRuleContext(LabelDefContext.class,0);
+		}
+		public InstructionContext instruction() {
+			return getRuleContext(InstructionContext.class,0);
+		}
+		public LineContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_line; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).enterLine(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).exitLine(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof CA65Visitor ) return ((CA65Visitor<? extends T>)visitor).visitLine(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final LineContext line() throws RecognitionException {
+		LineContext _localctx = new LineContext(_ctx, getState());
+		enterRule(_localctx, 2, RULE_line);
+		try {
+			setState(91);
+			_errHandler.sync(this);
+			switch ( getInterpreter().adaptivePredict(_input,2,_ctx) ) {
+			case 1:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(88);
+				labelEqu();
+				}
+				break;
+			case 2:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(89);
+				labelDef();
+				}
+				break;
+			case 3:
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(90);
+				instruction();
+				}
+				break;
 			}
 		}
 		catch (RecognitionException re) {
@@ -272,13 +324,12 @@ public class CA65Parser extends Parser {
 	}
 
 	public static class LabelEquContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(CA65Parser.Identifier, 0); }
+		public IdentifierContext identifier() {
+			return getRuleContext(IdentifierContext.class,0);
+		}
 		public TerminalNode EQ() { return getToken(CA65Parser.EQ, 0); }
 		public ConstantExpressionContext constantExpression() {
 			return getRuleContext(ConstantExpressionContext.class,0);
-		}
-		public ArgsContext args() {
-			return getRuleContext(ArgsContext.class,0);
 		}
 		public LabelEquContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -301,26 +352,15 @@ public class CA65Parser extends Parser {
 
 	public final LabelEquContext labelEqu() throws RecognitionException {
 		LabelEquContext _localctx = new LabelEquContext(_ctx, getState());
-		enterRule(_localctx, 2, RULE_labelEqu);
-		int _la;
+		enterRule(_localctx, 4, RULE_labelEqu);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(82);
-			match(Identifier);
-			setState(84);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__1) | (1L << T__3) | (1L << Identifier) | (1L << UnnamedLabel))) != 0) || ((((_la - 180)) & ~0x3f) == 0 && ((1L << (_la - 180)) & ((1L << (PLUS - 180)) | (1L << (MINUS - 180)) | (1L << (BITNOT - 180)) | (1L << (LOBYTE - 180)) | (1L << (HIBYTE - 180)) | (1L << (BANKBYTE - 180)) | (1L << (LT - 180)) | (1L << (GT - 180)) | (1L << (NOT - 180)))) != 0)) {
-				{
-				setState(83);
-				args();
-				}
-			}
-
-			setState(86);
+			setState(93);
+			identifier();
+			setState(94);
 			match(EQ);
-			setState(87);
+			setState(95);
 			constantExpression();
 			}
 		}
@@ -336,12 +376,11 @@ public class CA65Parser extends Parser {
 	}
 
 	public static class LabelDefContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(CA65Parser.Identifier, 0); }
-		public ArgsContext args() {
-			return getRuleContext(ArgsContext.class,0);
+		public InlineLabelContext inlineLabel() {
+			return getRuleContext(InlineLabelContext.class,0);
 		}
-		public LabelRefContext labelRef() {
-			return getRuleContext(LabelRefContext.class,0);
+		public IdentifierContext identifier() {
+			return getRuleContext(IdentifierContext.class,0);
 		}
 		public LabelDefContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -364,36 +403,23 @@ public class CA65Parser extends Parser {
 
 	public final LabelDefContext labelDef() throws RecognitionException {
 		LabelDefContext _localctx = new LabelDefContext(_ctx, getState());
-		enterRule(_localctx, 4, RULE_labelDef);
-		int _la;
+		enterRule(_localctx, 6, RULE_labelDef);
 		try {
-			setState(95);
+			setState(99);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,3,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(89);
-				match(Identifier);
-				setState(91);
-				_errHandler.sync(this);
-				_la = _input.LA(1);
-				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__1) | (1L << T__3) | (1L << Identifier) | (1L << UnnamedLabel))) != 0) || ((((_la - 180)) & ~0x3f) == 0 && ((1L << (_la - 180)) & ((1L << (PLUS - 180)) | (1L << (MINUS - 180)) | (1L << (BITNOT - 180)) | (1L << (LOBYTE - 180)) | (1L << (HIBYTE - 180)) | (1L << (BANKBYTE - 180)) | (1L << (LT - 180)) | (1L << (GT - 180)) | (1L << (NOT - 180)))) != 0)) {
-					{
-					setState(90);
-					args();
-					}
-				}
-
-				setState(93);
-				match(T__0);
+				setState(97);
+				inlineLabel();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(94);
-				labelRef();
+				setState(98);
+				identifier();
 				}
 				break;
 			}
@@ -409,16 +435,73 @@ public class CA65Parser extends Parser {
 		return _localctx;
 	}
 
+	public static class InlineLabelContext extends ParserRuleContext {
+		public TerminalNode COLON() { return getToken(CA65Parser.COLON, 0); }
+		public IdentifierContext identifier() {
+			return getRuleContext(IdentifierContext.class,0);
+		}
+		public InlineLabelContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_inlineLabel; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).enterInlineLabel(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).exitInlineLabel(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof CA65Visitor ) return ((CA65Visitor<? extends T>)visitor).visitInlineLabel(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final InlineLabelContext inlineLabel() throws RecognitionException {
+		InlineLabelContext _localctx = new InlineLabelContext(_ctx, getState());
+		enterRule(_localctx, 8, RULE_inlineLabel);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(102);
+			_errHandler.sync(this);
+			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
+			case 1:
+				{
+				setState(101);
+				identifier();
+				}
+				break;
+			}
+			setState(104);
+			match(COLON);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
 	public static class InstructionContext extends ParserRuleContext {
-		public OpcodeContext opcode() {
-			return getRuleContext(OpcodeContext.class,0);
+		public ImplicitInstructionContext implicitInstruction() {
+			return getRuleContext(ImplicitInstructionContext.class,0);
 		}
-		public LabelDefContext labelDef() {
-			return getRuleContext(LabelDefContext.class,0);
+		public ImmediateInstructionContext immediateInstruction() {
+			return getRuleContext(ImmediateInstructionContext.class,0);
 		}
-		public TerminalNode IMMEDIATE() { return getToken(CA65Parser.IMMEDIATE, 0); }
-		public ArgsContext args() {
-			return getRuleContext(ArgsContext.class,0);
+		public AbsoluteInstructionContext absoluteInstruction() {
+			return getRuleContext(AbsoluteInstructionContext.class,0);
+		}
+		public IndirectInstructionContext indirectInstruction() {
+			return getRuleContext(IndirectInstructionContext.class,0);
 		}
 		public InstructionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -441,40 +524,103 @@ public class CA65Parser extends Parser {
 
 	public final InstructionContext instruction() throws RecognitionException {
 		InstructionContext _localctx = new InstructionContext(_ctx, getState());
-		enterRule(_localctx, 6, RULE_instruction);
+		enterRule(_localctx, 10, RULE_instruction);
+		try {
+			setState(110);
+			_errHandler.sync(this);
+			switch ( getInterpreter().adaptivePredict(_input,5,_ctx) ) {
+			case 1:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(106);
+				implicitInstruction();
+				}
+				break;
+			case 2:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(107);
+				immediateInstruction();
+				}
+				break;
+			case 3:
+				enterOuterAlt(_localctx, 3);
+				{
+				setState(108);
+				absoluteInstruction();
+				}
+				break;
+			case 4:
+				enterOuterAlt(_localctx, 4);
+				{
+				setState(109);
+				indirectInstruction();
+				}
+				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class ImplicitInstructionContext extends ParserRuleContext {
+		public TerminalNode Opcode() { return getToken(CA65Parser.Opcode, 0); }
+		public InlineLabelContext inlineLabel() {
+			return getRuleContext(InlineLabelContext.class,0);
+		}
+		public TerminalNode ACC() { return getToken(CA65Parser.ACC, 0); }
+		public ImplicitInstructionContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_implicitInstruction; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).enterImplicitInstruction(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).exitImplicitInstruction(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof CA65Visitor ) return ((CA65Visitor<? extends T>)visitor).visitImplicitInstruction(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final ImplicitInstructionContext implicitInstruction() throws RecognitionException {
+		ImplicitInstructionContext _localctx = new ImplicitInstructionContext(_ctx, getState());
+		enterRule(_localctx, 12, RULE_implicitInstruction);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(98);
+			setState(113);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (_la==Identifier || _la==UnnamedLabel) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << Addressing) | (1L << Diretive) | (1L << CheapLabel) | (1L << UnnamedLabel) | (1L << Label) | (1L << Number) | (1L << ADC) | (1L << AND) | (1L << ASL) | (1L << BCC) | (1L << BCS) | (1L << BEQ) | (1L << BIT) | (1L << BMI) | (1L << BNE) | (1L << BPL) | (1L << BRK) | (1L << BVC) | (1L << BVS) | (1L << CLC) | (1L << CLD) | (1L << CLI) | (1L << CLV) | (1L << CMP) | (1L << CPX) | (1L << CPY) | (1L << DEC) | (1L << DEX) | (1L << DEY) | (1L << EOR) | (1L << INC) | (1L << INX) | (1L << INY) | (1L << JMP) | (1L << JSR) | (1L << LDA) | (1L << LDX) | (1L << LDY) | (1L << LSR) | (1L << NOP) | (1L << ORA) | (1L << PHA) | (1L << PHP) | (1L << PLA) | (1L << PLP) | (1L << ROL) | (1L << ROR) | (1L << RTI) | (1L << RTS) | (1L << SBC) | (1L << SEC) | (1L << SED) | (1L << SEI) | (1L << STA) | (1L << STX) | (1L << STY) | (1L << TAX) | (1L << TAY) | (1L << TSX) | (1L << TXA) | (1L << TXS))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (TYA - 64)) | (1L << (BRA - 64)) | (1L << (PHX - 64)) | (1L << (PHY - 64)) | (1L << (PLX - 64)) | (1L << (PLY - 64)) | (1L << (STZ - 64)) | (1L << (TRB - 64)) | (1L << (TSB - 64)) | (1L << (BBR0 - 64)) | (1L << (BBR1 - 64)) | (1L << (BBR2 - 64)) | (1L << (BBR3 - 64)) | (1L << (BBR4 - 64)) | (1L << (BBR5 - 64)) | (1L << (BBR6 - 64)) | (1L << (BBR7 - 64)) | (1L << (BBS0 - 64)) | (1L << (BBS1 - 64)) | (1L << (BBS2 - 64)) | (1L << (BBS3 - 64)) | (1L << (BBS4 - 64)) | (1L << (BBS5 - 64)) | (1L << (BBS6 - 64)) | (1L << (BBS7 - 64)) | (1L << (RMB0 - 64)) | (1L << (RMB1 - 64)) | (1L << (RMB2 - 64)) | (1L << (RMB3 - 64)) | (1L << (RMB4 - 64)) | (1L << (RMB5 - 64)) | (1L << (RMB6 - 64)) | (1L << (RMB7 - 64)) | (1L << (SMB0 - 64)) | (1L << (SMB1 - 64)) | (1L << (SMB2 - 64)) | (1L << (SMB3 - 64)) | (1L << (SMB4 - 64)) | (1L << (SMB5 - 64)) | (1L << (SMB6 - 64)) | (1L << (SMB7 - 64)) | (1L << (ALR - 64)) | (1L << (ANC - 64)) | (1L << (ARR - 64)) | (1L << (AXS - 64)) | (1L << (DCP - 64)) | (1L << (ISC - 64)) | (1L << (LAS - 64)) | (1L << (LAX - 64)) | (1L << (RLA - 64)) | (1L << (RRA - 64)) | (1L << (SAX - 64)) | (1L << (SLO - 64)) | (1L << (SRE - 64)) | (1L << (BRL - 64)) | (1L << (COP - 64)) | (1L << (JML - 64)) | (1L << (JSL - 64)) | (1L << (MVN - 64)) | (1L << (MVP - 64)) | (1L << (PEA - 64)) | (1L << (PEI - 64)) | (1L << (PER - 64)) | (1L << (PHB - 64)))) != 0) || ((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & ((1L << (PHD - 128)) | (1L << (PHK - 128)) | (1L << (PLB - 128)) | (1L << (PLD - 128)) | (1L << (REP - 128)) | (1L << (RTL - 128)) | (1L << (SEP - 128)) | (1L << (STP - 128)) | (1L << (TCD - 128)) | (1L << (TCS - 128)) | (1L << (TDC - 128)) | (1L << (TSC - 128)) | (1L << (TXY - 128)) | (1L << (TYX - 128)) | (1L << (WAI - 128)) | (1L << (WDM - 128)) | (1L << (XBA - 128)) | (1L << (XCE - 128)) | (1L << (CPA - 128)) | (1L << (DEA - 128)) | (1L << (INA - 128)) | (1L << (SWA - 128)) | (1L << (TAD - 128)) | (1L << (TAS - 128)) | (1L << (TDA - 128)) | (1L << (TSA - 128)) | (1L << (LBCC - 128)) | (1L << (LBCS - 128)) | (1L << (LBEQ - 128)) | (1L << (LBMI - 128)) | (1L << (LBNE - 128)) | (1L << (LBPL - 128)) | (1L << (LBVC - 128)) | (1L << (LBVS - 128)) | (1L << (ADD - 128)) | (1L << (SUB - 128)) | (1L << (BGE - 128)) | (1L << (BLT - 128)) | (1L << (BGT - 128)) | (1L << (BLE - 128)) | (1L << (BNZ - 128)) | (1L << (BZE - 128)) | (1L << (JEQ - 128)) | (1L << (JNE - 128)) | (1L << (JMI - 128)) | (1L << (JPL - 128)) | (1L << (JCS - 128)) | (1L << (JCC - 128)) | (1L << (JVS - 128)) | (1L << (JVC - 128)) | (1L << (PLUS - 128)) | (1L << (MINUS - 128)) | (1L << (BITNOT - 128)) | (1L << (LOBYTE - 128)) | (1L << (HIBYTE - 128)) | (1L << (BANKBYTE - 128)) | (1L << (MUL - 128)) | (1L << (DIV - 128)) | (1L << (MOD - 128)) | (1L << (BITAND - 128)) | (1L << (BITXOR - 128)) | (1L << (SHL - 128)) | (1L << (SHR - 128)) | (1L << (BITOR - 128)))) != 0) || ((((_la - 192)) & ~0x3f) == 0 && ((1L << (_la - 192)) & ((1L << (EQ - 192)) | (1L << (NE - 192)) | (1L << (LT - 192)) | (1L << (LE - 192)) | (1L << (GT - 192)) | (1L << (GE - 192)) | (1L << (BAND - 192)) | (1L << (XOR - 192)) | (1L << (OR - 192)) | (1L << (NOT - 192)) | (1L << (DIGIT - 192)) | (1L << (HEX - 192)) | (1L << (BIN - 192)) | (1L << (LPAREN - 192)) | (1L << (RPAREN - 192)) | (1L << (LBRACE - 192)) | (1L << (RBRACE - 192)) | (1L << (LBRACK - 192)) | (1L << (RBRACK - 192)) | (1L << (COMMA - 192)) | (1L << (DOT - 192)) | (1L << (COLON - 192)) | (1L << (COLONCOLON - 192)) | (1L << (PC - 192)) | (1L << (IMMEDIATE - 192)) | (1L << (LOCALCHAR - 192)) | (1L << (INDEX - 192)) | (1L << (ACC - 192)) | (1L << (COMMENT - 192)) | (1L << (C_COMMENT - 192)) | (1L << (STRING - 192)) | (1L << (CHAR - 192)) | (1L << (EOL - 192)) | (1L << (WS - 192)))) != 0)) {
 				{
-				setState(97);
-				labelDef();
+				setState(112);
+				inlineLabel();
 				}
 			}
 
-			setState(101);
+			setState(115);
+			match(Opcode);
+			setState(117);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if (_la==IMMEDIATE) {
+			if (_la==ACC) {
 				{
-				setState(100);
-				match(IMMEDIATE);
-				}
-			}
-
-			setState(103);
-			opcode();
-			setState(105);
-			_errHandler.sync(this);
-			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__1) | (1L << T__3) | (1L << Identifier) | (1L << UnnamedLabel))) != 0) || ((((_la - 180)) & ~0x3f) == 0 && ((1L << (_la - 180)) & ((1L << (PLUS - 180)) | (1L << (MINUS - 180)) | (1L << (BITNOT - 180)) | (1L << (LOBYTE - 180)) | (1L << (HIBYTE - 180)) | (1L << (BANKBYTE - 180)) | (1L << (LT - 180)) | (1L << (GT - 180)) | (1L << (NOT - 180)))) != 0)) {
-				{
-				setState(104);
-				args();
+				setState(116);
+				match(ACC);
 				}
 			}
 
@@ -491,10 +637,293 @@ public class CA65Parser extends Parser {
 		return _localctx;
 	}
 
+	public static class ImmediateInstructionContext extends ParserRuleContext {
+		public TerminalNode Opcode() { return getToken(CA65Parser.Opcode, 0); }
+		public TerminalNode IMMEDIATE() { return getToken(CA65Parser.IMMEDIATE, 0); }
+		public ConstantExpressionContext constantExpression() {
+			return getRuleContext(ConstantExpressionContext.class,0);
+		}
+		public InlineLabelContext inlineLabel() {
+			return getRuleContext(InlineLabelContext.class,0);
+		}
+		public ImmediateInstructionContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_immediateInstruction; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).enterImmediateInstruction(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).exitImmediateInstruction(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof CA65Visitor ) return ((CA65Visitor<? extends T>)visitor).visitImmediateInstruction(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final ImmediateInstructionContext immediateInstruction() throws RecognitionException {
+		ImmediateInstructionContext _localctx = new ImmediateInstructionContext(_ctx, getState());
+		enterRule(_localctx, 14, RULE_immediateInstruction);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(120);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << Addressing) | (1L << Diretive) | (1L << CheapLabel) | (1L << UnnamedLabel) | (1L << Label) | (1L << Number) | (1L << ADC) | (1L << AND) | (1L << ASL) | (1L << BCC) | (1L << BCS) | (1L << BEQ) | (1L << BIT) | (1L << BMI) | (1L << BNE) | (1L << BPL) | (1L << BRK) | (1L << BVC) | (1L << BVS) | (1L << CLC) | (1L << CLD) | (1L << CLI) | (1L << CLV) | (1L << CMP) | (1L << CPX) | (1L << CPY) | (1L << DEC) | (1L << DEX) | (1L << DEY) | (1L << EOR) | (1L << INC) | (1L << INX) | (1L << INY) | (1L << JMP) | (1L << JSR) | (1L << LDA) | (1L << LDX) | (1L << LDY) | (1L << LSR) | (1L << NOP) | (1L << ORA) | (1L << PHA) | (1L << PHP) | (1L << PLA) | (1L << PLP) | (1L << ROL) | (1L << ROR) | (1L << RTI) | (1L << RTS) | (1L << SBC) | (1L << SEC) | (1L << SED) | (1L << SEI) | (1L << STA) | (1L << STX) | (1L << STY) | (1L << TAX) | (1L << TAY) | (1L << TSX) | (1L << TXA) | (1L << TXS))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (TYA - 64)) | (1L << (BRA - 64)) | (1L << (PHX - 64)) | (1L << (PHY - 64)) | (1L << (PLX - 64)) | (1L << (PLY - 64)) | (1L << (STZ - 64)) | (1L << (TRB - 64)) | (1L << (TSB - 64)) | (1L << (BBR0 - 64)) | (1L << (BBR1 - 64)) | (1L << (BBR2 - 64)) | (1L << (BBR3 - 64)) | (1L << (BBR4 - 64)) | (1L << (BBR5 - 64)) | (1L << (BBR6 - 64)) | (1L << (BBR7 - 64)) | (1L << (BBS0 - 64)) | (1L << (BBS1 - 64)) | (1L << (BBS2 - 64)) | (1L << (BBS3 - 64)) | (1L << (BBS4 - 64)) | (1L << (BBS5 - 64)) | (1L << (BBS6 - 64)) | (1L << (BBS7 - 64)) | (1L << (RMB0 - 64)) | (1L << (RMB1 - 64)) | (1L << (RMB2 - 64)) | (1L << (RMB3 - 64)) | (1L << (RMB4 - 64)) | (1L << (RMB5 - 64)) | (1L << (RMB6 - 64)) | (1L << (RMB7 - 64)) | (1L << (SMB0 - 64)) | (1L << (SMB1 - 64)) | (1L << (SMB2 - 64)) | (1L << (SMB3 - 64)) | (1L << (SMB4 - 64)) | (1L << (SMB5 - 64)) | (1L << (SMB6 - 64)) | (1L << (SMB7 - 64)) | (1L << (ALR - 64)) | (1L << (ANC - 64)) | (1L << (ARR - 64)) | (1L << (AXS - 64)) | (1L << (DCP - 64)) | (1L << (ISC - 64)) | (1L << (LAS - 64)) | (1L << (LAX - 64)) | (1L << (RLA - 64)) | (1L << (RRA - 64)) | (1L << (SAX - 64)) | (1L << (SLO - 64)) | (1L << (SRE - 64)) | (1L << (BRL - 64)) | (1L << (COP - 64)) | (1L << (JML - 64)) | (1L << (JSL - 64)) | (1L << (MVN - 64)) | (1L << (MVP - 64)) | (1L << (PEA - 64)) | (1L << (PEI - 64)) | (1L << (PER - 64)) | (1L << (PHB - 64)))) != 0) || ((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & ((1L << (PHD - 128)) | (1L << (PHK - 128)) | (1L << (PLB - 128)) | (1L << (PLD - 128)) | (1L << (REP - 128)) | (1L << (RTL - 128)) | (1L << (SEP - 128)) | (1L << (STP - 128)) | (1L << (TCD - 128)) | (1L << (TCS - 128)) | (1L << (TDC - 128)) | (1L << (TSC - 128)) | (1L << (TXY - 128)) | (1L << (TYX - 128)) | (1L << (WAI - 128)) | (1L << (WDM - 128)) | (1L << (XBA - 128)) | (1L << (XCE - 128)) | (1L << (CPA - 128)) | (1L << (DEA - 128)) | (1L << (INA - 128)) | (1L << (SWA - 128)) | (1L << (TAD - 128)) | (1L << (TAS - 128)) | (1L << (TDA - 128)) | (1L << (TSA - 128)) | (1L << (LBCC - 128)) | (1L << (LBCS - 128)) | (1L << (LBEQ - 128)) | (1L << (LBMI - 128)) | (1L << (LBNE - 128)) | (1L << (LBPL - 128)) | (1L << (LBVC - 128)) | (1L << (LBVS - 128)) | (1L << (ADD - 128)) | (1L << (SUB - 128)) | (1L << (BGE - 128)) | (1L << (BLT - 128)) | (1L << (BGT - 128)) | (1L << (BLE - 128)) | (1L << (BNZ - 128)) | (1L << (BZE - 128)) | (1L << (JEQ - 128)) | (1L << (JNE - 128)) | (1L << (JMI - 128)) | (1L << (JPL - 128)) | (1L << (JCS - 128)) | (1L << (JCC - 128)) | (1L << (JVS - 128)) | (1L << (JVC - 128)) | (1L << (PLUS - 128)) | (1L << (MINUS - 128)) | (1L << (BITNOT - 128)) | (1L << (LOBYTE - 128)) | (1L << (HIBYTE - 128)) | (1L << (BANKBYTE - 128)) | (1L << (MUL - 128)) | (1L << (DIV - 128)) | (1L << (MOD - 128)) | (1L << (BITAND - 128)) | (1L << (BITXOR - 128)) | (1L << (SHL - 128)) | (1L << (SHR - 128)) | (1L << (BITOR - 128)))) != 0) || ((((_la - 192)) & ~0x3f) == 0 && ((1L << (_la - 192)) & ((1L << (EQ - 192)) | (1L << (NE - 192)) | (1L << (LT - 192)) | (1L << (LE - 192)) | (1L << (GT - 192)) | (1L << (GE - 192)) | (1L << (BAND - 192)) | (1L << (XOR - 192)) | (1L << (OR - 192)) | (1L << (NOT - 192)) | (1L << (DIGIT - 192)) | (1L << (HEX - 192)) | (1L << (BIN - 192)) | (1L << (LPAREN - 192)) | (1L << (RPAREN - 192)) | (1L << (LBRACE - 192)) | (1L << (RBRACE - 192)) | (1L << (LBRACK - 192)) | (1L << (RBRACK - 192)) | (1L << (COMMA - 192)) | (1L << (DOT - 192)) | (1L << (COLON - 192)) | (1L << (COLONCOLON - 192)) | (1L << (PC - 192)) | (1L << (IMMEDIATE - 192)) | (1L << (LOCALCHAR - 192)) | (1L << (INDEX - 192)) | (1L << (ACC - 192)) | (1L << (COMMENT - 192)) | (1L << (C_COMMENT - 192)) | (1L << (STRING - 192)) | (1L << (CHAR - 192)) | (1L << (EOL - 192)) | (1L << (WS - 192)))) != 0)) {
+				{
+				setState(119);
+				inlineLabel();
+				}
+			}
+
+			setState(122);
+			match(Opcode);
+			setState(123);
+			match(IMMEDIATE);
+			setState(124);
+			constantExpression();
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class AbsoluteInstructionContext extends ParserRuleContext {
+		public TerminalNode Opcode() { return getToken(CA65Parser.Opcode, 0); }
+		public ConstantExpressionContext constantExpression() {
+			return getRuleContext(ConstantExpressionContext.class,0);
+		}
+		public InlineLabelContext inlineLabel() {
+			return getRuleContext(InlineLabelContext.class,0);
+		}
+		public TerminalNode COMMA() { return getToken(CA65Parser.COMMA, 0); }
+		public TerminalNode INDEX() { return getToken(CA65Parser.INDEX, 0); }
+		public AbsoluteInstructionContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_absoluteInstruction; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).enterAbsoluteInstruction(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).exitAbsoluteInstruction(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof CA65Visitor ) return ((CA65Visitor<? extends T>)visitor).visitAbsoluteInstruction(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final AbsoluteInstructionContext absoluteInstruction() throws RecognitionException {
+		AbsoluteInstructionContext _localctx = new AbsoluteInstructionContext(_ctx, getState());
+		enterRule(_localctx, 16, RULE_absoluteInstruction);
+		int _la;
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(127);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << Addressing) | (1L << Diretive) | (1L << CheapLabel) | (1L << UnnamedLabel) | (1L << Label) | (1L << Number) | (1L << ADC) | (1L << AND) | (1L << ASL) | (1L << BCC) | (1L << BCS) | (1L << BEQ) | (1L << BIT) | (1L << BMI) | (1L << BNE) | (1L << BPL) | (1L << BRK) | (1L << BVC) | (1L << BVS) | (1L << CLC) | (1L << CLD) | (1L << CLI) | (1L << CLV) | (1L << CMP) | (1L << CPX) | (1L << CPY) | (1L << DEC) | (1L << DEX) | (1L << DEY) | (1L << EOR) | (1L << INC) | (1L << INX) | (1L << INY) | (1L << JMP) | (1L << JSR) | (1L << LDA) | (1L << LDX) | (1L << LDY) | (1L << LSR) | (1L << NOP) | (1L << ORA) | (1L << PHA) | (1L << PHP) | (1L << PLA) | (1L << PLP) | (1L << ROL) | (1L << ROR) | (1L << RTI) | (1L << RTS) | (1L << SBC) | (1L << SEC) | (1L << SED) | (1L << SEI) | (1L << STA) | (1L << STX) | (1L << STY) | (1L << TAX) | (1L << TAY) | (1L << TSX) | (1L << TXA) | (1L << TXS))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (TYA - 64)) | (1L << (BRA - 64)) | (1L << (PHX - 64)) | (1L << (PHY - 64)) | (1L << (PLX - 64)) | (1L << (PLY - 64)) | (1L << (STZ - 64)) | (1L << (TRB - 64)) | (1L << (TSB - 64)) | (1L << (BBR0 - 64)) | (1L << (BBR1 - 64)) | (1L << (BBR2 - 64)) | (1L << (BBR3 - 64)) | (1L << (BBR4 - 64)) | (1L << (BBR5 - 64)) | (1L << (BBR6 - 64)) | (1L << (BBR7 - 64)) | (1L << (BBS0 - 64)) | (1L << (BBS1 - 64)) | (1L << (BBS2 - 64)) | (1L << (BBS3 - 64)) | (1L << (BBS4 - 64)) | (1L << (BBS5 - 64)) | (1L << (BBS6 - 64)) | (1L << (BBS7 - 64)) | (1L << (RMB0 - 64)) | (1L << (RMB1 - 64)) | (1L << (RMB2 - 64)) | (1L << (RMB3 - 64)) | (1L << (RMB4 - 64)) | (1L << (RMB5 - 64)) | (1L << (RMB6 - 64)) | (1L << (RMB7 - 64)) | (1L << (SMB0 - 64)) | (1L << (SMB1 - 64)) | (1L << (SMB2 - 64)) | (1L << (SMB3 - 64)) | (1L << (SMB4 - 64)) | (1L << (SMB5 - 64)) | (1L << (SMB6 - 64)) | (1L << (SMB7 - 64)) | (1L << (ALR - 64)) | (1L << (ANC - 64)) | (1L << (ARR - 64)) | (1L << (AXS - 64)) | (1L << (DCP - 64)) | (1L << (ISC - 64)) | (1L << (LAS - 64)) | (1L << (LAX - 64)) | (1L << (RLA - 64)) | (1L << (RRA - 64)) | (1L << (SAX - 64)) | (1L << (SLO - 64)) | (1L << (SRE - 64)) | (1L << (BRL - 64)) | (1L << (COP - 64)) | (1L << (JML - 64)) | (1L << (JSL - 64)) | (1L << (MVN - 64)) | (1L << (MVP - 64)) | (1L << (PEA - 64)) | (1L << (PEI - 64)) | (1L << (PER - 64)) | (1L << (PHB - 64)))) != 0) || ((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & ((1L << (PHD - 128)) | (1L << (PHK - 128)) | (1L << (PLB - 128)) | (1L << (PLD - 128)) | (1L << (REP - 128)) | (1L << (RTL - 128)) | (1L << (SEP - 128)) | (1L << (STP - 128)) | (1L << (TCD - 128)) | (1L << (TCS - 128)) | (1L << (TDC - 128)) | (1L << (TSC - 128)) | (1L << (TXY - 128)) | (1L << (TYX - 128)) | (1L << (WAI - 128)) | (1L << (WDM - 128)) | (1L << (XBA - 128)) | (1L << (XCE - 128)) | (1L << (CPA - 128)) | (1L << (DEA - 128)) | (1L << (INA - 128)) | (1L << (SWA - 128)) | (1L << (TAD - 128)) | (1L << (TAS - 128)) | (1L << (TDA - 128)) | (1L << (TSA - 128)) | (1L << (LBCC - 128)) | (1L << (LBCS - 128)) | (1L << (LBEQ - 128)) | (1L << (LBMI - 128)) | (1L << (LBNE - 128)) | (1L << (LBPL - 128)) | (1L << (LBVC - 128)) | (1L << (LBVS - 128)) | (1L << (ADD - 128)) | (1L << (SUB - 128)) | (1L << (BGE - 128)) | (1L << (BLT - 128)) | (1L << (BGT - 128)) | (1L << (BLE - 128)) | (1L << (BNZ - 128)) | (1L << (BZE - 128)) | (1L << (JEQ - 128)) | (1L << (JNE - 128)) | (1L << (JMI - 128)) | (1L << (JPL - 128)) | (1L << (JCS - 128)) | (1L << (JCC - 128)) | (1L << (JVS - 128)) | (1L << (JVC - 128)) | (1L << (PLUS - 128)) | (1L << (MINUS - 128)) | (1L << (BITNOT - 128)) | (1L << (LOBYTE - 128)) | (1L << (HIBYTE - 128)) | (1L << (BANKBYTE - 128)) | (1L << (MUL - 128)) | (1L << (DIV - 128)) | (1L << (MOD - 128)) | (1L << (BITAND - 128)) | (1L << (BITXOR - 128)) | (1L << (SHL - 128)) | (1L << (SHR - 128)) | (1L << (BITOR - 128)))) != 0) || ((((_la - 192)) & ~0x3f) == 0 && ((1L << (_la - 192)) & ((1L << (EQ - 192)) | (1L << (NE - 192)) | (1L << (LT - 192)) | (1L << (LE - 192)) | (1L << (GT - 192)) | (1L << (GE - 192)) | (1L << (BAND - 192)) | (1L << (XOR - 192)) | (1L << (OR - 192)) | (1L << (NOT - 192)) | (1L << (DIGIT - 192)) | (1L << (HEX - 192)) | (1L << (BIN - 192)) | (1L << (LPAREN - 192)) | (1L << (RPAREN - 192)) | (1L << (LBRACE - 192)) | (1L << (RBRACE - 192)) | (1L << (LBRACK - 192)) | (1L << (RBRACK - 192)) | (1L << (COMMA - 192)) | (1L << (DOT - 192)) | (1L << (COLON - 192)) | (1L << (COLONCOLON - 192)) | (1L << (PC - 192)) | (1L << (IMMEDIATE - 192)) | (1L << (LOCALCHAR - 192)) | (1L << (INDEX - 192)) | (1L << (ACC - 192)) | (1L << (COMMENT - 192)) | (1L << (C_COMMENT - 192)) | (1L << (STRING - 192)) | (1L << (CHAR - 192)) | (1L << (EOL - 192)) | (1L << (WS - 192)))) != 0)) {
+				{
+				setState(126);
+				inlineLabel();
+				}
+			}
+
+			setState(129);
+			match(Opcode);
+			setState(130);
+			constantExpression();
+			setState(133);
+			_errHandler.sync(this);
+			_la = _input.LA(1);
+			if (_la==COMMA) {
+				{
+				setState(131);
+				match(COMMA);
+				setState(132);
+				match(INDEX);
+				}
+			}
+
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class IndirectInstructionContext extends ParserRuleContext {
+		public TerminalNode Opcode() { return getToken(CA65Parser.Opcode, 0); }
+		public TerminalNode LPAREN() { return getToken(CA65Parser.LPAREN, 0); }
+		public ConstantExpressionContext constantExpression() {
+			return getRuleContext(ConstantExpressionContext.class,0);
+		}
+		public TerminalNode RPAREN() { return getToken(CA65Parser.RPAREN, 0); }
+		public InlineLabelContext inlineLabel() {
+			return getRuleContext(InlineLabelContext.class,0);
+		}
+		public List<TerminalNode> COMMA() { return getTokens(CA65Parser.COMMA); }
+		public TerminalNode COMMA(int i) {
+			return getToken(CA65Parser.COMMA, i);
+		}
+		public List<TerminalNode> INDEX() { return getTokens(CA65Parser.INDEX); }
+		public TerminalNode INDEX(int i) {
+			return getToken(CA65Parser.INDEX, i);
+		}
+		public TerminalNode LBRACK() { return getToken(CA65Parser.LBRACK, 0); }
+		public TerminalNode RBRACK() { return getToken(CA65Parser.RBRACK, 0); }
+		public IndirectInstructionContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_indirectInstruction; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).enterIndirectInstruction(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).exitIndirectInstruction(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof CA65Visitor ) return ((CA65Visitor<? extends T>)visitor).visitIndirectInstruction(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final IndirectInstructionContext indirectInstruction() throws RecognitionException {
+		IndirectInstructionContext _localctx = new IndirectInstructionContext(_ctx, getState());
+		enterRule(_localctx, 18, RULE_indirectInstruction);
+		int _la;
+		try {
+			setState(161);
+			_errHandler.sync(this);
+			switch ( getInterpreter().adaptivePredict(_input,16,_ctx) ) {
+			case 1:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(136);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << Addressing) | (1L << Diretive) | (1L << CheapLabel) | (1L << UnnamedLabel) | (1L << Label) | (1L << Number) | (1L << ADC) | (1L << AND) | (1L << ASL) | (1L << BCC) | (1L << BCS) | (1L << BEQ) | (1L << BIT) | (1L << BMI) | (1L << BNE) | (1L << BPL) | (1L << BRK) | (1L << BVC) | (1L << BVS) | (1L << CLC) | (1L << CLD) | (1L << CLI) | (1L << CLV) | (1L << CMP) | (1L << CPX) | (1L << CPY) | (1L << DEC) | (1L << DEX) | (1L << DEY) | (1L << EOR) | (1L << INC) | (1L << INX) | (1L << INY) | (1L << JMP) | (1L << JSR) | (1L << LDA) | (1L << LDX) | (1L << LDY) | (1L << LSR) | (1L << NOP) | (1L << ORA) | (1L << PHA) | (1L << PHP) | (1L << PLA) | (1L << PLP) | (1L << ROL) | (1L << ROR) | (1L << RTI) | (1L << RTS) | (1L << SBC) | (1L << SEC) | (1L << SED) | (1L << SEI) | (1L << STA) | (1L << STX) | (1L << STY) | (1L << TAX) | (1L << TAY) | (1L << TSX) | (1L << TXA) | (1L << TXS))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (TYA - 64)) | (1L << (BRA - 64)) | (1L << (PHX - 64)) | (1L << (PHY - 64)) | (1L << (PLX - 64)) | (1L << (PLY - 64)) | (1L << (STZ - 64)) | (1L << (TRB - 64)) | (1L << (TSB - 64)) | (1L << (BBR0 - 64)) | (1L << (BBR1 - 64)) | (1L << (BBR2 - 64)) | (1L << (BBR3 - 64)) | (1L << (BBR4 - 64)) | (1L << (BBR5 - 64)) | (1L << (BBR6 - 64)) | (1L << (BBR7 - 64)) | (1L << (BBS0 - 64)) | (1L << (BBS1 - 64)) | (1L << (BBS2 - 64)) | (1L << (BBS3 - 64)) | (1L << (BBS4 - 64)) | (1L << (BBS5 - 64)) | (1L << (BBS6 - 64)) | (1L << (BBS7 - 64)) | (1L << (RMB0 - 64)) | (1L << (RMB1 - 64)) | (1L << (RMB2 - 64)) | (1L << (RMB3 - 64)) | (1L << (RMB4 - 64)) | (1L << (RMB5 - 64)) | (1L << (RMB6 - 64)) | (1L << (RMB7 - 64)) | (1L << (SMB0 - 64)) | (1L << (SMB1 - 64)) | (1L << (SMB2 - 64)) | (1L << (SMB3 - 64)) | (1L << (SMB4 - 64)) | (1L << (SMB5 - 64)) | (1L << (SMB6 - 64)) | (1L << (SMB7 - 64)) | (1L << (ALR - 64)) | (1L << (ANC - 64)) | (1L << (ARR - 64)) | (1L << (AXS - 64)) | (1L << (DCP - 64)) | (1L << (ISC - 64)) | (1L << (LAS - 64)) | (1L << (LAX - 64)) | (1L << (RLA - 64)) | (1L << (RRA - 64)) | (1L << (SAX - 64)) | (1L << (SLO - 64)) | (1L << (SRE - 64)) | (1L << (BRL - 64)) | (1L << (COP - 64)) | (1L << (JML - 64)) | (1L << (JSL - 64)) | (1L << (MVN - 64)) | (1L << (MVP - 64)) | (1L << (PEA - 64)) | (1L << (PEI - 64)) | (1L << (PER - 64)) | (1L << (PHB - 64)))) != 0) || ((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & ((1L << (PHD - 128)) | (1L << (PHK - 128)) | (1L << (PLB - 128)) | (1L << (PLD - 128)) | (1L << (REP - 128)) | (1L << (RTL - 128)) | (1L << (SEP - 128)) | (1L << (STP - 128)) | (1L << (TCD - 128)) | (1L << (TCS - 128)) | (1L << (TDC - 128)) | (1L << (TSC - 128)) | (1L << (TXY - 128)) | (1L << (TYX - 128)) | (1L << (WAI - 128)) | (1L << (WDM - 128)) | (1L << (XBA - 128)) | (1L << (XCE - 128)) | (1L << (CPA - 128)) | (1L << (DEA - 128)) | (1L << (INA - 128)) | (1L << (SWA - 128)) | (1L << (TAD - 128)) | (1L << (TAS - 128)) | (1L << (TDA - 128)) | (1L << (TSA - 128)) | (1L << (LBCC - 128)) | (1L << (LBCS - 128)) | (1L << (LBEQ - 128)) | (1L << (LBMI - 128)) | (1L << (LBNE - 128)) | (1L << (LBPL - 128)) | (1L << (LBVC - 128)) | (1L << (LBVS - 128)) | (1L << (ADD - 128)) | (1L << (SUB - 128)) | (1L << (BGE - 128)) | (1L << (BLT - 128)) | (1L << (BGT - 128)) | (1L << (BLE - 128)) | (1L << (BNZ - 128)) | (1L << (BZE - 128)) | (1L << (JEQ - 128)) | (1L << (JNE - 128)) | (1L << (JMI - 128)) | (1L << (JPL - 128)) | (1L << (JCS - 128)) | (1L << (JCC - 128)) | (1L << (JVS - 128)) | (1L << (JVC - 128)) | (1L << (PLUS - 128)) | (1L << (MINUS - 128)) | (1L << (BITNOT - 128)) | (1L << (LOBYTE - 128)) | (1L << (HIBYTE - 128)) | (1L << (BANKBYTE - 128)) | (1L << (MUL - 128)) | (1L << (DIV - 128)) | (1L << (MOD - 128)) | (1L << (BITAND - 128)) | (1L << (BITXOR - 128)) | (1L << (SHL - 128)) | (1L << (SHR - 128)) | (1L << (BITOR - 128)))) != 0) || ((((_la - 192)) & ~0x3f) == 0 && ((1L << (_la - 192)) & ((1L << (EQ - 192)) | (1L << (NE - 192)) | (1L << (LT - 192)) | (1L << (LE - 192)) | (1L << (GT - 192)) | (1L << (GE - 192)) | (1L << (BAND - 192)) | (1L << (XOR - 192)) | (1L << (OR - 192)) | (1L << (NOT - 192)) | (1L << (DIGIT - 192)) | (1L << (HEX - 192)) | (1L << (BIN - 192)) | (1L << (LPAREN - 192)) | (1L << (RPAREN - 192)) | (1L << (LBRACE - 192)) | (1L << (RBRACE - 192)) | (1L << (LBRACK - 192)) | (1L << (RBRACK - 192)) | (1L << (COMMA - 192)) | (1L << (DOT - 192)) | (1L << (COLON - 192)) | (1L << (COLONCOLON - 192)) | (1L << (PC - 192)) | (1L << (IMMEDIATE - 192)) | (1L << (LOCALCHAR - 192)) | (1L << (INDEX - 192)) | (1L << (ACC - 192)) | (1L << (COMMENT - 192)) | (1L << (C_COMMENT - 192)) | (1L << (STRING - 192)) | (1L << (CHAR - 192)) | (1L << (EOL - 192)) | (1L << (WS - 192)))) != 0)) {
+					{
+					setState(135);
+					inlineLabel();
+					}
+				}
+
+				setState(138);
+				match(Opcode);
+				setState(139);
+				match(LPAREN);
+				setState(140);
+				constantExpression();
+				setState(143);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				if (_la==COMMA) {
+					{
+					setState(141);
+					match(COMMA);
+					setState(142);
+					match(INDEX);
+					}
+				}
+
+				setState(145);
+				match(RPAREN);
+				setState(148);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				if (_la==COMMA) {
+					{
+					setState(146);
+					match(COMMA);
+					setState(147);
+					match(INDEX);
+					}
+				}
+
+				}
+				break;
+			case 2:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(151);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << T__0) | (1L << Addressing) | (1L << Diretive) | (1L << CheapLabel) | (1L << UnnamedLabel) | (1L << Label) | (1L << Number) | (1L << ADC) | (1L << AND) | (1L << ASL) | (1L << BCC) | (1L << BCS) | (1L << BEQ) | (1L << BIT) | (1L << BMI) | (1L << BNE) | (1L << BPL) | (1L << BRK) | (1L << BVC) | (1L << BVS) | (1L << CLC) | (1L << CLD) | (1L << CLI) | (1L << CLV) | (1L << CMP) | (1L << CPX) | (1L << CPY) | (1L << DEC) | (1L << DEX) | (1L << DEY) | (1L << EOR) | (1L << INC) | (1L << INX) | (1L << INY) | (1L << JMP) | (1L << JSR) | (1L << LDA) | (1L << LDX) | (1L << LDY) | (1L << LSR) | (1L << NOP) | (1L << ORA) | (1L << PHA) | (1L << PHP) | (1L << PLA) | (1L << PLP) | (1L << ROL) | (1L << ROR) | (1L << RTI) | (1L << RTS) | (1L << SBC) | (1L << SEC) | (1L << SED) | (1L << SEI) | (1L << STA) | (1L << STX) | (1L << STY) | (1L << TAX) | (1L << TAY) | (1L << TSX) | (1L << TXA) | (1L << TXS))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (TYA - 64)) | (1L << (BRA - 64)) | (1L << (PHX - 64)) | (1L << (PHY - 64)) | (1L << (PLX - 64)) | (1L << (PLY - 64)) | (1L << (STZ - 64)) | (1L << (TRB - 64)) | (1L << (TSB - 64)) | (1L << (BBR0 - 64)) | (1L << (BBR1 - 64)) | (1L << (BBR2 - 64)) | (1L << (BBR3 - 64)) | (1L << (BBR4 - 64)) | (1L << (BBR5 - 64)) | (1L << (BBR6 - 64)) | (1L << (BBR7 - 64)) | (1L << (BBS0 - 64)) | (1L << (BBS1 - 64)) | (1L << (BBS2 - 64)) | (1L << (BBS3 - 64)) | (1L << (BBS4 - 64)) | (1L << (BBS5 - 64)) | (1L << (BBS6 - 64)) | (1L << (BBS7 - 64)) | (1L << (RMB0 - 64)) | (1L << (RMB1 - 64)) | (1L << (RMB2 - 64)) | (1L << (RMB3 - 64)) | (1L << (RMB4 - 64)) | (1L << (RMB5 - 64)) | (1L << (RMB6 - 64)) | (1L << (RMB7 - 64)) | (1L << (SMB0 - 64)) | (1L << (SMB1 - 64)) | (1L << (SMB2 - 64)) | (1L << (SMB3 - 64)) | (1L << (SMB4 - 64)) | (1L << (SMB5 - 64)) | (1L << (SMB6 - 64)) | (1L << (SMB7 - 64)) | (1L << (ALR - 64)) | (1L << (ANC - 64)) | (1L << (ARR - 64)) | (1L << (AXS - 64)) | (1L << (DCP - 64)) | (1L << (ISC - 64)) | (1L << (LAS - 64)) | (1L << (LAX - 64)) | (1L << (RLA - 64)) | (1L << (RRA - 64)) | (1L << (SAX - 64)) | (1L << (SLO - 64)) | (1L << (SRE - 64)) | (1L << (BRL - 64)) | (1L << (COP - 64)) | (1L << (JML - 64)) | (1L << (JSL - 64)) | (1L << (MVN - 64)) | (1L << (MVP - 64)) | (1L << (PEA - 64)) | (1L << (PEI - 64)) | (1L << (PER - 64)) | (1L << (PHB - 64)))) != 0) || ((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & ((1L << (PHD - 128)) | (1L << (PHK - 128)) | (1L << (PLB - 128)) | (1L << (PLD - 128)) | (1L << (REP - 128)) | (1L << (RTL - 128)) | (1L << (SEP - 128)) | (1L << (STP - 128)) | (1L << (TCD - 128)) | (1L << (TCS - 128)) | (1L << (TDC - 128)) | (1L << (TSC - 128)) | (1L << (TXY - 128)) | (1L << (TYX - 128)) | (1L << (WAI - 128)) | (1L << (WDM - 128)) | (1L << (XBA - 128)) | (1L << (XCE - 128)) | (1L << (CPA - 128)) | (1L << (DEA - 128)) | (1L << (INA - 128)) | (1L << (SWA - 128)) | (1L << (TAD - 128)) | (1L << (TAS - 128)) | (1L << (TDA - 128)) | (1L << (TSA - 128)) | (1L << (LBCC - 128)) | (1L << (LBCS - 128)) | (1L << (LBEQ - 128)) | (1L << (LBMI - 128)) | (1L << (LBNE - 128)) | (1L << (LBPL - 128)) | (1L << (LBVC - 128)) | (1L << (LBVS - 128)) | (1L << (ADD - 128)) | (1L << (SUB - 128)) | (1L << (BGE - 128)) | (1L << (BLT - 128)) | (1L << (BGT - 128)) | (1L << (BLE - 128)) | (1L << (BNZ - 128)) | (1L << (BZE - 128)) | (1L << (JEQ - 128)) | (1L << (JNE - 128)) | (1L << (JMI - 128)) | (1L << (JPL - 128)) | (1L << (JCS - 128)) | (1L << (JCC - 128)) | (1L << (JVS - 128)) | (1L << (JVC - 128)) | (1L << (PLUS - 128)) | (1L << (MINUS - 128)) | (1L << (BITNOT - 128)) | (1L << (LOBYTE - 128)) | (1L << (HIBYTE - 128)) | (1L << (BANKBYTE - 128)) | (1L << (MUL - 128)) | (1L << (DIV - 128)) | (1L << (MOD - 128)) | (1L << (BITAND - 128)) | (1L << (BITXOR - 128)) | (1L << (SHL - 128)) | (1L << (SHR - 128)) | (1L << (BITOR - 128)))) != 0) || ((((_la - 192)) & ~0x3f) == 0 && ((1L << (_la - 192)) & ((1L << (EQ - 192)) | (1L << (NE - 192)) | (1L << (LT - 192)) | (1L << (LE - 192)) | (1L << (GT - 192)) | (1L << (GE - 192)) | (1L << (BAND - 192)) | (1L << (XOR - 192)) | (1L << (OR - 192)) | (1L << (NOT - 192)) | (1L << (DIGIT - 192)) | (1L << (HEX - 192)) | (1L << (BIN - 192)) | (1L << (LPAREN - 192)) | (1L << (RPAREN - 192)) | (1L << (LBRACE - 192)) | (1L << (RBRACE - 192)) | (1L << (LBRACK - 192)) | (1L << (RBRACK - 192)) | (1L << (COMMA - 192)) | (1L << (DOT - 192)) | (1L << (COLON - 192)) | (1L << (COLONCOLON - 192)) | (1L << (PC - 192)) | (1L << (IMMEDIATE - 192)) | (1L << (LOCALCHAR - 192)) | (1L << (INDEX - 192)) | (1L << (ACC - 192)) | (1L << (COMMENT - 192)) | (1L << (C_COMMENT - 192)) | (1L << (STRING - 192)) | (1L << (CHAR - 192)) | (1L << (EOL - 192)) | (1L << (WS - 192)))) != 0)) {
+					{
+					setState(150);
+					inlineLabel();
+					}
+				}
+
+				setState(153);
+				match(Opcode);
+				setState(154);
+				match(LBRACK);
+				setState(155);
+				constantExpression();
+				setState(156);
+				match(RBRACK);
+				setState(159);
+				_errHandler.sync(this);
+				_la = _input.LA(1);
+				if (_la==COMMA) {
+					{
+					setState(157);
+					match(COMMA);
+					setState(158);
+					match(INDEX);
+					}
+				}
+
+				}
+				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
 	public static class ConstantExpressionContext extends ParserRuleContext {
+		public TerminalNode LPAREN() { return getToken(CA65Parser.LPAREN, 0); }
 		public NotExpressionContext notExpression() {
 			return getRuleContext(NotExpressionContext.class,0);
 		}
+		public TerminalNode RPAREN() { return getToken(CA65Parser.RPAREN, 0); }
 		public ConstantExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -516,42 +945,29 @@ public class CA65Parser extends Parser {
 
 	public final ConstantExpressionContext constantExpression() throws RecognitionException {
 		ConstantExpressionContext _localctx = new ConstantExpressionContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_constantExpression);
+		enterRule(_localctx, 20, RULE_constantExpression);
 		try {
-			setState(112);
+			setState(168);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case T__1:
+			switch ( getInterpreter().adaptivePredict(_input,17,_ctx) ) {
+			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(107);
-				match(T__1);
-				setState(108);
+				setState(163);
+				match(LPAREN);
+				setState(164);
 				notExpression();
-				setState(109);
-				match(T__2);
+				setState(165);
+				match(RPAREN);
 				}
 				break;
-			case T__3:
-			case Identifier:
-			case UnnamedLabel:
-			case PLUS:
-			case MINUS:
-			case BITNOT:
-			case LOBYTE:
-			case HIBYTE:
-			case BANKBYTE:
-			case LT:
-			case GT:
-			case NOT:
+			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(111);
+				setState(167);
 				notExpression();
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -591,39 +1007,27 @@ public class CA65Parser extends Parser {
 
 	public final NotExpressionContext notExpression() throws RecognitionException {
 		NotExpressionContext _localctx = new NotExpressionContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_notExpression);
+		enterRule(_localctx, 22, RULE_notExpression);
 		try {
-			setState(117);
+			setState(173);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case NOT:
+			switch ( getInterpreter().adaptivePredict(_input,18,_ctx) ) {
+			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(114);
+				setState(170);
 				match(NOT);
-				setState(115);
+				setState(171);
 				orExpression(0);
 				}
 				break;
-			case T__3:
-			case Identifier:
-			case UnnamedLabel:
-			case PLUS:
-			case MINUS:
-			case BITNOT:
-			case LOBYTE:
-			case HIBYTE:
-			case BANKBYTE:
-			case LT:
-			case GT:
+			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(116);
+				setState(172);
 				orExpression(0);
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -673,20 +1077,20 @@ public class CA65Parser extends Parser {
 		int _parentState = getState();
 		OrExpressionContext _localctx = new OrExpressionContext(_ctx, _parentState);
 		OrExpressionContext _prevctx = _localctx;
-		int _startState = 12;
-		enterRecursionRule(_localctx, 12, RULE_orExpression, _p);
+		int _startState = 24;
+		enterRecursionRule(_localctx, 24, RULE_orExpression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(120);
+			setState(176);
 			xorExpression(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(127);
+			setState(183);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,10,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,19,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -695,18 +1099,18 @@ public class CA65Parser extends Parser {
 					{
 					_localctx = new OrExpressionContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_orExpression);
-					setState(122);
+					setState(178);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(123);
+					setState(179);
 					match(OR);
-					setState(124);
+					setState(180);
 					xorExpression(0);
 					}
 					} 
 				}
-				setState(129);
+				setState(185);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,10,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,19,_ctx);
 			}
 			}
 		}
@@ -757,20 +1161,20 @@ public class CA65Parser extends Parser {
 		int _parentState = getState();
 		XorExpressionContext _localctx = new XorExpressionContext(_ctx, _parentState);
 		XorExpressionContext _prevctx = _localctx;
-		int _startState = 14;
-		enterRecursionRule(_localctx, 14, RULE_xorExpression, _p);
+		int _startState = 26;
+		enterRecursionRule(_localctx, 26, RULE_xorExpression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(131);
+			setState(187);
 			andExpression(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(138);
+			setState(194);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,11,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,20,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -779,18 +1183,18 @@ public class CA65Parser extends Parser {
 					{
 					_localctx = new XorExpressionContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_xorExpression);
-					setState(133);
+					setState(189);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(134);
+					setState(190);
 					match(XOR);
-					setState(135);
+					setState(191);
 					andExpression(0);
 					}
 					} 
 				}
-				setState(140);
+				setState(196);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,11,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,20,_ctx);
 			}
 			}
 		}
@@ -841,20 +1245,20 @@ public class CA65Parser extends Parser {
 		int _parentState = getState();
 		AndExpressionContext _localctx = new AndExpressionContext(_ctx, _parentState);
 		AndExpressionContext _prevctx = _localctx;
-		int _startState = 16;
-		enterRecursionRule(_localctx, 16, RULE_andExpression, _p);
+		int _startState = 28;
+		enterRecursionRule(_localctx, 28, RULE_andExpression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(142);
+			setState(198);
 			geExpression(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(149);
+			setState(205);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,12,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,21,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -863,18 +1267,18 @@ public class CA65Parser extends Parser {
 					{
 					_localctx = new AndExpressionContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_andExpression);
-					setState(144);
+					setState(200);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(145);
+					setState(201);
 					match(BAND);
-					setState(146);
+					setState(202);
 					geExpression(0);
 					}
 					} 
 				}
-				setState(151);
+				setState(207);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,12,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,21,_ctx);
 			}
 			}
 		}
@@ -925,20 +1329,20 @@ public class CA65Parser extends Parser {
 		int _parentState = getState();
 		GeExpressionContext _localctx = new GeExpressionContext(_ctx, _parentState);
 		GeExpressionContext _prevctx = _localctx;
-		int _startState = 18;
-		enterRecursionRule(_localctx, 18, RULE_geExpression, _p);
+		int _startState = 30;
+		enterRecursionRule(_localctx, 30, RULE_geExpression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(153);
+			setState(209);
 			leExpression(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(160);
+			setState(216);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,13,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,22,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -947,18 +1351,18 @@ public class CA65Parser extends Parser {
 					{
 					_localctx = new GeExpressionContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_geExpression);
-					setState(155);
+					setState(211);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(156);
+					setState(212);
 					match(GE);
-					setState(157);
+					setState(213);
 					leExpression(0);
 					}
 					} 
 				}
-				setState(162);
+				setState(218);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,13,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,22,_ctx);
 			}
 			}
 		}
@@ -1009,20 +1413,20 @@ public class CA65Parser extends Parser {
 		int _parentState = getState();
 		LeExpressionContext _localctx = new LeExpressionContext(_ctx, _parentState);
 		LeExpressionContext _prevctx = _localctx;
-		int _startState = 20;
-		enterRecursionRule(_localctx, 20, RULE_leExpression, _p);
+		int _startState = 32;
+		enterRecursionRule(_localctx, 32, RULE_leExpression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(164);
+			setState(220);
 			gtExpression(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(171);
+			setState(227);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,14,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,23,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -1031,18 +1435,18 @@ public class CA65Parser extends Parser {
 					{
 					_localctx = new LeExpressionContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_leExpression);
-					setState(166);
+					setState(222);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(167);
+					setState(223);
 					match(LE);
-					setState(168);
+					setState(224);
 					gtExpression(0);
 					}
 					} 
 				}
-				setState(173);
+				setState(229);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,14,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,23,_ctx);
 			}
 			}
 		}
@@ -1093,20 +1497,20 @@ public class CA65Parser extends Parser {
 		int _parentState = getState();
 		GtExpressionContext _localctx = new GtExpressionContext(_ctx, _parentState);
 		GtExpressionContext _prevctx = _localctx;
-		int _startState = 22;
-		enterRecursionRule(_localctx, 22, RULE_gtExpression, _p);
+		int _startState = 34;
+		enterRecursionRule(_localctx, 34, RULE_gtExpression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(175);
+			setState(231);
 			ltExpression(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(182);
+			setState(238);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,15,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,24,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -1115,18 +1519,18 @@ public class CA65Parser extends Parser {
 					{
 					_localctx = new GtExpressionContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_gtExpression);
-					setState(177);
+					setState(233);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(178);
+					setState(234);
 					match(GT);
-					setState(179);
+					setState(235);
 					ltExpression(0);
 					}
 					} 
 				}
-				setState(184);
+				setState(240);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,15,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,24,_ctx);
 			}
 			}
 		}
@@ -1177,20 +1581,20 @@ public class CA65Parser extends Parser {
 		int _parentState = getState();
 		LtExpressionContext _localctx = new LtExpressionContext(_ctx, _parentState);
 		LtExpressionContext _prevctx = _localctx;
-		int _startState = 24;
-		enterRecursionRule(_localctx, 24, RULE_ltExpression, _p);
+		int _startState = 36;
+		enterRecursionRule(_localctx, 36, RULE_ltExpression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(186);
+			setState(242);
 			neExpression(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(193);
+			setState(249);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,16,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,25,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -1199,18 +1603,18 @@ public class CA65Parser extends Parser {
 					{
 					_localctx = new LtExpressionContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_ltExpression);
-					setState(188);
+					setState(244);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(189);
+					setState(245);
 					match(LT);
-					setState(190);
+					setState(246);
 					neExpression(0);
 					}
 					} 
 				}
-				setState(195);
+				setState(251);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,16,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,25,_ctx);
 			}
 			}
 		}
@@ -1261,20 +1665,20 @@ public class CA65Parser extends Parser {
 		int _parentState = getState();
 		NeExpressionContext _localctx = new NeExpressionContext(_ctx, _parentState);
 		NeExpressionContext _prevctx = _localctx;
-		int _startState = 26;
-		enterRecursionRule(_localctx, 26, RULE_neExpression, _p);
+		int _startState = 38;
+		enterRecursionRule(_localctx, 38, RULE_neExpression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(197);
+			setState(253);
 			eqExpression(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(204);
+			setState(260);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,17,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,26,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -1283,18 +1687,18 @@ public class CA65Parser extends Parser {
 					{
 					_localctx = new NeExpressionContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_neExpression);
-					setState(199);
+					setState(255);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(200);
+					setState(256);
 					match(NE);
-					setState(201);
+					setState(257);
 					eqExpression(0);
 					}
 					} 
 				}
-				setState(206);
+				setState(262);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,17,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,26,_ctx);
 			}
 			}
 		}
@@ -1345,20 +1749,20 @@ public class CA65Parser extends Parser {
 		int _parentState = getState();
 		EqExpressionContext _localctx = new EqExpressionContext(_ctx, _parentState);
 		EqExpressionContext _prevctx = _localctx;
-		int _startState = 28;
-		enterRecursionRule(_localctx, 28, RULE_eqExpression, _p);
+		int _startState = 40;
+		enterRecursionRule(_localctx, 40, RULE_eqExpression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(208);
+			setState(264);
 			bitorExpression(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(215);
+			setState(271);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,18,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,27,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -1367,18 +1771,18 @@ public class CA65Parser extends Parser {
 					{
 					_localctx = new EqExpressionContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_eqExpression);
-					setState(210);
+					setState(266);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(211);
+					setState(267);
 					match(EQ);
-					setState(212);
+					setState(268);
 					bitorExpression(0);
 					}
 					} 
 				}
-				setState(217);
+				setState(273);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,18,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,27,_ctx);
 			}
 			}
 		}
@@ -1429,20 +1833,20 @@ public class CA65Parser extends Parser {
 		int _parentState = getState();
 		BitorExpressionContext _localctx = new BitorExpressionContext(_ctx, _parentState);
 		BitorExpressionContext _prevctx = _localctx;
-		int _startState = 30;
-		enterRecursionRule(_localctx, 30, RULE_bitorExpression, _p);
+		int _startState = 42;
+		enterRecursionRule(_localctx, 42, RULE_bitorExpression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(219);
+			setState(275);
 			subExpression(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(226);
+			setState(282);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,19,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,28,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -1451,18 +1855,18 @@ public class CA65Parser extends Parser {
 					{
 					_localctx = new BitorExpressionContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_bitorExpression);
-					setState(221);
+					setState(277);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(222);
+					setState(278);
 					match(BITOR);
-					setState(223);
+					setState(279);
 					subExpression(0);
 					}
 					} 
 				}
-				setState(228);
+				setState(284);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,19,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,28,_ctx);
 			}
 			}
 		}
@@ -1513,20 +1917,20 @@ public class CA65Parser extends Parser {
 		int _parentState = getState();
 		SubExpressionContext _localctx = new SubExpressionContext(_ctx, _parentState);
 		SubExpressionContext _prevctx = _localctx;
-		int _startState = 32;
-		enterRecursionRule(_localctx, 32, RULE_subExpression, _p);
+		int _startState = 44;
+		enterRecursionRule(_localctx, 44, RULE_subExpression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(230);
+			setState(286);
 			addExpression(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(237);
+			setState(293);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,20,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,29,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -1535,18 +1939,18 @@ public class CA65Parser extends Parser {
 					{
 					_localctx = new SubExpressionContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_subExpression);
-					setState(232);
+					setState(288);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(233);
+					setState(289);
 					match(MINUS);
-					setState(234);
+					setState(290);
 					addExpression(0);
 					}
 					} 
 				}
-				setState(239);
+				setState(295);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,20,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,29,_ctx);
 			}
 			}
 		}
@@ -1597,20 +2001,20 @@ public class CA65Parser extends Parser {
 		int _parentState = getState();
 		AddExpressionContext _localctx = new AddExpressionContext(_ctx, _parentState);
 		AddExpressionContext _prevctx = _localctx;
-		int _startState = 34;
-		enterRecursionRule(_localctx, 34, RULE_addExpression, _p);
+		int _startState = 46;
+		enterRecursionRule(_localctx, 46, RULE_addExpression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(241);
+			setState(297);
 			mulExpression(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(248);
+			setState(304);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,21,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,30,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -1619,18 +2023,18 @@ public class CA65Parser extends Parser {
 					{
 					_localctx = new AddExpressionContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_addExpression);
-					setState(243);
+					setState(299);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(244);
+					setState(300);
 					match(PLUS);
-					setState(245);
+					setState(301);
 					mulExpression(0);
 					}
 					} 
 				}
-				setState(250);
+				setState(306);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,21,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,30,_ctx);
 			}
 			}
 		}
@@ -1681,20 +2085,20 @@ public class CA65Parser extends Parser {
 		int _parentState = getState();
 		MulExpressionContext _localctx = new MulExpressionContext(_ctx, _parentState);
 		MulExpressionContext _prevctx = _localctx;
-		int _startState = 36;
-		enterRecursionRule(_localctx, 36, RULE_mulExpression, _p);
+		int _startState = 48;
+		enterRecursionRule(_localctx, 48, RULE_mulExpression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(252);
+			setState(308);
 			divExpression(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(259);
+			setState(315);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,22,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,31,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -1703,18 +2107,18 @@ public class CA65Parser extends Parser {
 					{
 					_localctx = new MulExpressionContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_mulExpression);
-					setState(254);
+					setState(310);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(255);
+					setState(311);
 					match(MUL);
-					setState(256);
+					setState(312);
 					divExpression(0);
 					}
 					} 
 				}
-				setState(261);
+				setState(317);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,22,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,31,_ctx);
 			}
 			}
 		}
@@ -1765,20 +2169,20 @@ public class CA65Parser extends Parser {
 		int _parentState = getState();
 		DivExpressionContext _localctx = new DivExpressionContext(_ctx, _parentState);
 		DivExpressionContext _prevctx = _localctx;
-		int _startState = 38;
-		enterRecursionRule(_localctx, 38, RULE_divExpression, _p);
+		int _startState = 50;
+		enterRecursionRule(_localctx, 50, RULE_divExpression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(263);
+			setState(319);
 			modExpression(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(270);
+			setState(326);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,23,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,32,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -1787,18 +2191,18 @@ public class CA65Parser extends Parser {
 					{
 					_localctx = new DivExpressionContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_divExpression);
-					setState(265);
+					setState(321);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(266);
+					setState(322);
 					match(DIV);
-					setState(267);
+					setState(323);
 					modExpression(0);
 					}
 					} 
 				}
-				setState(272);
+				setState(328);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,23,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,32,_ctx);
 			}
 			}
 		}
@@ -1849,20 +2253,20 @@ public class CA65Parser extends Parser {
 		int _parentState = getState();
 		ModExpressionContext _localctx = new ModExpressionContext(_ctx, _parentState);
 		ModExpressionContext _prevctx = _localctx;
-		int _startState = 40;
-		enterRecursionRule(_localctx, 40, RULE_modExpression, _p);
+		int _startState = 52;
+		enterRecursionRule(_localctx, 52, RULE_modExpression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(274);
+			setState(330);
 			bitandExpression(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(281);
+			setState(337);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,24,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,33,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -1871,18 +2275,18 @@ public class CA65Parser extends Parser {
 					{
 					_localctx = new ModExpressionContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_modExpression);
-					setState(276);
+					setState(332);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(277);
+					setState(333);
 					match(MOD);
-					setState(278);
+					setState(334);
 					bitandExpression(0);
 					}
 					} 
 				}
-				setState(283);
+				setState(339);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,24,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,33,_ctx);
 			}
 			}
 		}
@@ -1933,20 +2337,20 @@ public class CA65Parser extends Parser {
 		int _parentState = getState();
 		BitandExpressionContext _localctx = new BitandExpressionContext(_ctx, _parentState);
 		BitandExpressionContext _prevctx = _localctx;
-		int _startState = 42;
-		enterRecursionRule(_localctx, 42, RULE_bitandExpression, _p);
+		int _startState = 54;
+		enterRecursionRule(_localctx, 54, RULE_bitandExpression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(285);
+			setState(341);
 			bitxorExpression(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(292);
+			setState(348);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,25,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,34,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -1955,18 +2359,18 @@ public class CA65Parser extends Parser {
 					{
 					_localctx = new BitandExpressionContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_bitandExpression);
-					setState(287);
+					setState(343);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(288);
+					setState(344);
 					match(BITAND);
-					setState(289);
+					setState(345);
 					bitxorExpression(0);
 					}
 					} 
 				}
-				setState(294);
+				setState(350);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,25,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,34,_ctx);
 			}
 			}
 		}
@@ -2017,20 +2421,20 @@ public class CA65Parser extends Parser {
 		int _parentState = getState();
 		BitxorExpressionContext _localctx = new BitxorExpressionContext(_ctx, _parentState);
 		BitxorExpressionContext _prevctx = _localctx;
-		int _startState = 44;
-		enterRecursionRule(_localctx, 44, RULE_bitxorExpression, _p);
+		int _startState = 56;
+		enterRecursionRule(_localctx, 56, RULE_bitxorExpression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(296);
+			setState(352);
 			shlExpression(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(303);
+			setState(359);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,26,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,35,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -2039,18 +2443,18 @@ public class CA65Parser extends Parser {
 					{
 					_localctx = new BitxorExpressionContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_bitxorExpression);
-					setState(298);
+					setState(354);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(299);
+					setState(355);
 					match(BITXOR);
-					setState(300);
+					setState(356);
 					shlExpression(0);
 					}
 					} 
 				}
-				setState(305);
+				setState(361);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,26,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,35,_ctx);
 			}
 			}
 		}
@@ -2101,20 +2505,20 @@ public class CA65Parser extends Parser {
 		int _parentState = getState();
 		ShlExpressionContext _localctx = new ShlExpressionContext(_ctx, _parentState);
 		ShlExpressionContext _prevctx = _localctx;
-		int _startState = 46;
-		enterRecursionRule(_localctx, 46, RULE_shlExpression, _p);
+		int _startState = 58;
+		enterRecursionRule(_localctx, 58, RULE_shlExpression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(307);
+			setState(363);
 			shrExpression(0);
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(314);
+			setState(370);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,27,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,36,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -2123,18 +2527,18 @@ public class CA65Parser extends Parser {
 					{
 					_localctx = new ShlExpressionContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_shlExpression);
-					setState(309);
+					setState(365);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(310);
+					setState(366);
 					match(SHL);
-					setState(311);
+					setState(367);
 					shrExpression(0);
 					}
 					} 
 				}
-				setState(316);
+				setState(372);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,27,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,36,_ctx);
 			}
 			}
 		}
@@ -2185,20 +2589,20 @@ public class CA65Parser extends Parser {
 		int _parentState = getState();
 		ShrExpressionContext _localctx = new ShrExpressionContext(_ctx, _parentState);
 		ShrExpressionContext _prevctx = _localctx;
-		int _startState = 48;
-		enterRecursionRule(_localctx, 48, RULE_shrExpression, _p);
+		int _startState = 60;
+		enterRecursionRule(_localctx, 60, RULE_shrExpression, _p);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
 			{
-			setState(318);
+			setState(374);
 			bankbyteExpression();
 			}
 			_ctx.stop = _input.LT(-1);
-			setState(325);
+			setState(381);
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,28,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,37,_ctx);
 			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
 				if ( _alt==1 ) {
 					if ( _parseListeners!=null ) triggerExitRuleEvent();
@@ -2207,18 +2611,18 @@ public class CA65Parser extends Parser {
 					{
 					_localctx = new ShrExpressionContext(_parentctx, _parentState);
 					pushNewRecursionContext(_localctx, _startState, RULE_shrExpression);
-					setState(320);
+					setState(376);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
-					setState(321);
+					setState(377);
 					match(SHR);
-					setState(322);
+					setState(378);
 					bankbyteExpression();
 					}
 					} 
 				}
-				setState(327);
+				setState(383);
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,28,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,37,_ctx);
 			}
 			}
 		}
@@ -2235,9 +2639,11 @@ public class CA65Parser extends Parser {
 
 	public static class BankbyteExpressionContext extends ParserRuleContext {
 		public TerminalNode BANKBYTE() { return getToken(CA65Parser.BANKBYTE, 0); }
+		public TerminalNode LPAREN() { return getToken(CA65Parser.LPAREN, 0); }
 		public HibyteExpressionContext hibyteExpression() {
 			return getRuleContext(HibyteExpressionContext.class,0);
 		}
+		public TerminalNode RPAREN() { return getToken(CA65Parser.RPAREN, 0); }
 		public BankbyteExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -2259,50 +2665,40 @@ public class CA65Parser extends Parser {
 
 	public final BankbyteExpressionContext bankbyteExpression() throws RecognitionException {
 		BankbyteExpressionContext _localctx = new BankbyteExpressionContext(_ctx, getState());
-		enterRule(_localctx, 50, RULE_bankbyteExpression);
+		enterRule(_localctx, 62, RULE_bankbyteExpression);
 		try {
-			setState(336);
+			setState(392);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case BANKBYTE:
+			switch ( getInterpreter().adaptivePredict(_input,38,_ctx) ) {
+			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(328);
+				setState(384);
 				match(BANKBYTE);
-				setState(329);
-				match(T__1);
-				setState(330);
+				setState(385);
+				match(LPAREN);
+				setState(386);
 				hibyteExpression();
-				setState(331);
-				match(T__2);
+				setState(387);
+				match(RPAREN);
 				}
 				break;
-			case T__3:
+			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(333);
-				match(T__3);
-				setState(334);
+				setState(389);
+				match(T__0);
+				setState(390);
 				hibyteExpression();
 				}
 				break;
-			case Identifier:
-			case UnnamedLabel:
-			case PLUS:
-			case MINUS:
-			case BITNOT:
-			case LOBYTE:
-			case HIBYTE:
-			case LT:
-			case GT:
+			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(335);
+				setState(391);
 				hibyteExpression();
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2318,9 +2714,11 @@ public class CA65Parser extends Parser {
 
 	public static class HibyteExpressionContext extends ParserRuleContext {
 		public TerminalNode HIBYTE() { return getToken(CA65Parser.HIBYTE, 0); }
+		public TerminalNode LPAREN() { return getToken(CA65Parser.LPAREN, 0); }
 		public LobyteExpressionContext lobyteExpression() {
 			return getRuleContext(LobyteExpressionContext.class,0);
 		}
+		public TerminalNode RPAREN() { return getToken(CA65Parser.RPAREN, 0); }
 		public TerminalNode GT() { return getToken(CA65Parser.GT, 0); }
 		public HibyteExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2343,48 +2741,40 @@ public class CA65Parser extends Parser {
 
 	public final HibyteExpressionContext hibyteExpression() throws RecognitionException {
 		HibyteExpressionContext _localctx = new HibyteExpressionContext(_ctx, getState());
-		enterRule(_localctx, 52, RULE_hibyteExpression);
+		enterRule(_localctx, 64, RULE_hibyteExpression);
 		try {
-			setState(346);
+			setState(402);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case HIBYTE:
+			switch ( getInterpreter().adaptivePredict(_input,39,_ctx) ) {
+			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(338);
+				setState(394);
 				match(HIBYTE);
-				setState(339);
-				match(T__1);
-				setState(340);
+				setState(395);
+				match(LPAREN);
+				setState(396);
 				lobyteExpression();
-				setState(341);
-				match(T__2);
+				setState(397);
+				match(RPAREN);
 				}
 				break;
-			case GT:
+			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(343);
+				setState(399);
 				match(GT);
-				setState(344);
+				setState(400);
 				lobyteExpression();
 				}
 				break;
-			case Identifier:
-			case UnnamedLabel:
-			case PLUS:
-			case MINUS:
-			case BITNOT:
-			case LOBYTE:
-			case LT:
+			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(345);
+				setState(401);
 				lobyteExpression();
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2400,9 +2790,11 @@ public class CA65Parser extends Parser {
 
 	public static class LobyteExpressionContext extends ParserRuleContext {
 		public TerminalNode LOBYTE() { return getToken(CA65Parser.LOBYTE, 0); }
+		public TerminalNode LPAREN() { return getToken(CA65Parser.LPAREN, 0); }
 		public BitnotExpressionContext bitnotExpression() {
 			return getRuleContext(BitnotExpressionContext.class,0);
 		}
+		public TerminalNode RPAREN() { return getToken(CA65Parser.RPAREN, 0); }
 		public TerminalNode LT() { return getToken(CA65Parser.LT, 0); }
 		public LobyteExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2425,46 +2817,40 @@ public class CA65Parser extends Parser {
 
 	public final LobyteExpressionContext lobyteExpression() throws RecognitionException {
 		LobyteExpressionContext _localctx = new LobyteExpressionContext(_ctx, getState());
-		enterRule(_localctx, 54, RULE_lobyteExpression);
+		enterRule(_localctx, 66, RULE_lobyteExpression);
 		try {
-			setState(356);
+			setState(412);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case LOBYTE:
+			switch ( getInterpreter().adaptivePredict(_input,40,_ctx) ) {
+			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(348);
+				setState(404);
 				match(LOBYTE);
-				setState(349);
-				match(T__1);
-				setState(350);
+				setState(405);
+				match(LPAREN);
+				setState(406);
 				bitnotExpression();
-				setState(351);
-				match(T__2);
+				setState(407);
+				match(RPAREN);
 				}
 				break;
-			case LT:
+			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(353);
+				setState(409);
 				match(LT);
-				setState(354);
+				setState(410);
 				bitnotExpression();
 				}
 				break;
-			case Identifier:
-			case UnnamedLabel:
-			case PLUS:
-			case MINUS:
-			case BITNOT:
+			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(355);
+				setState(411);
 				bitnotExpression();
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2504,32 +2890,27 @@ public class CA65Parser extends Parser {
 
 	public final BitnotExpressionContext bitnotExpression() throws RecognitionException {
 		BitnotExpressionContext _localctx = new BitnotExpressionContext(_ctx, getState());
-		enterRule(_localctx, 56, RULE_bitnotExpression);
+		enterRule(_localctx, 68, RULE_bitnotExpression);
 		try {
-			setState(361);
+			setState(417);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case BITNOT:
+			switch ( getInterpreter().adaptivePredict(_input,41,_ctx) ) {
+			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(358);
+				setState(414);
 				match(BITNOT);
-				setState(359);
+				setState(415);
 				negativeExpression();
 				}
 				break;
-			case Identifier:
-			case UnnamedLabel:
-			case PLUS:
-			case MINUS:
+			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(360);
+				setState(416);
 				negativeExpression();
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2569,31 +2950,27 @@ public class CA65Parser extends Parser {
 
 	public final NegativeExpressionContext negativeExpression() throws RecognitionException {
 		NegativeExpressionContext _localctx = new NegativeExpressionContext(_ctx, getState());
-		enterRule(_localctx, 58, RULE_negativeExpression);
+		enterRule(_localctx, 70, RULE_negativeExpression);
 		try {
-			setState(366);
+			setState(422);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case MINUS:
+			switch ( getInterpreter().adaptivePredict(_input,42,_ctx) ) {
+			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(363);
+				setState(419);
 				match(MINUS);
-				setState(364);
+				setState(420);
 				positiveExpression();
 				}
 				break;
-			case Identifier:
-			case UnnamedLabel:
-			case PLUS:
+			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(365);
+				setState(421);
 				positiveExpression();
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2609,8 +2986,8 @@ public class CA65Parser extends Parser {
 
 	public static class PositiveExpressionContext extends ParserRuleContext {
 		public TerminalNode PLUS() { return getToken(CA65Parser.PLUS, 0); }
-		public LabelRefContext labelRef() {
-			return getRuleContext(LabelRefContext.class,0);
+		public ReferenceContext reference() {
+			return getRuleContext(ReferenceContext.class,0);
 		}
 		public PositiveExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -2633,30 +3010,85 @@ public class CA65Parser extends Parser {
 
 	public final PositiveExpressionContext positiveExpression() throws RecognitionException {
 		PositiveExpressionContext _localctx = new PositiveExpressionContext(_ctx, getState());
-		enterRule(_localctx, 60, RULE_positiveExpression);
+		enterRule(_localctx, 72, RULE_positiveExpression);
 		try {
-			setState(371);
+			setState(427);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case PLUS:
+			switch ( getInterpreter().adaptivePredict(_input,43,_ctx) ) {
+			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(368);
+				setState(424);
 				match(PLUS);
-				setState(369);
-				labelRef();
+				setState(425);
+				reference();
 				}
 				break;
-			case Identifier:
-			case UnnamedLabel:
+			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(370);
+				setState(426);
+				reference();
+				}
+				break;
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class ReferenceContext extends ParserRuleContext {
+		public LabelRefContext labelRef() {
+			return getRuleContext(LabelRefContext.class,0);
+		}
+		public TerminalNode Number() { return getToken(CA65Parser.Number, 0); }
+		public ReferenceContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_reference; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).enterReference(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).exitReference(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof CA65Visitor ) return ((CA65Visitor<? extends T>)visitor).visitReference(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final ReferenceContext reference() throws RecognitionException {
+		ReferenceContext _localctx = new ReferenceContext(_ctx, getState());
+		enterRule(_localctx, 74, RULE_reference);
+		try {
+			setState(431);
+			_errHandler.sync(this);
+			switch ( getInterpreter().adaptivePredict(_input,44,_ctx) ) {
+			case 1:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(429);
 				labelRef();
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
+			case 2:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(430);
+				match(Number);
+				}
+				break;
 			}
 		}
 		catch (RecognitionException re) {
@@ -2671,9 +3103,16 @@ public class CA65Parser extends Parser {
 	}
 
 	public static class LabelRefContext extends ParserRuleContext {
-		public TerminalNode Identifier() { return getToken(CA65Parser.Identifier, 0); }
-		public ArgsContext args() {
-			return getRuleContext(ArgsContext.class,0);
+		public List<IdentifierContext> identifier() {
+			return getRuleContexts(IdentifierContext.class);
+		}
+		public IdentifierContext identifier(int i) {
+			return getRuleContext(IdentifierContext.class,i);
+		}
+		public TerminalNode Addressing() { return getToken(CA65Parser.Addressing, 0); }
+		public List<TerminalNode> COLONCOLON() { return getTokens(CA65Parser.COLONCOLON); }
+		public TerminalNode COLONCOLON(int i) {
+			return getToken(CA65Parser.COLONCOLON, i);
 		}
 		public TerminalNode UnnamedLabel() { return getToken(CA65Parser.UnnamedLabel, 0); }
 		public LabelRefContext(ParserRuleContext parent, int invokingState) {
@@ -2697,37 +3136,64 @@ public class CA65Parser extends Parser {
 
 	public final LabelRefContext labelRef() throws RecognitionException {
 		LabelRefContext _localctx = new LabelRefContext(_ctx, getState());
-		enterRule(_localctx, 62, RULE_labelRef);
+		enterRule(_localctx, 76, RULE_labelRef);
 		try {
-			setState(378);
+			int _alt;
+			setState(448);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case Identifier:
+			switch ( getInterpreter().adaptivePredict(_input,48,_ctx) ) {
+			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(373);
-				match(Identifier);
-				setState(375);
+				setState(434);
 				_errHandler.sync(this);
-				switch ( getInterpreter().adaptivePredict(_input,35,_ctx) ) {
+				switch ( getInterpreter().adaptivePredict(_input,45,_ctx) ) {
 				case 1:
 					{
-					setState(374);
-					args();
+					setState(433);
+					match(Addressing);
 					}
 					break;
 				}
+				setState(437);
+				_errHandler.sync(this);
+				switch ( getInterpreter().adaptivePredict(_input,46,_ctx) ) {
+				case 1:
+					{
+					setState(436);
+					match(COLONCOLON);
+					}
+					break;
+				}
+				setState(439);
+				identifier();
+				setState(444);
+				_errHandler.sync(this);
+				_alt = getInterpreter().adaptivePredict(_input,47,_ctx);
+				while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
+					if ( _alt==1 ) {
+						{
+						{
+						setState(440);
+						match(COLONCOLON);
+						setState(441);
+						identifier();
+						}
+						} 
+					}
+					setState(446);
+					_errHandler.sync(this);
+					_alt = getInterpreter().adaptivePredict(_input,47,_ctx);
+				}
 				}
 				break;
-			case UnnamedLabel:
+			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(377);
+				setState(447);
 				match(UnnamedLabel);
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -2741,271 +3207,50 @@ public class CA65Parser extends Parser {
 		return _localctx;
 	}
 
-	public static class ArgsContext extends ParserRuleContext {
-		public List<ConstantExpressionContext> constantExpression() {
-			return getRuleContexts(ConstantExpressionContext.class);
-		}
-		public ConstantExpressionContext constantExpression(int i) {
-			return getRuleContext(ConstantExpressionContext.class,i);
-		}
-		public ArgsContext(ParserRuleContext parent, int invokingState) {
+	public static class IdentifierContext extends ParserRuleContext {
+		public TerminalNode Diretive() { return getToken(CA65Parser.Diretive, 0); }
+		public TerminalNode CheapLabel() { return getToken(CA65Parser.CheapLabel, 0); }
+		public TerminalNode Label() { return getToken(CA65Parser.Label, 0); }
+		public TerminalNode Opcode() { return getToken(CA65Parser.Opcode, 0); }
+		public IdentifierContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_args; }
+		@Override public int getRuleIndex() { return RULE_identifier; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).enterArgs(this);
+			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).enterIdentifier(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).exitArgs(this);
+			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).exitIdentifier(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CA65Visitor ) return ((CA65Visitor<? extends T>)visitor).visitArgs(this);
+			if ( visitor instanceof CA65Visitor ) return ((CA65Visitor<? extends T>)visitor).visitIdentifier(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final ArgsContext args() throws RecognitionException {
-		ArgsContext _localctx = new ArgsContext(_ctx, getState());
-		enterRule(_localctx, 64, RULE_args);
-		try {
-			int _alt;
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(380);
-			constantExpression();
-			setState(385);
-			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,37,_ctx);
-			while ( _alt!=2 && _alt!=org.antlr.v4.runtime.atn.ATN.INVALID_ALT_NUMBER ) {
-				if ( _alt==1 ) {
-					{
-					{
-					setState(381);
-					match(T__4);
-					setState(382);
-					constantExpression();
-					}
-					} 
-				}
-				setState(387);
-				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,37,_ctx);
-			}
-			}
-		}
-		catch (RecognitionException re) {
-			_localctx.exception = re;
-			_errHandler.reportError(this, re);
-			_errHandler.recover(this, re);
-		}
-		finally {
-			exitRule();
-		}
-		return _localctx;
-	}
-
-	public static class OpcodeContext extends ParserRuleContext {
-		public TerminalNode ADC() { return getToken(CA65Parser.ADC, 0); }
-		public TerminalNode AND() { return getToken(CA65Parser.AND, 0); }
-		public TerminalNode ASL() { return getToken(CA65Parser.ASL, 0); }
-		public TerminalNode BCC() { return getToken(CA65Parser.BCC, 0); }
-		public TerminalNode BCS() { return getToken(CA65Parser.BCS, 0); }
-		public TerminalNode BEQ() { return getToken(CA65Parser.BEQ, 0); }
-		public TerminalNode BIT() { return getToken(CA65Parser.BIT, 0); }
-		public TerminalNode BMI() { return getToken(CA65Parser.BMI, 0); }
-		public TerminalNode BNE() { return getToken(CA65Parser.BNE, 0); }
-		public TerminalNode BPL() { return getToken(CA65Parser.BPL, 0); }
-		public TerminalNode BRK() { return getToken(CA65Parser.BRK, 0); }
-		public TerminalNode BVC() { return getToken(CA65Parser.BVC, 0); }
-		public TerminalNode BVS() { return getToken(CA65Parser.BVS, 0); }
-		public TerminalNode CLC() { return getToken(CA65Parser.CLC, 0); }
-		public TerminalNode CLD() { return getToken(CA65Parser.CLD, 0); }
-		public TerminalNode CLI() { return getToken(CA65Parser.CLI, 0); }
-		public TerminalNode CLV() { return getToken(CA65Parser.CLV, 0); }
-		public TerminalNode CMP() { return getToken(CA65Parser.CMP, 0); }
-		public TerminalNode CPX() { return getToken(CA65Parser.CPX, 0); }
-		public TerminalNode CPY() { return getToken(CA65Parser.CPY, 0); }
-		public TerminalNode DEC() { return getToken(CA65Parser.DEC, 0); }
-		public TerminalNode DEX() { return getToken(CA65Parser.DEX, 0); }
-		public TerminalNode DEY() { return getToken(CA65Parser.DEY, 0); }
-		public TerminalNode EOR() { return getToken(CA65Parser.EOR, 0); }
-		public TerminalNode INC() { return getToken(CA65Parser.INC, 0); }
-		public TerminalNode INX() { return getToken(CA65Parser.INX, 0); }
-		public TerminalNode INY() { return getToken(CA65Parser.INY, 0); }
-		public TerminalNode JMP() { return getToken(CA65Parser.JMP, 0); }
-		public TerminalNode JSR() { return getToken(CA65Parser.JSR, 0); }
-		public TerminalNode LDA() { return getToken(CA65Parser.LDA, 0); }
-		public TerminalNode LDX() { return getToken(CA65Parser.LDX, 0); }
-		public TerminalNode LDY() { return getToken(CA65Parser.LDY, 0); }
-		public TerminalNode LSR() { return getToken(CA65Parser.LSR, 0); }
-		public TerminalNode NOP() { return getToken(CA65Parser.NOP, 0); }
-		public TerminalNode ORA() { return getToken(CA65Parser.ORA, 0); }
-		public TerminalNode PHA() { return getToken(CA65Parser.PHA, 0); }
-		public TerminalNode PHP() { return getToken(CA65Parser.PHP, 0); }
-		public TerminalNode PLA() { return getToken(CA65Parser.PLA, 0); }
-		public TerminalNode PLP() { return getToken(CA65Parser.PLP, 0); }
-		public TerminalNode ROL() { return getToken(CA65Parser.ROL, 0); }
-		public TerminalNode ROR() { return getToken(CA65Parser.ROR, 0); }
-		public TerminalNode RTI() { return getToken(CA65Parser.RTI, 0); }
-		public TerminalNode RTS() { return getToken(CA65Parser.RTS, 0); }
-		public TerminalNode SBC() { return getToken(CA65Parser.SBC, 0); }
-		public TerminalNode SEC() { return getToken(CA65Parser.SEC, 0); }
-		public TerminalNode SED() { return getToken(CA65Parser.SED, 0); }
-		public TerminalNode SEI() { return getToken(CA65Parser.SEI, 0); }
-		public TerminalNode STA() { return getToken(CA65Parser.STA, 0); }
-		public TerminalNode STX() { return getToken(CA65Parser.STX, 0); }
-		public TerminalNode STY() { return getToken(CA65Parser.STY, 0); }
-		public TerminalNode TAX() { return getToken(CA65Parser.TAX, 0); }
-		public TerminalNode TAY() { return getToken(CA65Parser.TAY, 0); }
-		public TerminalNode TSX() { return getToken(CA65Parser.TSX, 0); }
-		public TerminalNode TXA() { return getToken(CA65Parser.TXA, 0); }
-		public TerminalNode TXS() { return getToken(CA65Parser.TXS, 0); }
-		public TerminalNode TYA() { return getToken(CA65Parser.TYA, 0); }
-		public TerminalNode BRA() { return getToken(CA65Parser.BRA, 0); }
-		public TerminalNode PHX() { return getToken(CA65Parser.PHX, 0); }
-		public TerminalNode PHY() { return getToken(CA65Parser.PHY, 0); }
-		public TerminalNode PLX() { return getToken(CA65Parser.PLX, 0); }
-		public TerminalNode PLY() { return getToken(CA65Parser.PLY, 0); }
-		public TerminalNode STZ() { return getToken(CA65Parser.STZ, 0); }
-		public TerminalNode TRB() { return getToken(CA65Parser.TRB, 0); }
-		public TerminalNode TSB() { return getToken(CA65Parser.TSB, 0); }
-		public TerminalNode BBR0() { return getToken(CA65Parser.BBR0, 0); }
-		public TerminalNode BBR1() { return getToken(CA65Parser.BBR1, 0); }
-		public TerminalNode BBR2() { return getToken(CA65Parser.BBR2, 0); }
-		public TerminalNode BBR3() { return getToken(CA65Parser.BBR3, 0); }
-		public TerminalNode BBR4() { return getToken(CA65Parser.BBR4, 0); }
-		public TerminalNode BBR5() { return getToken(CA65Parser.BBR5, 0); }
-		public TerminalNode BBR6() { return getToken(CA65Parser.BBR6, 0); }
-		public TerminalNode BBR7() { return getToken(CA65Parser.BBR7, 0); }
-		public TerminalNode BBS0() { return getToken(CA65Parser.BBS0, 0); }
-		public TerminalNode BBS1() { return getToken(CA65Parser.BBS1, 0); }
-		public TerminalNode BBS2() { return getToken(CA65Parser.BBS2, 0); }
-		public TerminalNode BBS3() { return getToken(CA65Parser.BBS3, 0); }
-		public TerminalNode BBS4() { return getToken(CA65Parser.BBS4, 0); }
-		public TerminalNode BBS5() { return getToken(CA65Parser.BBS5, 0); }
-		public TerminalNode BBS6() { return getToken(CA65Parser.BBS6, 0); }
-		public TerminalNode BBS7() { return getToken(CA65Parser.BBS7, 0); }
-		public TerminalNode RMB0() { return getToken(CA65Parser.RMB0, 0); }
-		public TerminalNode RMB1() { return getToken(CA65Parser.RMB1, 0); }
-		public TerminalNode RMB2() { return getToken(CA65Parser.RMB2, 0); }
-		public TerminalNode RMB3() { return getToken(CA65Parser.RMB3, 0); }
-		public TerminalNode RMB4() { return getToken(CA65Parser.RMB4, 0); }
-		public TerminalNode RMB5() { return getToken(CA65Parser.RMB5, 0); }
-		public TerminalNode RMB6() { return getToken(CA65Parser.RMB6, 0); }
-		public TerminalNode RMB7() { return getToken(CA65Parser.RMB7, 0); }
-		public TerminalNode SMB0() { return getToken(CA65Parser.SMB0, 0); }
-		public TerminalNode SMB1() { return getToken(CA65Parser.SMB1, 0); }
-		public TerminalNode SMB2() { return getToken(CA65Parser.SMB2, 0); }
-		public TerminalNode SMB3() { return getToken(CA65Parser.SMB3, 0); }
-		public TerminalNode SMB4() { return getToken(CA65Parser.SMB4, 0); }
-		public TerminalNode SMB5() { return getToken(CA65Parser.SMB5, 0); }
-		public TerminalNode SMB6() { return getToken(CA65Parser.SMB6, 0); }
-		public TerminalNode SMB7() { return getToken(CA65Parser.SMB7, 0); }
-		public TerminalNode ALR() { return getToken(CA65Parser.ALR, 0); }
-		public TerminalNode ANC() { return getToken(CA65Parser.ANC, 0); }
-		public TerminalNode ARR() { return getToken(CA65Parser.ARR, 0); }
-		public TerminalNode AXS() { return getToken(CA65Parser.AXS, 0); }
-		public TerminalNode DCP() { return getToken(CA65Parser.DCP, 0); }
-		public TerminalNode ISC() { return getToken(CA65Parser.ISC, 0); }
-		public TerminalNode LAS() { return getToken(CA65Parser.LAS, 0); }
-		public TerminalNode LAX() { return getToken(CA65Parser.LAX, 0); }
-		public TerminalNode RLA() { return getToken(CA65Parser.RLA, 0); }
-		public TerminalNode RRA() { return getToken(CA65Parser.RRA, 0); }
-		public TerminalNode SAX() { return getToken(CA65Parser.SAX, 0); }
-		public TerminalNode SLO() { return getToken(CA65Parser.SLO, 0); }
-		public TerminalNode SRE() { return getToken(CA65Parser.SRE, 0); }
-		public TerminalNode BRL() { return getToken(CA65Parser.BRL, 0); }
-		public TerminalNode COP() { return getToken(CA65Parser.COP, 0); }
-		public TerminalNode JML() { return getToken(CA65Parser.JML, 0); }
-		public TerminalNode JSL() { return getToken(CA65Parser.JSL, 0); }
-		public TerminalNode MVN() { return getToken(CA65Parser.MVN, 0); }
-		public TerminalNode MVP() { return getToken(CA65Parser.MVP, 0); }
-		public TerminalNode PEA() { return getToken(CA65Parser.PEA, 0); }
-		public TerminalNode PEI() { return getToken(CA65Parser.PEI, 0); }
-		public TerminalNode PER() { return getToken(CA65Parser.PER, 0); }
-		public TerminalNode PHB() { return getToken(CA65Parser.PHB, 0); }
-		public TerminalNode PHD() { return getToken(CA65Parser.PHD, 0); }
-		public TerminalNode PHK() { return getToken(CA65Parser.PHK, 0); }
-		public TerminalNode PLB() { return getToken(CA65Parser.PLB, 0); }
-		public TerminalNode PLD() { return getToken(CA65Parser.PLD, 0); }
-		public TerminalNode REP() { return getToken(CA65Parser.REP, 0); }
-		public TerminalNode RTL() { return getToken(CA65Parser.RTL, 0); }
-		public TerminalNode SEP() { return getToken(CA65Parser.SEP, 0); }
-		public TerminalNode STP() { return getToken(CA65Parser.STP, 0); }
-		public TerminalNode TCD() { return getToken(CA65Parser.TCD, 0); }
-		public TerminalNode TCS() { return getToken(CA65Parser.TCS, 0); }
-		public TerminalNode TDC() { return getToken(CA65Parser.TDC, 0); }
-		public TerminalNode TSC() { return getToken(CA65Parser.TSC, 0); }
-		public TerminalNode TXY() { return getToken(CA65Parser.TXY, 0); }
-		public TerminalNode TYX() { return getToken(CA65Parser.TYX, 0); }
-		public TerminalNode WAI() { return getToken(CA65Parser.WAI, 0); }
-		public TerminalNode WDM() { return getToken(CA65Parser.WDM, 0); }
-		public TerminalNode XBA() { return getToken(CA65Parser.XBA, 0); }
-		public TerminalNode XCE() { return getToken(CA65Parser.XCE, 0); }
-		public TerminalNode CPA() { return getToken(CA65Parser.CPA, 0); }
-		public TerminalNode DEA() { return getToken(CA65Parser.DEA, 0); }
-		public TerminalNode INA() { return getToken(CA65Parser.INA, 0); }
-		public TerminalNode SWA() { return getToken(CA65Parser.SWA, 0); }
-		public TerminalNode TAD() { return getToken(CA65Parser.TAD, 0); }
-		public TerminalNode TAS() { return getToken(CA65Parser.TAS, 0); }
-		public TerminalNode TDA() { return getToken(CA65Parser.TDA, 0); }
-		public TerminalNode TSA() { return getToken(CA65Parser.TSA, 0); }
-		public TerminalNode LBCC() { return getToken(CA65Parser.LBCC, 0); }
-		public TerminalNode LBCS() { return getToken(CA65Parser.LBCS, 0); }
-		public TerminalNode LBEQ() { return getToken(CA65Parser.LBEQ, 0); }
-		public TerminalNode LBMI() { return getToken(CA65Parser.LBMI, 0); }
-		public TerminalNode LBNE() { return getToken(CA65Parser.LBNE, 0); }
-		public TerminalNode LBPL() { return getToken(CA65Parser.LBPL, 0); }
-		public TerminalNode LBVC() { return getToken(CA65Parser.LBVC, 0); }
-		public TerminalNode LBVS() { return getToken(CA65Parser.LBVS, 0); }
-		public TerminalNode ADD() { return getToken(CA65Parser.ADD, 0); }
-		public TerminalNode SUB() { return getToken(CA65Parser.SUB, 0); }
-		public TerminalNode BGE() { return getToken(CA65Parser.BGE, 0); }
-		public TerminalNode BLT() { return getToken(CA65Parser.BLT, 0); }
-		public TerminalNode BGT() { return getToken(CA65Parser.BGT, 0); }
-		public TerminalNode BLE() { return getToken(CA65Parser.BLE, 0); }
-		public TerminalNode BNZ() { return getToken(CA65Parser.BNZ, 0); }
-		public TerminalNode BZE() { return getToken(CA65Parser.BZE, 0); }
-		public TerminalNode JEQ() { return getToken(CA65Parser.JEQ, 0); }
-		public TerminalNode JNE() { return getToken(CA65Parser.JNE, 0); }
-		public TerminalNode JMI() { return getToken(CA65Parser.JMI, 0); }
-		public TerminalNode JPL() { return getToken(CA65Parser.JPL, 0); }
-		public TerminalNode JCS() { return getToken(CA65Parser.JCS, 0); }
-		public TerminalNode JCC() { return getToken(CA65Parser.JCC, 0); }
-		public TerminalNode JVS() { return getToken(CA65Parser.JVS, 0); }
-		public TerminalNode JVC() { return getToken(CA65Parser.JVC, 0); }
-		public OpcodeContext(ParserRuleContext parent, int invokingState) {
-			super(parent, invokingState);
-		}
-		@Override public int getRuleIndex() { return RULE_opcode; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).enterOpcode(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CA65Listener ) ((CA65Listener)listener).exitOpcode(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CA65Visitor ) return ((CA65Visitor<? extends T>)visitor).visitOpcode(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-
-	public final OpcodeContext opcode() throws RecognitionException {
-		OpcodeContext _localctx = new OpcodeContext(_ctx, getState());
-		enterRule(_localctx, 66, RULE_opcode);
+	public final IdentifierContext identifier() throws RecognitionException {
+		IdentifierContext _localctx = new IdentifierContext(_ctx, getState());
+		enterRule(_localctx, 78, RULE_identifier);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(388);
+			setState(450);
 			_la = _input.LA(1);
-			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << ADC) | (1L << AND) | (1L << ASL) | (1L << BCC) | (1L << BCS) | (1L << BEQ) | (1L << BIT) | (1L << BMI) | (1L << BNE) | (1L << BPL) | (1L << BRK) | (1L << BVC) | (1L << BVS) | (1L << CLC) | (1L << CLD) | (1L << CLI) | (1L << CLV) | (1L << CMP) | (1L << CPX) | (1L << CPY) | (1L << DEC) | (1L << DEX) | (1L << DEY) | (1L << EOR) | (1L << INC) | (1L << INX) | (1L << INY) | (1L << JMP) | (1L << JSR) | (1L << LDA) | (1L << LDX) | (1L << LDY) | (1L << LSR) | (1L << NOP) | (1L << ORA) | (1L << PHA) | (1L << PHP) | (1L << PLA) | (1L << PLP) | (1L << ROL) | (1L << ROR) | (1L << RTI) | (1L << RTS) | (1L << SBC) | (1L << SEC) | (1L << SED) | (1L << SEI) | (1L << STA) | (1L << STX) | (1L << STY) | (1L << TAX) | (1L << TAY) | (1L << TSX))) != 0) || ((((_la - 64)) & ~0x3f) == 0 && ((1L << (_la - 64)) & ((1L << (TXA - 64)) | (1L << (TXS - 64)) | (1L << (TYA - 64)) | (1L << (BRA - 64)) | (1L << (PHX - 64)) | (1L << (PHY - 64)) | (1L << (PLX - 64)) | (1L << (PLY - 64)) | (1L << (STZ - 64)) | (1L << (TRB - 64)) | (1L << (TSB - 64)) | (1L << (BBR0 - 64)) | (1L << (BBR1 - 64)) | (1L << (BBR2 - 64)) | (1L << (BBR3 - 64)) | (1L << (BBR4 - 64)) | (1L << (BBR5 - 64)) | (1L << (BBR6 - 64)) | (1L << (BBR7 - 64)) | (1L << (BBS0 - 64)) | (1L << (BBS1 - 64)) | (1L << (BBS2 - 64)) | (1L << (BBS3 - 64)) | (1L << (BBS4 - 64)) | (1L << (BBS5 - 64)) | (1L << (BBS6 - 64)) | (1L << (BBS7 - 64)) | (1L << (RMB0 - 64)) | (1L << (RMB1 - 64)) | (1L << (RMB2 - 64)) | (1L << (RMB3 - 64)) | (1L << (RMB4 - 64)) | (1L << (RMB5 - 64)) | (1L << (RMB6 - 64)) | (1L << (RMB7 - 64)) | (1L << (SMB0 - 64)) | (1L << (SMB1 - 64)) | (1L << (SMB2 - 64)) | (1L << (SMB3 - 64)) | (1L << (SMB4 - 64)) | (1L << (SMB5 - 64)) | (1L << (SMB6 - 64)) | (1L << (SMB7 - 64)) | (1L << (ALR - 64)) | (1L << (ANC - 64)) | (1L << (ARR - 64)) | (1L << (AXS - 64)) | (1L << (DCP - 64)) | (1L << (ISC - 64)) | (1L << (LAS - 64)) | (1L << (LAX - 64)) | (1L << (RLA - 64)) | (1L << (RRA - 64)) | (1L << (SAX - 64)) | (1L << (SLO - 64)) | (1L << (SRE - 64)) | (1L << (BRL - 64)) | (1L << (COP - 64)) | (1L << (JML - 64)) | (1L << (JSL - 64)) | (1L << (MVN - 64)) | (1L << (MVP - 64)) | (1L << (PEA - 64)) | (1L << (PEI - 64)))) != 0) || ((((_la - 128)) & ~0x3f) == 0 && ((1L << (_la - 128)) & ((1L << (PER - 128)) | (1L << (PHB - 128)) | (1L << (PHD - 128)) | (1L << (PHK - 128)) | (1L << (PLB - 128)) | (1L << (PLD - 128)) | (1L << (REP - 128)) | (1L << (RTL - 128)) | (1L << (SEP - 128)) | (1L << (STP - 128)) | (1L << (TCD - 128)) | (1L << (TCS - 128)) | (1L << (TDC - 128)) | (1L << (TSC - 128)) | (1L << (TXY - 128)) | (1L << (TYX - 128)) | (1L << (WAI - 128)) | (1L << (WDM - 128)) | (1L << (XBA - 128)) | (1L << (XCE - 128)) | (1L << (CPA - 128)) | (1L << (DEA - 128)) | (1L << (INA - 128)) | (1L << (SWA - 128)) | (1L << (TAD - 128)) | (1L << (TAS - 128)) | (1L << (TDA - 128)) | (1L << (TSA - 128)) | (1L << (LBCC - 128)) | (1L << (LBCS - 128)) | (1L << (LBEQ - 128)) | (1L << (LBMI - 128)) | (1L << (LBNE - 128)) | (1L << (LBPL - 128)) | (1L << (LBVC - 128)) | (1L << (LBVS - 128)) | (1L << (ADD - 128)) | (1L << (SUB - 128)) | (1L << (BGE - 128)) | (1L << (BLT - 128)) | (1L << (BGT - 128)) | (1L << (BLE - 128)) | (1L << (BNZ - 128)) | (1L << (BZE - 128)) | (1L << (JEQ - 128)) | (1L << (JNE - 128)) | (1L << (JMI - 128)) | (1L << (JPL - 128)) | (1L << (JCS - 128)) | (1L << (JCC - 128)) | (1L << (JVS - 128)) | (1L << (JVC - 128)))) != 0)) ) {
+			if ( _la <= 0 || (_la==Opcode) ) {
+			_errHandler.recoverInline(this);
+			}
+			else {
+				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
+				_errHandler.reportMatch(this);
+				consume();
+			}
+			setState(451);
+			_la = _input.LA(1);
+			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << Diretive) | (1L << CheapLabel) | (1L << Label))) != 0)) ) {
 			_errHandler.recoverInline(this);
 			}
 			else {
@@ -3028,43 +3273,43 @@ public class CA65Parser extends Parser {
 
 	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
-		case 6:
-			return orExpression_sempred((OrExpressionContext)_localctx, predIndex);
-		case 7:
-			return xorExpression_sempred((XorExpressionContext)_localctx, predIndex);
-		case 8:
-			return andExpression_sempred((AndExpressionContext)_localctx, predIndex);
-		case 9:
-			return geExpression_sempred((GeExpressionContext)_localctx, predIndex);
-		case 10:
-			return leExpression_sempred((LeExpressionContext)_localctx, predIndex);
-		case 11:
-			return gtExpression_sempred((GtExpressionContext)_localctx, predIndex);
 		case 12:
-			return ltExpression_sempred((LtExpressionContext)_localctx, predIndex);
+			return orExpression_sempred((OrExpressionContext)_localctx, predIndex);
 		case 13:
-			return neExpression_sempred((NeExpressionContext)_localctx, predIndex);
+			return xorExpression_sempred((XorExpressionContext)_localctx, predIndex);
 		case 14:
-			return eqExpression_sempred((EqExpressionContext)_localctx, predIndex);
+			return andExpression_sempred((AndExpressionContext)_localctx, predIndex);
 		case 15:
-			return bitorExpression_sempred((BitorExpressionContext)_localctx, predIndex);
+			return geExpression_sempred((GeExpressionContext)_localctx, predIndex);
 		case 16:
-			return subExpression_sempred((SubExpressionContext)_localctx, predIndex);
+			return leExpression_sempred((LeExpressionContext)_localctx, predIndex);
 		case 17:
-			return addExpression_sempred((AddExpressionContext)_localctx, predIndex);
+			return gtExpression_sempred((GtExpressionContext)_localctx, predIndex);
 		case 18:
-			return mulExpression_sempred((MulExpressionContext)_localctx, predIndex);
+			return ltExpression_sempred((LtExpressionContext)_localctx, predIndex);
 		case 19:
-			return divExpression_sempred((DivExpressionContext)_localctx, predIndex);
+			return neExpression_sempred((NeExpressionContext)_localctx, predIndex);
 		case 20:
-			return modExpression_sempred((ModExpressionContext)_localctx, predIndex);
+			return eqExpression_sempred((EqExpressionContext)_localctx, predIndex);
 		case 21:
-			return bitandExpression_sempred((BitandExpressionContext)_localctx, predIndex);
+			return bitorExpression_sempred((BitorExpressionContext)_localctx, predIndex);
 		case 22:
-			return bitxorExpression_sempred((BitxorExpressionContext)_localctx, predIndex);
+			return subExpression_sempred((SubExpressionContext)_localctx, predIndex);
 		case 23:
-			return shlExpression_sempred((ShlExpressionContext)_localctx, predIndex);
+			return addExpression_sempred((AddExpressionContext)_localctx, predIndex);
 		case 24:
+			return mulExpression_sempred((MulExpressionContext)_localctx, predIndex);
+		case 25:
+			return divExpression_sempred((DivExpressionContext)_localctx, predIndex);
+		case 26:
+			return modExpression_sempred((ModExpressionContext)_localctx, predIndex);
+		case 27:
+			return bitandExpression_sempred((BitandExpressionContext)_localctx, predIndex);
+		case 28:
+			return bitxorExpression_sempred((BitxorExpressionContext)_localctx, predIndex);
+		case 29:
+			return shlExpression_sempred((ShlExpressionContext)_localctx, predIndex);
+		case 30:
 			return shrExpression_sempred((ShrExpressionContext)_localctx, predIndex);
 		}
 		return true;
@@ -3204,144 +3449,170 @@ public class CA65Parser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\u00d7\u0189\4\2\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\u00e3\u01c8\4\2\t"+
 		"\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13"+
 		"\t\13\4\f\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\4\21\t\21\4\22\t\22"+
 		"\4\23\t\23\4\24\t\24\4\25\t\25\4\26\t\26\4\27\t\27\4\30\t\30\4\31\t\31"+
 		"\4\32\t\32\4\33\t\33\4\34\t\34\4\35\t\35\4\36\t\36\4\37\t\37\4 \t \4!"+
-		"\t!\4\"\t\"\4#\t#\3\2\3\2\3\2\5\2J\n\2\3\2\3\2\7\2N\n\2\f\2\16\2Q\13\2"+
-		"\3\2\3\2\3\3\3\3\5\3W\n\3\3\3\3\3\3\3\3\4\3\4\5\4^\n\4\3\4\3\4\5\4b\n"+
-		"\4\3\5\5\5e\n\5\3\5\5\5h\n\5\3\5\3\5\5\5l\n\5\3\6\3\6\3\6\3\6\3\6\5\6"+
-		"s\n\6\3\7\3\7\3\7\5\7x\n\7\3\b\3\b\3\b\3\b\3\b\3\b\7\b\u0080\n\b\f\b\16"+
-		"\b\u0083\13\b\3\t\3\t\3\t\3\t\3\t\3\t\7\t\u008b\n\t\f\t\16\t\u008e\13"+
-		"\t\3\n\3\n\3\n\3\n\3\n\3\n\7\n\u0096\n\n\f\n\16\n\u0099\13\n\3\13\3\13"+
-		"\3\13\3\13\3\13\3\13\7\13\u00a1\n\13\f\13\16\13\u00a4\13\13\3\f\3\f\3"+
-		"\f\3\f\3\f\3\f\7\f\u00ac\n\f\f\f\16\f\u00af\13\f\3\r\3\r\3\r\3\r\3\r\3"+
-		"\r\7\r\u00b7\n\r\f\r\16\r\u00ba\13\r\3\16\3\16\3\16\3\16\3\16\3\16\7\16"+
-		"\u00c2\n\16\f\16\16\16\u00c5\13\16\3\17\3\17\3\17\3\17\3\17\3\17\7\17"+
-		"\u00cd\n\17\f\17\16\17\u00d0\13\17\3\20\3\20\3\20\3\20\3\20\3\20\7\20"+
-		"\u00d8\n\20\f\20\16\20\u00db\13\20\3\21\3\21\3\21\3\21\3\21\3\21\7\21"+
-		"\u00e3\n\21\f\21\16\21\u00e6\13\21\3\22\3\22\3\22\3\22\3\22\3\22\7\22"+
-		"\u00ee\n\22\f\22\16\22\u00f1\13\22\3\23\3\23\3\23\3\23\3\23\3\23\7\23"+
-		"\u00f9\n\23\f\23\16\23\u00fc\13\23\3\24\3\24\3\24\3\24\3\24\3\24\7\24"+
-		"\u0104\n\24\f\24\16\24\u0107\13\24\3\25\3\25\3\25\3\25\3\25\3\25\7\25"+
-		"\u010f\n\25\f\25\16\25\u0112\13\25\3\26\3\26\3\26\3\26\3\26\3\26\7\26"+
-		"\u011a\n\26\f\26\16\26\u011d\13\26\3\27\3\27\3\27\3\27\3\27\3\27\7\27"+
-		"\u0125\n\27\f\27\16\27\u0128\13\27\3\30\3\30\3\30\3\30\3\30\3\30\7\30"+
-		"\u0130\n\30\f\30\16\30\u0133\13\30\3\31\3\31\3\31\3\31\3\31\3\31\7\31"+
-		"\u013b\n\31\f\31\16\31\u013e\13\31\3\32\3\32\3\32\3\32\3\32\3\32\7\32"+
-		"\u0146\n\32\f\32\16\32\u0149\13\32\3\33\3\33\3\33\3\33\3\33\3\33\3\33"+
-		"\3\33\5\33\u0153\n\33\3\34\3\34\3\34\3\34\3\34\3\34\3\34\3\34\5\34\u015d"+
-		"\n\34\3\35\3\35\3\35\3\35\3\35\3\35\3\35\3\35\5\35\u0167\n\35\3\36\3\36"+
-		"\3\36\5\36\u016c\n\36\3\37\3\37\3\37\5\37\u0171\n\37\3 \3 \3 \5 \u0176"+
-		"\n \3!\3!\5!\u017a\n!\3!\5!\u017d\n!\3\"\3\"\3\"\7\"\u0182\n\"\f\"\16"+
-		"\"\u0185\13\"\3#\3#\3#\2\25\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\62"+
-		"$\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\62\64\668:<>@BD\2"+
-		"\3\3\2\r\u00b5\2\u0190\2O\3\2\2\2\4T\3\2\2\2\6a\3\2\2\2\bd\3\2\2\2\nr"+
-		"\3\2\2\2\fw\3\2\2\2\16y\3\2\2\2\20\u0084\3\2\2\2\22\u008f\3\2\2\2\24\u009a"+
-		"\3\2\2\2\26\u00a5\3\2\2\2\30\u00b0\3\2\2\2\32\u00bb\3\2\2\2\34\u00c6\3"+
-		"\2\2\2\36\u00d1\3\2\2\2 \u00dc\3\2\2\2\"\u00e7\3\2\2\2$\u00f2\3\2\2\2"+
-		"&\u00fd\3\2\2\2(\u0108\3\2\2\2*\u0113\3\2\2\2,\u011e\3\2\2\2.\u0129\3"+
-		"\2\2\2\60\u0134\3\2\2\2\62\u013f\3\2\2\2\64\u0152\3\2\2\2\66\u015c\3\2"+
-		"\2\28\u0166\3\2\2\2:\u016b\3\2\2\2<\u0170\3\2\2\2>\u0175\3\2\2\2@\u017c"+
-		"\3\2\2\2B\u017e\3\2\2\2D\u0186\3\2\2\2FJ\5\4\3\2GJ\5\6\4\2HJ\5\b\5\2I"+
-		"F\3\2\2\2IG\3\2\2\2IH\3\2\2\2JK\3\2\2\2KL\7\u00d6\2\2LN\3\2\2\2MI\3\2"+
-		"\2\2NQ\3\2\2\2OM\3\2\2\2OP\3\2\2\2PR\3\2\2\2QO\3\2\2\2RS\7\2\2\3S\3\3"+
-		"\2\2\2TV\7\b\2\2UW\5B\"\2VU\3\2\2\2VW\3\2\2\2WX\3\2\2\2XY\7\u00c4\2\2"+
-		"YZ\5\n\6\2Z\5\3\2\2\2[]\7\b\2\2\\^\5B\"\2]\\\3\2\2\2]^\3\2\2\2^_\3\2\2"+
-		"\2_b\7\3\2\2`b\5@!\2a[\3\2\2\2a`\3\2\2\2b\7\3\2\2\2ce\5\6\4\2dc\3\2\2"+
-		"\2de\3\2\2\2eg\3\2\2\2fh\7\u00d0\2\2gf\3\2\2\2gh\3\2\2\2hi\3\2\2\2ik\5"+
-		"D#\2jl\5B\"\2kj\3\2\2\2kl\3\2\2\2l\t\3\2\2\2mn\7\4\2\2no\5\f\7\2op\7\5"+
-		"\2\2ps\3\2\2\2qs\5\f\7\2rm\3\2\2\2rq\3\2\2\2s\13\3\2\2\2tu\7\u00cd\2\2"+
-		"ux\5\16\b\2vx\5\16\b\2wt\3\2\2\2wv\3\2\2\2x\r\3\2\2\2yz\b\b\1\2z{\5\20"+
-		"\t\2{\u0081\3\2\2\2|}\f\4\2\2}~\7\u00cc\2\2~\u0080\5\20\t\2\177|\3\2\2"+
-		"\2\u0080\u0083\3\2\2\2\u0081\177\3\2\2\2\u0081\u0082\3\2\2\2\u0082\17"+
-		"\3\2\2\2\u0083\u0081\3\2\2\2\u0084\u0085\b\t\1\2\u0085\u0086\5\22\n\2"+
-		"\u0086\u008c\3\2\2\2\u0087\u0088\f\4\2\2\u0088\u0089\7\u00cb\2\2\u0089"+
-		"\u008b\5\22\n\2\u008a\u0087\3\2\2\2\u008b\u008e\3\2\2\2\u008c\u008a\3"+
-		"\2\2\2\u008c\u008d\3\2\2\2\u008d\21\3\2\2\2\u008e\u008c\3\2\2\2\u008f"+
-		"\u0090\b\n\1\2\u0090\u0091\5\24\13\2\u0091\u0097\3\2\2\2\u0092\u0093\f"+
-		"\4\2\2\u0093\u0094\7\u00ca\2\2\u0094\u0096\5\24\13\2\u0095\u0092\3\2\2"+
-		"\2\u0096\u0099\3\2\2\2\u0097\u0095\3\2\2\2\u0097\u0098\3\2\2\2\u0098\23"+
-		"\3\2\2\2\u0099\u0097\3\2\2\2\u009a\u009b\b\13\1\2\u009b\u009c\5\26\f\2"+
-		"\u009c\u00a2\3\2\2\2\u009d\u009e\f\4\2\2\u009e\u009f\7\u00c9\2\2\u009f"+
-		"\u00a1\5\26\f\2\u00a0\u009d\3\2\2\2\u00a1\u00a4\3\2\2\2\u00a2\u00a0\3"+
-		"\2\2\2\u00a2\u00a3\3\2\2\2\u00a3\25\3\2\2\2\u00a4\u00a2\3\2\2\2\u00a5"+
-		"\u00a6\b\f\1\2\u00a6\u00a7\5\30\r\2\u00a7\u00ad\3\2\2\2\u00a8\u00a9\f"+
-		"\4\2\2\u00a9\u00aa\7\u00c7\2\2\u00aa\u00ac\5\30\r\2\u00ab\u00a8\3\2\2"+
-		"\2\u00ac\u00af\3\2\2\2\u00ad\u00ab\3\2\2\2\u00ad\u00ae\3\2\2\2\u00ae\27"+
-		"\3\2\2\2\u00af\u00ad\3\2\2\2\u00b0\u00b1\b\r\1\2\u00b1\u00b2\5\32\16\2"+
-		"\u00b2\u00b8\3\2\2\2\u00b3\u00b4\f\4\2\2\u00b4\u00b5\7\u00c8\2\2\u00b5"+
-		"\u00b7\5\32\16\2\u00b6\u00b3\3\2\2\2\u00b7\u00ba\3\2\2\2\u00b8\u00b6\3"+
-		"\2\2\2\u00b8\u00b9\3\2\2\2\u00b9\31\3\2\2\2\u00ba\u00b8\3\2\2\2\u00bb"+
-		"\u00bc\b\16\1\2\u00bc\u00bd\5\34\17\2\u00bd\u00c3\3\2\2\2\u00be\u00bf"+
-		"\f\4\2\2\u00bf\u00c0\7\u00c6\2\2\u00c0\u00c2\5\34\17\2\u00c1\u00be\3\2"+
-		"\2\2\u00c2\u00c5\3\2\2\2\u00c3\u00c1\3\2\2\2\u00c3\u00c4\3\2\2\2\u00c4"+
-		"\33\3\2\2\2\u00c5\u00c3\3\2\2\2\u00c6\u00c7\b\17\1\2\u00c7\u00c8\5\36"+
-		"\20\2\u00c8\u00ce\3\2\2\2\u00c9\u00ca\f\4\2\2\u00ca\u00cb\7\u00c5\2\2"+
-		"\u00cb\u00cd\5\36\20\2\u00cc\u00c9\3\2\2\2\u00cd\u00d0\3\2\2\2\u00ce\u00cc"+
-		"\3\2\2\2\u00ce\u00cf\3\2\2\2\u00cf\35\3\2\2\2\u00d0\u00ce\3\2\2\2\u00d1"+
-		"\u00d2\b\20\1\2\u00d2\u00d3\5 \21\2\u00d3\u00d9\3\2\2\2\u00d4\u00d5\f"+
-		"\4\2\2\u00d5\u00d6\7\u00c4\2\2\u00d6\u00d8\5 \21\2\u00d7\u00d4\3\2\2\2"+
-		"\u00d8\u00db\3\2\2\2\u00d9\u00d7\3\2\2\2\u00d9\u00da\3\2\2\2\u00da\37"+
-		"\3\2\2\2\u00db\u00d9\3\2\2\2\u00dc\u00dd\b\21\1\2\u00dd\u00de\5\"\22\2"+
-		"\u00de\u00e4\3\2\2\2\u00df\u00e0\f\4\2\2\u00e0\u00e1\7\u00c3\2\2\u00e1"+
-		"\u00e3\5\"\22\2\u00e2\u00df\3\2\2\2\u00e3\u00e6\3\2\2\2\u00e4\u00e2\3"+
-		"\2\2\2\u00e4\u00e5\3\2\2\2\u00e5!\3\2\2\2\u00e6\u00e4\3\2\2\2\u00e7\u00e8"+
-		"\b\22\1\2\u00e8\u00e9\5$\23\2\u00e9\u00ef\3\2\2\2\u00ea\u00eb\f\4\2\2"+
-		"\u00eb\u00ec\7\u00b7\2\2\u00ec\u00ee\5$\23\2\u00ed\u00ea\3\2\2\2\u00ee"+
-		"\u00f1\3\2\2\2\u00ef\u00ed\3\2\2\2\u00ef\u00f0\3\2\2\2\u00f0#\3\2\2\2"+
-		"\u00f1\u00ef\3\2\2\2\u00f2\u00f3\b\23\1\2\u00f3\u00f4\5&\24\2\u00f4\u00fa"+
-		"\3\2\2\2\u00f5\u00f6\f\4\2\2\u00f6\u00f7\7\u00b6\2\2\u00f7\u00f9\5&\24"+
-		"\2\u00f8\u00f5\3\2\2\2\u00f9\u00fc\3\2\2\2\u00fa\u00f8\3\2\2\2\u00fa\u00fb"+
-		"\3\2\2\2\u00fb%\3\2\2\2\u00fc\u00fa\3\2\2\2\u00fd\u00fe\b\24\1\2\u00fe"+
-		"\u00ff\5(\25\2\u00ff\u0105\3\2\2\2\u0100\u0101\f\4\2\2\u0101\u0102\7\u00bc"+
-		"\2\2\u0102\u0104\5(\25\2\u0103\u0100\3\2\2\2\u0104\u0107\3\2\2\2\u0105"+
-		"\u0103\3\2\2\2\u0105\u0106\3\2\2\2\u0106\'\3\2\2\2\u0107\u0105\3\2\2\2"+
-		"\u0108\u0109\b\25\1\2\u0109\u010a\5*\26\2\u010a\u0110\3\2\2\2\u010b\u010c"+
-		"\f\4\2\2\u010c\u010d\7\u00bd\2\2\u010d\u010f\5*\26\2\u010e\u010b\3\2\2"+
-		"\2\u010f\u0112\3\2\2\2\u0110\u010e\3\2\2\2\u0110\u0111\3\2\2\2\u0111)"+
-		"\3\2\2\2\u0112\u0110\3\2\2\2\u0113\u0114\b\26\1\2\u0114\u0115\5,\27\2"+
-		"\u0115\u011b\3\2\2\2\u0116\u0117\f\4\2\2\u0117\u0118\7\u00be\2\2\u0118"+
-		"\u011a\5,\27\2\u0119\u0116\3\2\2\2\u011a\u011d\3\2\2\2\u011b\u0119\3\2"+
-		"\2\2\u011b\u011c\3\2\2\2\u011c+\3\2\2\2\u011d\u011b\3\2\2\2\u011e\u011f"+
-		"\b\27\1\2\u011f\u0120\5.\30\2\u0120\u0126\3\2\2\2\u0121\u0122\f\4\2\2"+
-		"\u0122\u0123\7\u00bf\2\2\u0123\u0125\5.\30\2\u0124\u0121\3\2\2\2\u0125"+
-		"\u0128\3\2\2\2\u0126\u0124\3\2\2\2\u0126\u0127\3\2\2\2\u0127-\3\2\2\2"+
-		"\u0128\u0126\3\2\2\2\u0129\u012a\b\30\1\2\u012a\u012b\5\60\31\2\u012b"+
-		"\u0131\3\2\2\2\u012c\u012d\f\4\2\2\u012d\u012e\7\u00c0\2\2\u012e\u0130"+
-		"\5\60\31\2\u012f\u012c\3\2\2\2\u0130\u0133\3\2\2\2\u0131\u012f\3\2\2\2"+
-		"\u0131\u0132\3\2\2\2\u0132/\3\2\2\2\u0133\u0131\3\2\2\2\u0134\u0135\b"+
-		"\31\1\2\u0135\u0136\5\62\32\2\u0136\u013c\3\2\2\2\u0137\u0138\f\4\2\2"+
-		"\u0138\u0139\7\u00c1\2\2\u0139\u013b\5\62\32\2\u013a\u0137\3\2\2\2\u013b"+
-		"\u013e\3\2\2\2\u013c\u013a\3\2\2\2\u013c\u013d\3\2\2\2\u013d\61\3\2\2"+
-		"\2\u013e\u013c\3\2\2\2\u013f\u0140\b\32\1\2\u0140\u0141\5\64\33\2\u0141"+
-		"\u0147\3\2\2\2\u0142\u0143\f\4\2\2\u0143\u0144\7\u00c2\2\2\u0144\u0146"+
-		"\5\64\33\2\u0145\u0142\3\2\2\2\u0146\u0149\3\2\2\2\u0147\u0145\3\2\2\2"+
-		"\u0147\u0148\3\2\2\2\u0148\63\3\2\2\2\u0149\u0147\3\2\2\2\u014a\u014b"+
-		"\7\u00bb\2\2\u014b\u014c\7\4\2\2\u014c\u014d\5\66\34\2\u014d\u014e\7\5"+
-		"\2\2\u014e\u0153\3\2\2\2\u014f\u0150\7\6\2\2\u0150\u0153\5\66\34\2\u0151"+
-		"\u0153\5\66\34\2\u0152\u014a\3\2\2\2\u0152\u014f\3\2\2\2\u0152\u0151\3"+
-		"\2\2\2\u0153\65\3\2\2\2\u0154\u0155\7\u00ba\2\2\u0155\u0156\7\4\2\2\u0156"+
-		"\u0157\58\35\2\u0157\u0158\7\5\2\2\u0158\u015d\3\2\2\2\u0159\u015a\7\u00c8"+
-		"\2\2\u015a\u015d\58\35\2\u015b\u015d\58\35\2\u015c\u0154\3\2\2\2\u015c"+
-		"\u0159\3\2\2\2\u015c\u015b\3\2\2\2\u015d\67\3\2\2\2\u015e\u015f\7\u00b9"+
-		"\2\2\u015f\u0160\7\4\2\2\u0160\u0161\5:\36\2\u0161\u0162\7\5\2\2\u0162"+
-		"\u0167\3\2\2\2\u0163\u0164\7\u00c6\2\2\u0164\u0167\5:\36\2\u0165\u0167"+
-		"\5:\36\2\u0166\u015e\3\2\2\2\u0166\u0163\3\2\2\2\u0166\u0165\3\2\2\2\u0167"+
-		"9\3\2\2\2\u0168\u0169\7\u00b8\2\2\u0169\u016c\5<\37\2\u016a\u016c\5<\37"+
-		"\2\u016b\u0168\3\2\2\2\u016b\u016a\3\2\2\2\u016c;\3\2\2\2\u016d\u016e"+
-		"\7\u00b7\2\2\u016e\u0171\5> \2\u016f\u0171\5> \2\u0170\u016d\3\2\2\2\u0170"+
-		"\u016f\3\2\2\2\u0171=\3\2\2\2\u0172\u0173\7\u00b6\2\2\u0173\u0176\5@!"+
-		"\2\u0174\u0176\5@!\2\u0175\u0172\3\2\2\2\u0175\u0174\3\2\2\2\u0176?\3"+
-		"\2\2\2\u0177\u0179\7\b\2\2\u0178\u017a\5B\"\2\u0179\u0178\3\2\2\2\u0179"+
-		"\u017a\3\2\2\2\u017a\u017d\3\2\2\2\u017b\u017d\7\13\2\2\u017c\u0177\3"+
-		"\2\2\2\u017c\u017b\3\2\2\2\u017dA\3\2\2\2\u017e\u0183\5\n\6\2\u017f\u0180"+
-		"\7\7\2\2\u0180\u0182\5\n\6\2\u0181\u017f\3\2\2\2\u0182\u0185\3\2\2\2\u0183"+
-		"\u0181\3\2\2\2\u0183\u0184\3\2\2\2\u0184C\3\2\2\2\u0185\u0183\3\2\2\2"+
-		"\u0186\u0187\t\2\2\2\u0187E\3\2\2\2(IOV]adgkrw\u0081\u008c\u0097\u00a2"+
-		"\u00ad\u00b8\u00c3\u00ce\u00d9\u00e4\u00ef\u00fa\u0105\u0110\u011b\u0126"+
-		"\u0131\u013c\u0147\u0152\u015c\u0166\u016b\u0170\u0175\u0179\u017c\u0183";
+		"\t!\4\"\t\"\4#\t#\4$\t$\4%\t%\4&\t&\4\'\t\'\4(\t(\4)\t)\3\2\5\2T\n\2\3"+
+		"\2\6\2W\n\2\r\2\16\2X\3\3\3\3\3\3\5\3^\n\3\3\4\3\4\3\4\3\4\3\5\3\5\5\5"+
+		"f\n\5\3\6\5\6i\n\6\3\6\3\6\3\7\3\7\3\7\3\7\5\7q\n\7\3\b\5\bt\n\b\3\b\3"+
+		"\b\5\bx\n\b\3\t\5\t{\n\t\3\t\3\t\3\t\3\t\3\n\5\n\u0082\n\n\3\n\3\n\3\n"+
+		"\3\n\5\n\u0088\n\n\3\13\5\13\u008b\n\13\3\13\3\13\3\13\3\13\3\13\5\13"+
+		"\u0092\n\13\3\13\3\13\3\13\5\13\u0097\n\13\3\13\5\13\u009a\n\13\3\13\3"+
+		"\13\3\13\3\13\3\13\3\13\5\13\u00a2\n\13\5\13\u00a4\n\13\3\f\3\f\3\f\3"+
+		"\f\3\f\5\f\u00ab\n\f\3\r\3\r\3\r\5\r\u00b0\n\r\3\16\3\16\3\16\3\16\3\16"+
+		"\3\16\7\16\u00b8\n\16\f\16\16\16\u00bb\13\16\3\17\3\17\3\17\3\17\3\17"+
+		"\3\17\7\17\u00c3\n\17\f\17\16\17\u00c6\13\17\3\20\3\20\3\20\3\20\3\20"+
+		"\3\20\7\20\u00ce\n\20\f\20\16\20\u00d1\13\20\3\21\3\21\3\21\3\21\3\21"+
+		"\3\21\7\21\u00d9\n\21\f\21\16\21\u00dc\13\21\3\22\3\22\3\22\3\22\3\22"+
+		"\3\22\7\22\u00e4\n\22\f\22\16\22\u00e7\13\22\3\23\3\23\3\23\3\23\3\23"+
+		"\3\23\7\23\u00ef\n\23\f\23\16\23\u00f2\13\23\3\24\3\24\3\24\3\24\3\24"+
+		"\3\24\7\24\u00fa\n\24\f\24\16\24\u00fd\13\24\3\25\3\25\3\25\3\25\3\25"+
+		"\3\25\7\25\u0105\n\25\f\25\16\25\u0108\13\25\3\26\3\26\3\26\3\26\3\26"+
+		"\3\26\7\26\u0110\n\26\f\26\16\26\u0113\13\26\3\27\3\27\3\27\3\27\3\27"+
+		"\3\27\7\27\u011b\n\27\f\27\16\27\u011e\13\27\3\30\3\30\3\30\3\30\3\30"+
+		"\3\30\7\30\u0126\n\30\f\30\16\30\u0129\13\30\3\31\3\31\3\31\3\31\3\31"+
+		"\3\31\7\31\u0131\n\31\f\31\16\31\u0134\13\31\3\32\3\32\3\32\3\32\3\32"+
+		"\3\32\7\32\u013c\n\32\f\32\16\32\u013f\13\32\3\33\3\33\3\33\3\33\3\33"+
+		"\3\33\7\33\u0147\n\33\f\33\16\33\u014a\13\33\3\34\3\34\3\34\3\34\3\34"+
+		"\3\34\7\34\u0152\n\34\f\34\16\34\u0155\13\34\3\35\3\35\3\35\3\35\3\35"+
+		"\3\35\7\35\u015d\n\35\f\35\16\35\u0160\13\35\3\36\3\36\3\36\3\36\3\36"+
+		"\3\36\7\36\u0168\n\36\f\36\16\36\u016b\13\36\3\37\3\37\3\37\3\37\3\37"+
+		"\3\37\7\37\u0173\n\37\f\37\16\37\u0176\13\37\3 \3 \3 \3 \3 \3 \7 \u017e"+
+		"\n \f \16 \u0181\13 \3!\3!\3!\3!\3!\3!\3!\3!\5!\u018b\n!\3\"\3\"\3\"\3"+
+		"\"\3\"\3\"\3\"\3\"\5\"\u0195\n\"\3#\3#\3#\3#\3#\3#\3#\3#\5#\u019f\n#\3"+
+		"$\3$\3$\5$\u01a4\n$\3%\3%\3%\5%\u01a9\n%\3&\3&\3&\5&\u01ae\n&\3\'\3\'"+
+		"\5\'\u01b2\n\'\3(\5(\u01b5\n(\3(\5(\u01b8\n(\3(\3(\3(\7(\u01bd\n(\f(\16"+
+		"(\u01c0\13(\3(\5(\u01c3\n(\3)\3)\3)\3)\2\25\32\34\36 \"$&(*,.\60\62\64"+
+		"\668:<>*\2\4\6\b\n\f\16\20\22\24\26\30\32\34\36 \"$&(*,.\60\62\64\668"+
+		":<>@BDFHJLNP\2\4\3\2\5\5\4\2\6\7\t\t\2\u01d6\2V\3\2\2\2\4]\3\2\2\2\6_"+
+		"\3\2\2\2\be\3\2\2\2\nh\3\2\2\2\fp\3\2\2\2\16s\3\2\2\2\20z\3\2\2\2\22\u0081"+
+		"\3\2\2\2\24\u00a3\3\2\2\2\26\u00aa\3\2\2\2\30\u00af\3\2\2\2\32\u00b1\3"+
+		"\2\2\2\34\u00bc\3\2\2\2\36\u00c7\3\2\2\2 \u00d2\3\2\2\2\"\u00dd\3\2\2"+
+		"\2$\u00e8\3\2\2\2&\u00f3\3\2\2\2(\u00fe\3\2\2\2*\u0109\3\2\2\2,\u0114"+
+		"\3\2\2\2.\u011f\3\2\2\2\60\u012a\3\2\2\2\62\u0135\3\2\2\2\64\u0140\3\2"+
+		"\2\2\66\u014b\3\2\2\28\u0156\3\2\2\2:\u0161\3\2\2\2<\u016c\3\2\2\2>\u0177"+
+		"\3\2\2\2@\u018a\3\2\2\2B\u0194\3\2\2\2D\u019e\3\2\2\2F\u01a3\3\2\2\2H"+
+		"\u01a8\3\2\2\2J\u01ad\3\2\2\2L\u01b1\3\2\2\2N\u01c2\3\2\2\2P\u01c4\3\2"+
+		"\2\2RT\5\4\3\2SR\3\2\2\2ST\3\2\2\2TU\3\2\2\2UW\7\u00e2\2\2VS\3\2\2\2W"+
+		"X\3\2\2\2XV\3\2\2\2XY\3\2\2\2Y\3\3\2\2\2Z^\5\6\4\2[^\5\b\5\2\\^\5\f\7"+
+		"\2]Z\3\2\2\2][\3\2\2\2]\\\3\2\2\2^\5\3\2\2\2_`\5P)\2`a\7\u00c2\2\2ab\5"+
+		"\26\f\2b\7\3\2\2\2cf\5\n\6\2df\5P)\2ec\3\2\2\2ed\3\2\2\2f\t\3\2\2\2gi"+
+		"\5P)\2hg\3\2\2\2hi\3\2\2\2ij\3\2\2\2jk\7\u00d7\2\2k\13\3\2\2\2lq\5\16"+
+		"\b\2mq\5\20\t\2nq\5\22\n\2oq\5\24\13\2pl\3\2\2\2pm\3\2\2\2pn\3\2\2\2p"+
+		"o\3\2\2\2q\r\3\2\2\2rt\5\n\6\2sr\3\2\2\2st\3\2\2\2tu\3\2\2\2uw\7\5\2\2"+
+		"vx\7\u00dd\2\2wv\3\2\2\2wx\3\2\2\2x\17\3\2\2\2y{\5\n\6\2zy\3\2\2\2z{\3"+
+		"\2\2\2{|\3\2\2\2|}\7\5\2\2}~\7\u00da\2\2~\177\5\26\f\2\177\21\3\2\2\2"+
+		"\u0080\u0082\5\n\6\2\u0081\u0080\3\2\2\2\u0081\u0082\3\2\2\2\u0082\u0083"+
+		"\3\2\2\2\u0083\u0084\7\5\2\2\u0084\u0087\5\26\f\2\u0085\u0086\7\u00d5"+
+		"\2\2\u0086\u0088\7\u00dc\2\2\u0087\u0085\3\2\2\2\u0087\u0088\3\2\2\2\u0088"+
+		"\23\3\2\2\2\u0089\u008b\5\n\6\2\u008a\u0089\3\2\2\2\u008a\u008b\3\2\2"+
+		"\2\u008b\u008c\3\2\2\2\u008c\u008d\7\5\2\2\u008d\u008e\7\u00cf\2\2\u008e"+
+		"\u0091\5\26\f\2\u008f\u0090\7\u00d5\2\2\u0090\u0092\7\u00dc\2\2\u0091"+
+		"\u008f\3\2\2\2\u0091\u0092\3\2\2\2\u0092\u0093\3\2\2\2\u0093\u0096\7\u00d0"+
+		"\2\2\u0094\u0095\7\u00d5\2\2\u0095\u0097\7\u00dc\2\2\u0096\u0094\3\2\2"+
+		"\2\u0096\u0097\3\2\2\2\u0097\u00a4\3\2\2\2\u0098\u009a\5\n\6\2\u0099\u0098"+
+		"\3\2\2\2\u0099\u009a\3\2\2\2\u009a\u009b\3\2\2\2\u009b\u009c\7\5\2\2\u009c"+
+		"\u009d\7\u00d3\2\2\u009d\u009e\5\26\f\2\u009e\u00a1\7\u00d4\2\2\u009f"+
+		"\u00a0\7\u00d5\2\2\u00a0\u00a2\7\u00dc\2\2\u00a1\u009f\3\2\2\2\u00a1\u00a2"+
+		"\3\2\2\2\u00a2\u00a4\3\2\2\2\u00a3\u008a\3\2\2\2\u00a3\u0099\3\2\2\2\u00a4"+
+		"\25\3\2\2\2\u00a5\u00a6\7\u00cf\2\2\u00a6\u00a7\5\30\r\2\u00a7\u00a8\7"+
+		"\u00d0\2\2\u00a8\u00ab\3\2\2\2\u00a9\u00ab\5\30\r\2\u00aa\u00a5\3\2\2"+
+		"\2\u00aa\u00a9\3\2\2\2\u00ab\27\3\2\2\2\u00ac\u00ad\7\u00cb\2\2\u00ad"+
+		"\u00b0\5\32\16\2\u00ae\u00b0\5\32\16\2\u00af\u00ac\3\2\2\2\u00af\u00ae"+
+		"\3\2\2\2\u00b0\31\3\2\2\2\u00b1\u00b2\b\16\1\2\u00b2\u00b3\5\34\17\2\u00b3"+
+		"\u00b9\3\2\2\2\u00b4\u00b5\f\4\2\2\u00b5\u00b6\7\u00ca\2\2\u00b6\u00b8"+
+		"\5\34\17\2\u00b7\u00b4\3\2\2\2\u00b8\u00bb\3\2\2\2\u00b9\u00b7\3\2\2\2"+
+		"\u00b9\u00ba\3\2\2\2\u00ba\33\3\2\2\2\u00bb\u00b9\3\2\2\2\u00bc\u00bd"+
+		"\b\17\1\2\u00bd\u00be\5\36\20\2\u00be\u00c4\3\2\2\2\u00bf\u00c0\f\4\2"+
+		"\2\u00c0\u00c1\7\u00c9\2\2\u00c1\u00c3\5\36\20\2\u00c2\u00bf\3\2\2\2\u00c3"+
+		"\u00c6\3\2\2\2\u00c4\u00c2\3\2\2\2\u00c4\u00c5\3\2\2\2\u00c5\35\3\2\2"+
+		"\2\u00c6\u00c4\3\2\2\2\u00c7\u00c8\b\20\1\2\u00c8\u00c9\5 \21\2\u00c9"+
+		"\u00cf\3\2\2\2\u00ca\u00cb\f\4\2\2\u00cb\u00cc\7\u00c8\2\2\u00cc\u00ce"+
+		"\5 \21\2\u00cd\u00ca\3\2\2\2\u00ce\u00d1\3\2\2\2\u00cf\u00cd\3\2\2\2\u00cf"+
+		"\u00d0\3\2\2\2\u00d0\37\3\2\2\2\u00d1\u00cf\3\2\2\2\u00d2\u00d3\b\21\1"+
+		"\2\u00d3\u00d4\5\"\22\2\u00d4\u00da\3\2\2\2\u00d5\u00d6\f\4\2\2\u00d6"+
+		"\u00d7\7\u00c7\2\2\u00d7\u00d9\5\"\22\2\u00d8\u00d5\3\2\2\2\u00d9\u00dc"+
+		"\3\2\2\2\u00da\u00d8\3\2\2\2\u00da\u00db\3\2\2\2\u00db!\3\2\2\2\u00dc"+
+		"\u00da\3\2\2\2\u00dd\u00de\b\22\1\2\u00de\u00df\5$\23\2\u00df\u00e5\3"+
+		"\2\2\2\u00e0\u00e1\f\4\2\2\u00e1\u00e2\7\u00c5\2\2\u00e2\u00e4\5$\23\2"+
+		"\u00e3\u00e0\3\2\2\2\u00e4\u00e7\3\2\2\2\u00e5\u00e3\3\2\2\2\u00e5\u00e6"+
+		"\3\2\2\2\u00e6#\3\2\2\2\u00e7\u00e5\3\2\2\2\u00e8\u00e9\b\23\1\2\u00e9"+
+		"\u00ea\5&\24\2\u00ea\u00f0\3\2\2\2\u00eb\u00ec\f\4\2\2\u00ec\u00ed\7\u00c6"+
+		"\2\2\u00ed\u00ef\5&\24\2\u00ee\u00eb\3\2\2\2\u00ef\u00f2\3\2\2\2\u00f0"+
+		"\u00ee\3\2\2\2\u00f0\u00f1\3\2\2\2\u00f1%\3\2\2\2\u00f2\u00f0\3\2\2\2"+
+		"\u00f3\u00f4\b\24\1\2\u00f4\u00f5\5(\25\2\u00f5\u00fb\3\2\2\2\u00f6\u00f7"+
+		"\f\4\2\2\u00f7\u00f8\7\u00c4\2\2\u00f8\u00fa\5(\25\2\u00f9\u00f6\3\2\2"+
+		"\2\u00fa\u00fd\3\2\2\2\u00fb\u00f9\3\2\2\2\u00fb\u00fc\3\2\2\2\u00fc\'"+
+		"\3\2\2\2\u00fd\u00fb\3\2\2\2\u00fe\u00ff\b\25\1\2\u00ff\u0100\5*\26\2"+
+		"\u0100\u0106\3\2\2\2\u0101\u0102\f\4\2\2\u0102\u0103\7\u00c3\2\2\u0103"+
+		"\u0105\5*\26\2\u0104\u0101\3\2\2\2\u0105\u0108\3\2\2\2\u0106\u0104\3\2"+
+		"\2\2\u0106\u0107\3\2\2\2\u0107)\3\2\2\2\u0108\u0106\3\2\2\2\u0109\u010a"+
+		"\b\26\1\2\u010a\u010b\5,\27\2\u010b\u0111\3\2\2\2\u010c\u010d\f\4\2\2"+
+		"\u010d\u010e\7\u00c2\2\2\u010e\u0110\5,\27\2\u010f\u010c\3\2\2\2\u0110"+
+		"\u0113\3\2\2\2\u0111\u010f\3\2\2\2\u0111\u0112\3\2\2\2\u0112+\3\2\2\2"+
+		"\u0113\u0111\3\2\2\2\u0114\u0115\b\27\1\2\u0115\u0116\5.\30\2\u0116\u011c"+
+		"\3\2\2\2\u0117\u0118\f\4\2\2\u0118\u0119\7\u00c1\2\2\u0119\u011b\5.\30"+
+		"\2\u011a\u0117\3\2\2\2\u011b\u011e\3\2\2\2\u011c\u011a\3\2\2\2\u011c\u011d"+
+		"\3\2\2\2\u011d-\3\2\2\2\u011e\u011c\3\2\2\2\u011f\u0120\b\30\1\2\u0120"+
+		"\u0121\5\60\31\2\u0121\u0127\3\2\2\2\u0122\u0123\f\4\2\2\u0123\u0124\7"+
+		"\u00b5\2\2\u0124\u0126\5\60\31\2\u0125\u0122\3\2\2\2\u0126\u0129\3\2\2"+
+		"\2\u0127\u0125\3\2\2\2\u0127\u0128\3\2\2\2\u0128/\3\2\2\2\u0129\u0127"+
+		"\3\2\2\2\u012a\u012b\b\31\1\2\u012b\u012c\5\62\32\2\u012c\u0132\3\2\2"+
+		"\2\u012d\u012e\f\4\2\2\u012e\u012f\7\u00b4\2\2\u012f\u0131\5\62\32\2\u0130"+
+		"\u012d\3\2\2\2\u0131\u0134\3\2\2\2\u0132\u0130\3\2\2\2\u0132\u0133\3\2"+
+		"\2\2\u0133\61\3\2\2\2\u0134\u0132\3\2\2\2\u0135\u0136\b\32\1\2\u0136\u0137"+
+		"\5\64\33\2\u0137\u013d\3\2\2\2\u0138\u0139\f\4\2\2\u0139\u013a\7\u00ba"+
+		"\2\2\u013a\u013c\5\64\33\2\u013b\u0138\3\2\2\2\u013c\u013f\3\2\2\2\u013d"+
+		"\u013b\3\2\2\2\u013d\u013e\3\2\2\2\u013e\63\3\2\2\2\u013f\u013d\3\2\2"+
+		"\2\u0140\u0141\b\33\1\2\u0141\u0142\5\66\34\2\u0142\u0148\3\2\2\2\u0143"+
+		"\u0144\f\4\2\2\u0144\u0145\7\u00bb\2\2\u0145\u0147\5\66\34\2\u0146\u0143"+
+		"\3\2\2\2\u0147\u014a\3\2\2\2\u0148\u0146\3\2\2\2\u0148\u0149\3\2\2\2\u0149"+
+		"\65\3\2\2\2\u014a\u0148\3\2\2\2\u014b\u014c\b\34\1\2\u014c\u014d\58\35"+
+		"\2\u014d\u0153\3\2\2\2\u014e\u014f\f\4\2\2\u014f\u0150\7\u00bc\2\2\u0150"+
+		"\u0152\58\35\2\u0151\u014e\3\2\2\2\u0152\u0155\3\2\2\2\u0153\u0151\3\2"+
+		"\2\2\u0153\u0154\3\2\2\2\u0154\67\3\2\2\2\u0155\u0153\3\2\2\2\u0156\u0157"+
+		"\b\35\1\2\u0157\u0158\5:\36\2\u0158\u015e\3\2\2\2\u0159\u015a\f\4\2\2"+
+		"\u015a\u015b\7\u00bd\2\2\u015b\u015d\5:\36\2\u015c\u0159\3\2\2\2\u015d"+
+		"\u0160\3\2\2\2\u015e\u015c\3\2\2\2\u015e\u015f\3\2\2\2\u015f9\3\2\2\2"+
+		"\u0160\u015e\3\2\2\2\u0161\u0162\b\36\1\2\u0162\u0163\5<\37\2\u0163\u0169"+
+		"\3\2\2\2\u0164\u0165\f\4\2\2\u0165\u0166\7\u00be\2\2\u0166\u0168\5<\37"+
+		"\2\u0167\u0164\3\2\2\2\u0168\u016b\3\2\2\2\u0169\u0167\3\2\2\2\u0169\u016a"+
+		"\3\2\2\2\u016a;\3\2\2\2\u016b\u0169\3\2\2\2\u016c\u016d\b\37\1\2\u016d"+
+		"\u016e\5> \2\u016e\u0174\3\2\2\2\u016f\u0170\f\4\2\2\u0170\u0171\7\u00bf"+
+		"\2\2\u0171\u0173\5> \2\u0172\u016f\3\2\2\2\u0173\u0176\3\2\2\2\u0174\u0172"+
+		"\3\2\2\2\u0174\u0175\3\2\2\2\u0175=\3\2\2\2\u0176\u0174\3\2\2\2\u0177"+
+		"\u0178\b \1\2\u0178\u0179\5@!\2\u0179\u017f\3\2\2\2\u017a\u017b\f\4\2"+
+		"\2\u017b\u017c\7\u00c0\2\2\u017c\u017e\5@!\2\u017d\u017a\3\2\2\2\u017e"+
+		"\u0181\3\2\2\2\u017f\u017d\3\2\2\2\u017f\u0180\3\2\2\2\u0180?\3\2\2\2"+
+		"\u0181\u017f\3\2\2\2\u0182\u0183\7\u00b9\2\2\u0183\u0184\7\u00cf\2\2\u0184"+
+		"\u0185\5B\"\2\u0185\u0186\7\u00d0\2\2\u0186\u018b\3\2\2\2\u0187\u0188"+
+		"\7\3\2\2\u0188\u018b\5B\"\2\u0189\u018b\5B\"\2\u018a\u0182\3\2\2\2\u018a"+
+		"\u0187\3\2\2\2\u018a\u0189\3\2\2\2\u018bA\3\2\2\2\u018c\u018d\7\u00b8"+
+		"\2\2\u018d\u018e\7\u00cf\2\2\u018e\u018f\5D#\2\u018f\u0190\7\u00d0\2\2"+
+		"\u0190\u0195\3\2\2\2\u0191\u0192\7\u00c6\2\2\u0192\u0195\5D#\2\u0193\u0195"+
+		"\5D#\2\u0194\u018c\3\2\2\2\u0194\u0191\3\2\2\2\u0194\u0193\3\2\2\2\u0195"+
+		"C\3\2\2\2\u0196\u0197\7\u00b7\2\2\u0197\u0198\7\u00cf\2\2\u0198\u0199"+
+		"\5F$\2\u0199\u019a\7\u00d0\2\2\u019a\u019f\3\2\2\2\u019b\u019c\7\u00c4"+
+		"\2\2\u019c\u019f\5F$\2\u019d\u019f\5F$\2\u019e\u0196\3\2\2\2\u019e\u019b"+
+		"\3\2\2\2\u019e\u019d\3\2\2\2\u019fE\3\2\2\2\u01a0\u01a1\7\u00b6\2\2\u01a1"+
+		"\u01a4\5H%\2\u01a2\u01a4\5H%\2\u01a3\u01a0\3\2\2\2\u01a3\u01a2\3\2\2\2"+
+		"\u01a4G\3\2\2\2\u01a5\u01a6\7\u00b5\2\2\u01a6\u01a9\5J&\2\u01a7\u01a9"+
+		"\5J&\2\u01a8\u01a5\3\2\2\2\u01a8\u01a7\3\2\2\2\u01a9I\3\2\2\2\u01aa\u01ab"+
+		"\7\u00b4\2\2\u01ab\u01ae\5L\'\2\u01ac\u01ae\5L\'\2\u01ad\u01aa\3\2\2\2"+
+		"\u01ad\u01ac\3\2\2\2\u01aeK\3\2\2\2\u01af\u01b2\5N(\2\u01b0\u01b2\7\n"+
+		"\2\2\u01b1\u01af\3\2\2\2\u01b1\u01b0\3\2\2\2\u01b2M\3\2\2\2\u01b3\u01b5"+
+		"\7\4\2\2\u01b4\u01b3\3\2\2\2\u01b4\u01b5\3\2\2\2\u01b5\u01b7\3\2\2\2\u01b6"+
+		"\u01b8\7\u00d8\2\2\u01b7\u01b6\3\2\2\2\u01b7\u01b8\3\2\2\2\u01b8\u01b9"+
+		"\3\2\2\2\u01b9\u01be\5P)\2\u01ba\u01bb\7\u00d8\2\2\u01bb\u01bd\5P)\2\u01bc"+
+		"\u01ba\3\2\2\2\u01bd\u01c0\3\2\2\2\u01be\u01bc\3\2\2\2\u01be\u01bf\3\2"+
+		"\2\2\u01bf\u01c3\3\2\2\2\u01c0\u01be\3\2\2\2\u01c1\u01c3\7\b\2\2\u01c2"+
+		"\u01b4\3\2\2\2\u01c2\u01c1\3\2\2\2\u01c3O\3\2\2\2\u01c4\u01c5\n\2\2\2"+
+		"\u01c5\u01c6\t\3\2\2\u01c6Q\3\2\2\2\63SX]ehpswz\u0081\u0087\u008a\u0091"+
+		"\u0096\u0099\u00a1\u00a3\u00aa\u00af\u00b9\u00c4\u00cf\u00da\u00e5\u00f0"+
+		"\u00fb\u0106\u0111\u011c\u0127\u0132\u013d\u0148\u0153\u015e\u0169\u0174"+
+		"\u017f\u018a\u0194\u019e\u01a3\u01a8\u01ad\u01b1\u01b4\u01b7\u01be\u01c2";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

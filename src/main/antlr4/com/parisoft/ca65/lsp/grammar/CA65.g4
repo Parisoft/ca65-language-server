@@ -1,20 +1,50 @@
 grammar CA65;
 
 program
-    : ((labelEqu | labelDef | instruction) EOL)* EOF
+    : line (EOL line?)*
+    ;
+
+line
+    : instruction
+    | labelEqu
+    | labelDef
     ;
 
 labelEqu
-    : identifier args? EQ constantExpression
+    : Identifier EQ constantExpression
     ;
 
 labelDef
-    : identifier args? ':'
-    | labelRef
+    : inlineLabel
+    | Identifier
+    ;
+
+inlineLabel
+    : Identifier? COLON
     ;
 
 instruction
-    : labelDef? Opcode IMMEDIATE? args?
+    : implicitInstruction
+    | immediateInstruction
+    | absoluteInstruction
+    | indirectInstruction
+    ;
+
+implicitInstruction
+    : inlineLabel? Opcode ACC?
+    ;
+
+immediateInstruction
+    : inlineLabel? Opcode IMMEDIATE constantExpression
+    ;
+
+absoluteInstruction
+    : inlineLabel? Opcode constantExpression (COMMA INDEX)?
+    ;
+
+indirectInstruction
+    : inlineLabel? Opcode LPAREN constantExpression (COMMA INDEX)? RPAREN (COMMA INDEX)?
+    | inlineLabel? Opcode LBRACK constantExpression RBRACK (COMMA INDEX)?
     ;
 
 constantExpression
@@ -151,21 +181,26 @@ negativeExpression
     ;
 
 positiveExpression
-    : PLUS labelRef
-    | labelRef
+    : PLUS reference
+    | reference
+    ;
+
+reference
+    : labelRef
+    | Number
     ;
 
 labelRef
-    : identifier args?
+    : Addressing? COLONCOLON? Identifier (COLONCOLON Identifier)*
     | UnnamedLabel
     ;
 
-args
-    : constantExpression (',' constantExpression)*
+Identifier
+    : (Diretive|CheapLabel|Label)
     ;
 
-identifier
-    : (Diretive|CheapLabel|Label)~Opcode
+Addressing
+    : (Z|A|F) COLON
     ;
 
 Opcode
@@ -341,7 +376,7 @@ Opcode
     ;
 
 Diretive
-    : '.'Label
+    : DOT Label
     ;
 
 CheapLabel
@@ -349,11 +384,18 @@ CheapLabel
     ;
 
 UnnamedLabel
-    : ':'(PLUS+|MINUS+)
+    : ':' (PLUS+|MINUS+)
     ;
 
 Label
     : [a-zA-Z_]+[a-zA-Z0-9_@\\?$]*
+    ;
+
+Number
+    : DIGIT
+    | HEX
+    | BIN
+    | CHAR
     ;
 
 fragment A
@@ -734,41 +776,70 @@ NOT
 
 /* END Operators */
 
-DOT
-    : '.'
+/* Digits */
+
+DIGIT
+    : ([0-9] ('_' [0-9])?)+
     ;
 
-PC
-    : [\\*$]
+HEX
+    : '$' ([0-9a-fA-F] ('_' [0-9a-fA-F])?)+
+    | ([0-9a-fA-F] ('_' [0-9a-fA-F])?)+ H
     ;
 
-IMMEDIATE
-    : '#'
+BIN
+    : '%' ([01] ('_' [01])?)+
     ;
 
-INDEX
-    : X | Y | S
-    ;
+/* END Digits */
 
-ACC
-    : A
-    ;
+/* Separators */
+
+LPAREN:     '(';
+RPAREN:     ')';
+LBRACE:     '{';
+RBRACE:     '}';
+LBRACK:     '[';
+RBRACK:     ']';
+COMMA:      ',';
+DOT:        '.';
+COLON:      ':';
+COLONCOLON: '::';
+
+/* END Separators */
+
+/* Assembler chars */
+PC: [\\*$];
+
+IMMEDIATE: '#';
+
+LOCALCHAR: '@';
+
+INDEX: X | Y | S;
+
+ACC: A;
+
+/* END Assembler chars */
 
 COMMENT
-   : ';' ~ [\r\n]* -> channel(HIDDEN)
-   ;
+    : ';' ~ [\r\n]* -> channel(HIDDEN)
+    ;
 
 C_COMMENT
-   : '/*' .*? '*/' -> channel(HIDDEN)
-   ;
+    : '/*' .*? '*/' -> channel(HIDDEN)
+    ;
 
 STRING
-   : '"' ~ ["]* '"'
-   ;
+    : '"' ~ ["]* '"'
+    ;
+
+CHAR
+    : '\'' . '\''
+    ;
 
 EOL
-   : [\r\n]+
-   ;
+    : [\r\n]+
+    ;
 
 WS
    : [ \t]([\\][\r\n]+)? -> skip

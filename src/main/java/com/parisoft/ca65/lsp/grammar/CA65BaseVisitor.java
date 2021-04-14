@@ -1,4 +1,4 @@
-// Generated from com/parisoft/ca65/lsp/grammar/CA65.g4 by ANTLR 4.9.2
+// Generated from /home/paris/git/ca65-language-server/src/main/antlr4/com/parisoft/ca65/lsp/grammar/CA65.g4 by ANTLR 4.9.1
 package com.parisoft.ca65.lsp.grammar;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -24,6 +24,13 @@ public class CA65BaseVisitor<T> extends AbstractParseTreeVisitor<T> implements C
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitLine(CA65Parser.LineContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitLabelEqu(CA65Parser.LabelEquContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -38,7 +45,42 @@ public class CA65BaseVisitor<T> extends AbstractParseTreeVisitor<T> implements C
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitInlineLabel(CA65Parser.InlineLabelContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitInstruction(CA65Parser.InstructionContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitImplicitInstruction(CA65Parser.ImplicitInstructionContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitImmediateInstruction(CA65Parser.ImmediateInstructionContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitAbsoluteInstruction(CA65Parser.AbsoluteInstructionContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitIndirectInstruction(CA65Parser.IndirectInstructionContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -234,6 +276,13 @@ public class CA65BaseVisitor<T> extends AbstractParseTreeVisitor<T> implements C
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitReference(CA65Parser.ReferenceContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitLabelRef(CA65Parser.LabelRefContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
@@ -241,12 +290,5 @@ public class CA65BaseVisitor<T> extends AbstractParseTreeVisitor<T> implements C
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitArgs(CA65Parser.ArgsContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitOpcode(CA65Parser.OpcodeContext ctx) { return visitChildren(ctx); }
+	@Override public T visitIdentifier(CA65Parser.IdentifierContext ctx) { return visitChildren(ctx); }
 }

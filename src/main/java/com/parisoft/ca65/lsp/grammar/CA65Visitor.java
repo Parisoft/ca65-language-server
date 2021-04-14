@@ -1,4 +1,4 @@
-// Generated from com/parisoft/ca65/lsp/grammar/CA65.g4 by ANTLR 4.9.2
+// Generated from /home/paris/git/ca65-language-server/src/main/antlr4/com/parisoft/ca65/lsp/grammar/CA65.g4 by ANTLR 4.9.1
 package com.parisoft.ca65.lsp.grammar;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -17,6 +17,12 @@ public interface CA65Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitProgram(CA65Parser.ProgramContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link CA65Parser#line}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLine(CA65Parser.LineContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link CA65Parser#labelEqu}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -29,11 +35,41 @@ public interface CA65Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLabelDef(CA65Parser.LabelDefContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link CA65Parser#inlineLabel}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInlineLabel(CA65Parser.InlineLabelContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link CA65Parser#instruction}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitInstruction(CA65Parser.InstructionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#implicitInstruction}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitImplicitInstruction(CA65Parser.ImplicitInstructionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#immediateInstruction}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitImmediateInstruction(CA65Parser.ImmediateInstructionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#absoluteInstruction}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAbsoluteInstruction(CA65Parser.AbsoluteInstructionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#indirectInstruction}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIndirectInstruction(CA65Parser.IndirectInstructionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link CA65Parser#constantExpression}.
 	 * @param ctx the parse tree
@@ -197,21 +233,21 @@ public interface CA65Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPositiveExpression(CA65Parser.PositiveExpressionContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link CA65Parser#reference}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReference(CA65Parser.ReferenceContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link CA65Parser#labelRef}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitLabelRef(CA65Parser.LabelRefContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#args}.
+	 * Visit a parse tree produced by {@link CA65Parser#identifier}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitArgs(CA65Parser.ArgsContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CA65Parser#opcode}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitOpcode(CA65Parser.OpcodeContext ctx);
+	T visitIdentifier(CA65Parser.IdentifierContext ctx);
 }
