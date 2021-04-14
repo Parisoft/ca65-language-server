@@ -1,4 +1,4 @@
-// Generated from /home/paris/git/ca65-language-server/src/main/antlr4/com/parisoft/ca65/lsp/grammar/CA65.g4 by ANTLR 4.9.1
+// Generated from com/parisoft/ca65/lsp/grammar/CA65.g4 by ANTLR 4.9.2
 package com.parisoft.ca65.lsp.grammar;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -68,25 +68,15 @@ public interface CA65Listener extends ParseTreeListener {
 	 */
 	void exitInstruction(CA65Parser.InstructionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CA65Parser#implicitInstruction}.
+	 * Enter a parse tree produced by {@link CA65Parser#indirectInstruction}.
 	 * @param ctx the parse tree
 	 */
-	void enterImplicitInstruction(CA65Parser.ImplicitInstructionContext ctx);
+	void enterIndirectInstruction(CA65Parser.IndirectInstructionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link CA65Parser#implicitInstruction}.
+	 * Exit a parse tree produced by {@link CA65Parser#indirectInstruction}.
 	 * @param ctx the parse tree
 	 */
-	void exitImplicitInstruction(CA65Parser.ImplicitInstructionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CA65Parser#immediateInstruction}.
-	 * @param ctx the parse tree
-	 */
-	void enterImmediateInstruction(CA65Parser.ImmediateInstructionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CA65Parser#immediateInstruction}.
-	 * @param ctx the parse tree
-	 */
-	void exitImmediateInstruction(CA65Parser.ImmediateInstructionContext ctx);
+	void exitIndirectInstruction(CA65Parser.IndirectInstructionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CA65Parser#absoluteInstruction}.
 	 * @param ctx the parse tree
@@ -98,15 +88,25 @@ public interface CA65Listener extends ParseTreeListener {
 	 */
 	void exitAbsoluteInstruction(CA65Parser.AbsoluteInstructionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CA65Parser#indirectInstruction}.
+	 * Enter a parse tree produced by {@link CA65Parser#immediateInstruction}.
 	 * @param ctx the parse tree
 	 */
-	void enterIndirectInstruction(CA65Parser.IndirectInstructionContext ctx);
+	void enterImmediateInstruction(CA65Parser.ImmediateInstructionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link CA65Parser#indirectInstruction}.
+	 * Exit a parse tree produced by {@link CA65Parser#immediateInstruction}.
 	 * @param ctx the parse tree
 	 */
-	void exitIndirectInstruction(CA65Parser.IndirectInstructionContext ctx);
+	void exitImmediateInstruction(CA65Parser.ImmediateInstructionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CA65Parser#implicitInstruction}.
+	 * @param ctx the parse tree
+	 */
+	void enterImplicitInstruction(CA65Parser.ImplicitInstructionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CA65Parser#implicitInstruction}.
+	 * @param ctx the parse tree
+	 */
+	void exitImplicitInstruction(CA65Parser.ImplicitInstructionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CA65Parser#constantExpression}.
 	 * @param ctx the parse tree
@@ -397,14 +397,4 @@ public interface CA65Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitLabelRef(CA65Parser.LabelRefContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CA65Parser#identifier}.
-	 * @param ctx the parse tree
-	 */
-	void enterIdentifier(CA65Parser.IdentifierContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CA65Parser#identifier}.
-	 * @param ctx the parse tree
-	 */
-	void exitIdentifier(CA65Parser.IdentifierContext ctx);
 }

@@ -1,7 +1,7 @@
 grammar CA65;
 
 program
-    : line (EOL line?)*
+    : EOL* line (EOL line?)* EOF
     ;
 
 line
@@ -24,27 +24,27 @@ inlineLabel
     ;
 
 instruction
-    : implicitInstruction
-    | immediateInstruction
+    : indirectInstruction
     | absoluteInstruction
-    | indirectInstruction
+    | immediateInstruction
+    | implicitInstruction
     ;
 
-implicitInstruction
-    : inlineLabel? Opcode ACC?
-    ;
-
-immediateInstruction
-    : inlineLabel? Opcode IMMEDIATE constantExpression
+indirectInstruction
+    : inlineLabel? Opcode LPAREN constantExpression (COMMA INDEX)? RPAREN (COMMA INDEX)?
+    | inlineLabel? Opcode LBRACK constantExpression RBRACK (COMMA INDEX)?
     ;
 
 absoluteInstruction
     : inlineLabel? Opcode constantExpression (COMMA INDEX)?
     ;
 
-indirectInstruction
-    : inlineLabel? Opcode LPAREN constantExpression (COMMA INDEX)? RPAREN (COMMA INDEX)?
-    | inlineLabel? Opcode LBRACK constantExpression RBRACK (COMMA INDEX)?
+immediateInstruction
+    : inlineLabel? Opcode IMMEDIATE constantExpression
+    ;
+
+implicitInstruction
+    : inlineLabel? Opcode ACC?
     ;
 
 constantExpression
@@ -195,13 +195,110 @@ labelRef
     | UnnamedLabel
     ;
 
-Identifier
-    : (Diretive|CheapLabel|Label)
-    ;
 
-Addressing
-    : (Z|A|F) COLON
-    ;
+fragment A
+   : ('a' | 'A')
+   ;
+
+fragment B
+   : ('b' | 'B')
+   ;
+
+fragment C
+   : ('c' | 'C')
+   ;
+
+fragment D
+   : ('d' | 'D')
+   ;
+
+fragment E
+   : ('e' | 'E')
+   ;
+
+fragment F
+   : ('f' | 'F')
+   ;
+
+fragment G
+   : ('g' | 'G')
+   ;
+
+fragment H
+   : ('h' | 'H')
+   ;
+
+fragment I
+   : ('i' | 'I')
+   ;
+
+fragment J
+   : ('j' | 'J')
+   ;
+
+fragment K
+   : ('k' | 'K')
+   ;
+
+fragment L
+   : ('l' | 'L')
+   ;
+
+fragment M
+   : ('m' | 'M')
+   ;
+
+fragment N
+   : ('n' | 'N')
+   ;
+
+fragment O
+   : ('o' | 'O')
+   ;
+
+fragment P
+   : ('p' | 'P')
+   ;
+
+fragment Q
+   : ('q' | 'Q')
+   ;
+
+fragment R
+   : ('r' | 'R')
+   ;
+
+fragment S
+   : ('s' | 'S')
+   ;
+
+fragment T
+   : ('t' | 'T')
+   ;
+
+fragment U
+   : ('u' | 'U')
+   ;
+
+fragment V
+   : ('v' | 'V')
+   ;
+
+fragment W
+   : ('w' | 'W')
+   ;
+
+fragment X
+   : ('x' | 'X')
+   ;
+
+fragment Y
+   : ('y' | 'Y')
+   ;
+
+fragment Z
+   : ('z' | 'Z')
+   ;
 
 Opcode
 	: ADC
@@ -375,6 +472,26 @@ Opcode
 	| JVC
     ;
 
+/* Assembler chars */
+PC: [\\*$];
+
+IMMEDIATE: '#';
+
+LOCALCHAR: '@';
+
+INDEX: X | Y | S;
+
+ACC: A;
+/* END Assembler chars */
+
+Identifier
+    : (Diretive|CheapLabel|Label)
+    ;
+
+Addressing
+    : (Z|A|F) COLON
+    ;
+
 Diretive
     : DOT Label
     ;
@@ -398,112 +515,7 @@ Number
     | CHAR
     ;
 
-fragment A
-   : ('a' | 'A')
-   ;
-
-fragment B
-   : ('b' | 'B')
-   ;
-
-fragment C
-   : ('c' | 'C')
-   ;
-
-fragment D
-   : ('d' | 'D')
-   ;
-
-fragment E
-   : ('e' | 'E')
-   ;
-
-fragment F
-   : ('f' | 'F')
-   ;
-
-fragment G
-   : ('g' | 'G')
-   ;
-
-fragment H
-   : ('h' | 'H')
-   ;
-
-fragment I
-   : ('i' | 'I')
-   ;
-
-fragment J
-   : ('j' | 'J')
-   ;
-
-fragment K
-   : ('k' | 'K')
-   ;
-
-fragment L
-   : ('l' | 'L')
-   ;
-
-fragment M
-   : ('m' | 'M')
-   ;
-
-fragment N
-   : ('n' | 'N')
-   ;
-
-fragment O
-   : ('o' | 'O')
-   ;
-
-fragment P
-   : ('p' | 'P')
-   ;
-
-fragment Q
-   : ('q' | 'Q')
-   ;
-
-fragment R
-   : ('r' | 'R')
-   ;
-
-fragment S
-   : ('s' | 'S')
-   ;
-
-fragment T
-   : ('t' | 'T')
-   ;
-
-fragment U
-   : ('u' | 'U')
-   ;
-
-fragment V
-   : ('v' | 'V')
-   ;
-
-fragment W
-   : ('w' | 'W')
-   ;
-
-fragment X
-   : ('x' | 'X')
-   ;
-
-fragment Y
-   : ('y' | 'Y')
-   ;
-
-fragment Z
-   : ('z' | 'Z')
-   ;
-
 /* Opcodes */
-
 ADC: A D C;
 AND: A N D;
 ASL: A S L;
@@ -673,11 +685,9 @@ JCS: J C S;
 JCC: J C C;
 JVS: J V S;
 JVC: J V C;
-
 /* END Opcodes */
 
 /* Operators */
-
 PLUS
     : '+'
     ;
@@ -773,11 +783,9 @@ OR
 NOT
     : (DOT N O T)|'!'
     ;
-
 /* END Operators */
 
 /* Digits */
-
 DIGIT
     : ([0-9] ('_' [0-9])?)+
     ;
@@ -790,11 +798,9 @@ HEX
 BIN
     : '%' ([01] ('_' [01])?)+
     ;
-
 /* END Digits */
 
 /* Separators */
-
 LPAREN:     '(';
 RPAREN:     ')';
 LBRACE:     '{';
@@ -805,21 +811,7 @@ COMMA:      ',';
 DOT:        '.';
 COLON:      ':';
 COLONCOLON: '::';
-
 /* END Separators */
-
-/* Assembler chars */
-PC: [\\*$];
-
-IMMEDIATE: '#';
-
-LOCALCHAR: '@';
-
-INDEX: X | Y | S;
-
-ACC: A;
-
-/* END Assembler chars */
 
 COMMENT
     : ';' ~ [\r\n]* -> channel(HIDDEN)
@@ -842,5 +834,5 @@ EOL
     ;
 
 WS
-   : [ \t]([\\][\r\n]+)? -> skip
+   : [ \t] -> skip
    ;

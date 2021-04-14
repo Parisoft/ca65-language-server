@@ -1,4 +1,4 @@
-// Generated from /home/paris/git/ca65-language-server/src/main/antlr4/com/parisoft/ca65/lsp/grammar/CA65.g4 by ANTLR 4.9.1
+// Generated from com/parisoft/ca65/lsp/grammar/CA65.g4 by ANTLR 4.9.2
 package com.parisoft.ca65.lsp.grammar;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -88,25 +88,13 @@ public class CA65BaseListener implements CA65Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterImplicitInstruction(CA65Parser.ImplicitInstructionContext ctx) { }
+	@Override public void enterIndirectInstruction(CA65Parser.IndirectInstructionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitImplicitInstruction(CA65Parser.ImplicitInstructionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterImmediateInstruction(CA65Parser.ImmediateInstructionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitImmediateInstruction(CA65Parser.ImmediateInstructionContext ctx) { }
+	@Override public void exitIndirectInstruction(CA65Parser.IndirectInstructionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -124,13 +112,25 @@ public class CA65BaseListener implements CA65Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIndirectInstruction(CA65Parser.IndirectInstructionContext ctx) { }
+	@Override public void enterImmediateInstruction(CA65Parser.ImmediateInstructionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIndirectInstruction(CA65Parser.IndirectInstructionContext ctx) { }
+	@Override public void exitImmediateInstruction(CA65Parser.ImmediateInstructionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterImplicitInstruction(CA65Parser.ImplicitInstructionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitImplicitInstruction(CA65Parser.ImplicitInstructionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -479,18 +479,6 @@ public class CA65BaseListener implements CA65Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitLabelRef(CA65Parser.LabelRefContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterIdentifier(CA65Parser.IdentifierContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitIdentifier(CA65Parser.IdentifierContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
