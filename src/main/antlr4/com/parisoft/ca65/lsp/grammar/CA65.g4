@@ -11,7 +11,7 @@ line
     ;
 
 labelEqu
-    : Identifier EQ constantExpression
+    : Identifier EQ expression
     ;
 
 labelDef
@@ -31,163 +31,163 @@ instruction
     ;
 
 indirectInstruction
-    : inlineLabel? Opcode LPAREN constantExpression (COMMA INDEX)? RPAREN (COMMA INDEX)?
-    | inlineLabel? Opcode LBRACK constantExpression RBRACK (COMMA INDEX)?
+    : inlineLabel? Opcode LPAREN expression (COMMA INDEX)? RPAREN (COMMA INDEX)?
+    | inlineLabel? Opcode LBRACK expression RBRACK (COMMA INDEX)?
     ;
 
 absoluteInstruction
-    : inlineLabel? Opcode constantExpression (COMMA INDEX)?
+    : inlineLabel? Opcode expression (COMMA INDEX)?
     ;
 
 immediateInstruction
-    : inlineLabel? Opcode IMMEDIATE constantExpression
+    : inlineLabel? Opcode IMMEDIATE expression
     ;
 
 implicitInstruction
     : inlineLabel? Opcode ACC?
     ;
 
-constantExpression
+expression
     :  '(' notExpression ')'
     | notExpression
     ;
 
 notExpression
-    : NOT orExpression
+    : NOT expr=orExpression
     | orExpression
     ;
 
 orExpression
-    : orExpression OR xorExpression
+    : left=orExpression OR right=xorExpression
     | xorExpression
     ;
 
 xorExpression
-    : xorExpression XOR andExpression
+    : left=xorExpression XOR right=andExpression
     | andExpression
     ;
 
 andExpression
-    : andExpression BAND geExpression
+    : left=andExpression BAND right=geExpression
     | geExpression
     ;
 
 geExpression
-    : geExpression GE leExpression
+    : left=geExpression GE right=leExpression
     | leExpression
     ;
 
 leExpression
-    : leExpression LE gtExpression
+    : left=leExpression LE right=gtExpression
     | gtExpression
     ;
 
 gtExpression
-    : gtExpression GT ltExpression
+    : left=gtExpression GT right=ltExpression
     | ltExpression
     ;
 
 ltExpression
-    : ltExpression LT neExpression
+    : left=ltExpression LT right=neExpression
     | neExpression
     ;
 
 neExpression
-    : neExpression NE eqExpression
+    : left=neExpression NE right=eqExpression
     | eqExpression
     ;
 
 eqExpression
-    : eqExpression EQ bitorExpression
+    : left=eqExpression EQ right=bitorExpression
     | bitorExpression
     ;
 
 bitorExpression
-    : bitorExpression BITOR subExpression
+    : left=bitorExpression BITOR right=subExpression
     | subExpression
     ;
 
 subExpression
-    : subExpression MINUS addExpression
+    : left=subExpression MINUS right=addExpression
     | addExpression
     ;
 
 addExpression
-    : addExpression PLUS mulExpression
+    : left=addExpression PLUS right=mulExpression
     | mulExpression
     ;
 
 mulExpression
-    : mulExpression MUL divExpression
+    : left=mulExpression MUL right=divExpression
     | divExpression
     ;
 
 divExpression
-    : divExpression DIV modExpression
+    : left=divExpression DIV right=modExpression
     | modExpression
     ;
 
 modExpression
-    : modExpression MOD bitandExpression
+    : left=modExpression MOD right=bitandExpression
     | bitandExpression
     ;
 
 bitandExpression
-    : bitandExpression BITAND bitxorExpression
+    : left=bitandExpression BITAND right=bitxorExpression
     | bitxorExpression
     ;
 
 bitxorExpression
-    : bitxorExpression BITXOR shlExpression
+    : left=bitxorExpression BITXOR right=shlExpression
     | shlExpression
     ;
 
 shlExpression
-    : shlExpression SHL shrExpression
+    : left=shlExpression SHL right=shrExpression
     | shrExpression
     ;
 
 shrExpression
-    : shrExpression SHR bankbyteExpression
+    : left=shrExpression SHR right=bankbyteExpression
     | bankbyteExpression
     ;
 
 bankbyteExpression
-    : BANKBYTE '(' hibyteExpression ')'
-    | '^' hibyteExpression
+    : BANKBYTE '(' expr=hibyteExpression ')'
+    | '^' expr=hibyteExpression
     | hibyteExpression
     ;
 
 hibyteExpression
-    : HIBYTE '(' lobyteExpression ')'
-    | '>' lobyteExpression
+    : HIBYTE '(' expr=lobyteExpression ')'
+    | '>' expr=lobyteExpression
     | lobyteExpression
     ;
 
 lobyteExpression
-    : LOBYTE '(' bitnotExpression ')'
-    | '<' bitnotExpression
+    : LOBYTE '(' expr=bitnotExpression ')'
+    | '<' expr=bitnotExpression
     | bitnotExpression
     ;
 
 bitnotExpression
-    : BITNOT negativeExpression
+    : BITNOT expr=negativeExpression
     | negativeExpression
     ;
 
 negativeExpression
-    : MINUS positiveExpression
+    : MINUS expr=positiveExpression
     | positiveExpression
     ;
 
 positiveExpression
-    : PLUS reference
+    : PLUS expr=reference
     | reference
     ;
 
 reference
-    : labelRef
-    | Number
+    : labelRef  #ref
+    | Number    #literal
     ;
 
 labelRef
@@ -472,8 +472,119 @@ Opcode
 	| JVC
     ;
 
+/* Operators */
+PLUS
+    : '+'
+    ;
+
+MINUS
+    : '-'
+    ;
+
+BITNOT
+    : (DOT B I T N O T)|'~'
+    ;
+
+LOBYTE
+    : (DOT L O B Y T E)
+    ;
+
+HIBYTE
+    : (DOT H I B Y T E)
+    ;
+
+BANKBYTE
+    : (DOT B A N K B Y T E)
+    ;
+
+MUL
+    : '*'
+    ;
+
+DIV
+    : '/'
+    ;
+
+MOD
+    : DOT M O D
+    ;
+
+BITAND
+    : (DOT B I T A N D)|'&'
+    ;
+
+BITXOR
+    : (DOT B I T X O R)|'^'
+    ;
+
+SHL
+    : (DOT S H L)|'<<'
+    ;
+
+SHR
+    : (DOT S H R)|'>>'
+    ;
+
+BITOR
+    : (DOT B I T O R)|'|'
+    ;
+
+EQ
+    : '='
+    ;
+
+NE
+    : '<>'
+    ;
+
+LT
+    : '<'
+    ;
+
+LE
+    : '<='
+    ;
+
+GT
+    : '>'
+    ;
+
+GE
+    : '>='
+    ;
+
+BAND
+    : (DOT A N D)|'&&'
+    ;
+
+XOR
+    : (DOT X O R)
+    ;
+
+OR
+    : (DOT O R)|'||'
+    ;
+
+NOT
+    : (DOT N O T)|'!'
+    ;
+/* END Operators */
+
+/* Separators */
+LPAREN:     '(';
+RPAREN:     ')';
+LBRACE:     '{';
+RBRACE:     '}';
+LBRACK:     '[';
+RBRACK:     ']';
+COMMA:      ',';
+DOT:        '.';
+COLON:      ':';
+COLONCOLON: '::';
+/* END Separators */
+
 /* Assembler chars */
-PC: [\\*$];
+PC: MUL | '$';
 
 IMMEDIATE: '#';
 
@@ -483,6 +594,28 @@ INDEX: X | Y | S;
 
 ACC: A;
 /* END Assembler chars */
+
+/* Digits */
+Number
+    : DIGIT
+    | HEX
+    | BIN
+    | CHAR
+    ;
+
+DIGIT
+    : ([0-9] ('_' [0-9])?)+
+    ;
+
+HEX
+    : '$' ([0-9a-fA-F] ('_' [0-9a-fA-F])?)+
+    | ([0-9a-fA-F] ('_' [0-9a-fA-F])?)+ H
+    ;
+
+BIN
+    : '%' ([01] ('_' [01])?)+
+    ;
+/* END Digits */
 
 Identifier
     : (Diretive|CheapLabel|Label)
@@ -506,13 +639,6 @@ UnnamedLabel
 
 Label
     : [a-zA-Z_] [a-zA-Z0-9_@\\?$]*
-    ;
-
-Number
-    : DIGIT
-    | HEX
-    | BIN
-    | CHAR
     ;
 
 /* Opcodes */
@@ -687,132 +813,6 @@ JVS: J V S;
 JVC: J V C;
 /* END Opcodes */
 
-/* Operators */
-PLUS
-    : '+'
-    ;
-
-MINUS
-    : '-'
-    ;
-
-BITNOT
-    : (DOT B I T N O T)|'~'
-    ;
-
-LOBYTE
-    : (DOT L O B Y T E)
-    ;
-
-HIBYTE
-    : (DOT H I B Y T E)
-    ;
-
-BANKBYTE
-    : (DOT B A N K B Y T E)
-    ;
-
-MUL
-    : '*'
-    ;
-
-DIV
-    : '/'
-    ;
-
-MOD
-    : DOT M O D
-    ;
-
-BITAND
-    : (DOT B I T A N D)|'&'
-    ;
-
-BITXOR
-    : (DOT B I T X O R)|'^'
-    ;
-
-SHL
-    : (DOT S H L)|'<<'
-    ;
-
-SHR
-    : (DOT S H R)|'>>'
-    ;
-
-BITOR
-    : (DOT B I T O R)|'|'
-    ;
-
-EQ
-    : '='
-    ;
-
-NE
-    : '<>'
-    ;
-
-LT
-    : '<'
-    ;
-
-LE
-    : '<='
-    ;
-
-GT
-    : '>'
-    ;
-
-GE
-    : '>='
-    ;
-
-BAND
-    : (DOT A N D)|'&&'
-    ;
-
-XOR
-    : (DOT X O R)
-    ;
-
-OR
-    : (DOT O R)|'||'
-    ;
-
-NOT
-    : (DOT N O T)|'!'
-    ;
-/* END Operators */
-
-/* Digits */
-DIGIT
-    : ([0-9] ('_' [0-9])?)+
-    ;
-
-HEX
-    : '$' ([0-9a-fA-F] ('_' [0-9a-fA-F])?)+
-    | ([0-9a-fA-F] ('_' [0-9a-fA-F])?)+ H
-    ;
-
-BIN
-    : '%' ([01] ('_' [01])?)+
-    ;
-/* END Digits */
-
-/* Separators */
-LPAREN:     '(';
-RPAREN:     ')';
-LBRACE:     '{';
-RBRACE:     '}';
-LBRACK:     '[';
-RBRACK:     ']';
-COMMA:      ',';
-DOT:        '.';
-COLON:      ':';
-COLONCOLON: '::';
-/* END Separators */
-
 COMMENT
     : ';' ~ [\r\n]* -> channel(HIDDEN)
     ;
@@ -834,5 +834,7 @@ EOL
     ;
 
 WS
-   : [ \t] -> skip
+   : [ \t]
+//   ('\\' EOL)?
+   -> skip
    ;
