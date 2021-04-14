@@ -47,147 +47,22 @@ implicitInstruction
     : inlineLabel? Opcode ACC?
     ;
 
+//https://cc65.github.io/doc/ca65.html#ss5.5
 expression
-    :  '(' notExpression ')'
-    | notExpression
+    : primaryExpression                                             #Primary
+    | prefix=(PLUS|MINUS|BITNOT|'<'|'>'|'^') expression             #Unary
+    | prefix=(LOBYTE|HIBYTE|BANKBYTE) LPAREN expression RPAREN      #Extraction
+    | expression op=(MUL|DIV|MOD|BITAND|BITXOR|SHL|SHR) expression  #Multiplicative
+    | expression op=(PLUS|MINUS|BITOR) expression                   #Additive
+    | expression op=(EQ|NE|LT|GT|LE|GE) expression                  #Comparative
+    | expression op=(BAND|XOR|OR) expression                        #Bitwise
+    | prefix=NOT expression                                         #Negation
     ;
 
-notExpression
-    : NOT expr=orExpression
-    | orExpression
-    ;
-
-orExpression
-    : left=orExpression OR right=xorExpression
-    | xorExpression
-    ;
-
-xorExpression
-    : left=xorExpression XOR right=andExpression
-    | andExpression
-    ;
-
-andExpression
-    : left=andExpression BAND right=geExpression
-    | geExpression
-    ;
-
-geExpression
-    : left=geExpression GE right=leExpression
-    | leExpression
-    ;
-
-leExpression
-    : left=leExpression LE right=gtExpression
-    | gtExpression
-    ;
-
-gtExpression
-    : left=gtExpression GT right=ltExpression
-    | ltExpression
-    ;
-
-ltExpression
-    : left=ltExpression LT right=neExpression
-    | neExpression
-    ;
-
-neExpression
-    : left=neExpression NE right=eqExpression
-    | eqExpression
-    ;
-
-eqExpression
-    : left=eqExpression EQ right=bitorExpression
-    | bitorExpression
-    ;
-
-bitorExpression
-    : left=bitorExpression BITOR right=subExpression
-    | subExpression
-    ;
-
-subExpression
-    : left=subExpression MINUS right=addExpression
-    | addExpression
-    ;
-
-addExpression
-    : left=addExpression PLUS right=mulExpression
-    | mulExpression
-    ;
-
-mulExpression
-    : left=mulExpression MUL right=divExpression
-    | divExpression
-    ;
-
-divExpression
-    : left=divExpression DIV right=modExpression
-    | modExpression
-    ;
-
-modExpression
-    : left=modExpression MOD right=bitandExpression
-    | bitandExpression
-    ;
-
-bitandExpression
-    : left=bitandExpression BITAND right=bitxorExpression
-    | bitxorExpression
-    ;
-
-bitxorExpression
-    : left=bitxorExpression BITXOR right=shlExpression
-    | shlExpression
-    ;
-
-shlExpression
-    : left=shlExpression SHL right=shrExpression
-    | shrExpression
-    ;
-
-shrExpression
-    : left=shrExpression SHR right=bankbyteExpression
-    | bankbyteExpression
-    ;
-
-bankbyteExpression
-    : BANKBYTE '(' expr=hibyteExpression ')'
-    | '^' expr=hibyteExpression
-    | hibyteExpression
-    ;
-
-hibyteExpression
-    : HIBYTE '(' expr=lobyteExpression ')'
-    | '>' expr=lobyteExpression
-    | lobyteExpression
-    ;
-
-lobyteExpression
-    : LOBYTE '(' expr=bitnotExpression ')'
-    | '<' expr=bitnotExpression
-    | bitnotExpression
-    ;
-
-bitnotExpression
-    : BITNOT expr=negativeExpression
-    | negativeExpression
-    ;
-
-negativeExpression
-    : MINUS expr=positiveExpression
-    | positiveExpression
-    ;
-
-positiveExpression
-    : PLUS expr=reference
-    | reference
-    ;
-
-reference
-    : labelRef  #ref
-    | Number    #literal
+primaryExpression
+    : LPAREN expression RPAREN #Expr
+    | Number    #Literal
+    | labelRef  #Ref
     ;
 
 labelRef
