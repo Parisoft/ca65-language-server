@@ -1,26 +1,14 @@
 grammar CA65;
 
 program
-    : EOL* line (EOL line?)* EOF
+    : EOL* line (EOL line?)*
     ;
 
 line
     : instruction
     | labelEqu
     | labelDef
-    ;
-
-labelEqu
-    : Identifier EQ expression
-    ;
-
-labelDef
-    : inlineLabel
-    | Identifier
-    ;
-
-inlineLabel
-    : Identifier? COLON
+    | proc
     ;
 
 instruction
@@ -47,9 +35,24 @@ implicitInstruction
     : inlineLabel? Opcode ACC?
     ;
 
+labelEqu
+    : identifier EQ expression
+    ;
+
+labelDef
+    : inlineLabel
+    | identifier
+    ;
+
+inlineLabel
+    : identifier? COLON
+    ;
+
 //https://cc65.github.io/doc/ca65.html#ss5.5
 expression
     : primaryExpression                                             #Primary
+    | var=Diretive                                                  #PseudoVariable
+    | fn=Diretive LPAREN expression (COMMA expression)* RPAREN      #PseudoFunction
     | prefix=(PLUS|MINUS|BITNOT|'<'|'>'|'^') expression             #Unary
     | prefix=(LOBYTE|HIBYTE|BANKBYTE) LPAREN expression RPAREN      #Extraction
     | expression op=(MUL|DIV|MOD|BITAND|BITXOR|SHL|SHR) expression  #Multiplicative
@@ -60,16 +63,29 @@ expression
     ;
 
 primaryExpression
-    : LPAREN expression RPAREN #Expr
-    | Number    #Literal
-    | labelRef  #Ref
+    : LPAREN expression RPAREN
+    | literal
+    | labelRef
     ;
 
 labelRef
-    : Addressing? COLONCOLON? Identifier (COLONCOLON Identifier)*
+    : Addressing? COLONCOLON? identifier (COLONCOLON identifier)*
     | UnnamedLabel
     ;
 
+identifier
+    : IDENT LPAREN expression RPAREN
+    | Identifier
+    ;
+
+literal
+    : NUMBER
+    | STRING
+    ;
+
+proc
+    : PROC identifier (EOL line?)+ ENDPROC
+    ;
 
 fragment A
    : ('a' | 'A')
@@ -347,6 +363,21 @@ Opcode
 	| JVC
     ;
 
+/* Diretives */
+IDENT
+    : DOT I D E N T
+    ;
+
+PROC
+    : DOT P R O C
+    ;
+
+ENDPROC
+    : DOT E N D P R O C
+    ;
+
+/* END Diretives */
+
 /* Operators */
 PLUS
     : '+'
@@ -471,7 +502,7 @@ ACC: A;
 /* END Assembler chars */
 
 /* Digits */
-Number
+NUMBER
     : DIGIT
     | HEX
     | BIN
