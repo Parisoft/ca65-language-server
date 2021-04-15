@@ -73,7 +73,7 @@ labelRef
     ;
 
 functionRef
-    : name=Diretive LPAREN args+=expression (COMMA args+=expression)* RPAREN
+    : identifier LPAREN args+=expression (COMMA args+=expression)* RPAREN
     ;
 
 identifier
@@ -376,9 +376,100 @@ PROC
     ;
 
 ENDPROC
-    : DOT E N D P R O C
+    : END P R O C
     ;
 
+ENUM
+    : DOT E N U M
+    ;
+
+ENDENUM
+    : END E N U M
+    ;
+
+STRUCT
+    : DOT S T R U C T
+    ;
+
+ENDSTRUCT
+    : END S T R U C T
+    ;
+
+UNION
+    : DOT U N I O N
+    ;
+
+ENDUNION
+    : END U N I O N
+    ;
+
+END
+    : DOT E N D
+    ;
+
+IF
+    : DOT I F (B L A N K|C O N S T|D E F|N B L A N K|N D E F|N R E F|P '02'|P '4510'|P '816' |P C '02'|P D T V|P S C '02'|R E F)
+    ;
+
+ENDIF
+    : END I F
+    ;
+
+REPEAT
+    : DOT R E P E A T
+    ;
+
+ENDREPEAT
+    : END R E P (E A T)?
+    ;
+
+BYTE
+    : DOT B Y T E
+    ;
+
+RES
+    : DOT R E S
+    ;
+
+DBYTE
+    : DOT D B Y T E
+    ;
+
+WORD
+    : DOT W O R D
+    ;
+
+ADDR
+    : DOT A D D R
+    ;
+
+FARADDR
+    : DOT F A R A D D R
+    ;
+
+DWORD
+    : DOT D W O R D
+    ;
+
+TAG
+    : DOT T A G
+    ;
+
+SET
+    : DOT S E T
+    ;
+
+INCLUDE
+    : DOT I N C L U D E
+    ;
+
+INCBIN
+    : DOT I N C B I N
+    ;
+
+SEGMENT
+    : DOT S E G M E N T
+    ;
 /* END Diretives */
 
 /* Operators */
