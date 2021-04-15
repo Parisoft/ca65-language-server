@@ -8,7 +8,12 @@ line
     : instruction
     | labelEqu
     | labelDef
+    | varDef
     | proc
+    | scope
+    | enum
+    | struct
+    | ifDirective
     ;
 
 instruction
@@ -44,20 +49,24 @@ labelDef
     | identifier
     ;
 
+varDef
+    : identifier SET expression
+    ;
+
 inlineLabel
     : identifier? COLON
     ;
 
 //https://cc65.github.io/doc/ca65.html#ss5.5
 expression
-    : primaryExpression                                             #Primary
-    | prefix=(PLUS|MINUS|BITNOT|'<'|'>'|'^') expression             #Unary
-    | prefix=(LOBYTE|HIBYTE|LOWORD|HIWORD|BANKBYTE) LPAREN expression RPAREN      #Extraction
-    | expression op=(MUL|DIV|MOD|BITAND|BITXOR|SHL|SHR) expression  #Multiplicative
-    | expression op=(PLUS|MINUS|BITOR) expression                   #Additive
-    | expression op=(EQ|NE|LT|GT|LE|GE) expression                  #Comparative
-    | expression op=(BAND|XOR|OR) expression                        #Bitwise
-    | prefix=NOT expression                                         #Negation
+    : primaryExpression                                                         #Primary
+    | prefix=(PLUS|MINUS|BITNOT|'<'|'>'|'^') expression                         #Unary
+    | prefix=(LOBYTE|HIBYTE|LOWORD|HIWORD|BANKBYTE) LPAREN expression RPAREN    #Extraction
+    | expression op=(MUL|DIV|MOD|BITAND|BITXOR|SHL|SHR) expression              #Multiplicative
+    | expression op=(PLUS|MINUS|BITOR) expression                               #Additive
+    | expression op=(EQ|NE|LT|GT|LE|GE) expression                              #Comparative
+    | expression op=(BAND|XOR|OR) expression                                    #Bitwise
+    | prefix=NOT expression                                                     #Negation
     ;
 
 primaryExpression
@@ -89,6 +98,40 @@ literal
 
 proc
     : PROC identifier (EOL line?)+ ENDPROC
+    ;
+
+scope
+    : SCOPE identifier? (EOL line?)+ ENDSCOPE
+    ;
+
+enum
+    : ENUM identifier? (EOL (identifier | labelEqu)?)+ ENDENUM
+    ;
+
+struct
+    : STRUCT identifier? (EOL (struct|union|field)?)+ ENDSTRUCT
+    ;
+
+union
+    : UNION identifier? (EOL (struct|union|field)?)+ ENDUNION
+    ;
+
+field
+    : identifier? allocator=(BYTE|RES|DBYT|WORD|ADDR|FARADDR|DWORD|TAG) expression?
+    ;
+
+ifDirective
+    : selector=IF expression (EOL line?)+ elseifDirective
+    ;
+
+elseifDirective
+    : ELSEIF expression (EOL line?)+ elseifDirective
+    | elseDirective
+    ;
+
+elseDirective
+    : ELSE (EOL line?)+ ENDIF
+    | ENDIF
     ;
 
 fragment A
@@ -378,7 +421,7 @@ STRUCT: DOT S T R U C T;
 ENDSTRUCT: END S T R U C T;
 UNION: DOT U N I O N;
 ENDUNION: END U N I O N;
-IF: DOT I F (B L A N K|C O N S T|D E F|N B L A N K|N D E F|N R E F|P '02'|P '4510'|P '816' |P C '02'|P D T V|P S C '02'|R E F);
+IF: DOT I F (B L A N K|C O N S T|D E F|N B L A N K|N D E F|N R E F|P '02'|P '4510'|P '816' |P C '02'|P D T V|P S C '02'|R E F)?;
 ENDIF: END I F;
 ELSE: DOT E L S E;
 ELSEIF: DOT E L S E I F;
@@ -426,7 +469,7 @@ XMATCH: DOT X M A T C H;
 /* Allocators */
 BYTE: DOT B Y T E?;
 RES: DOT R E S;
-DBYTE: DOT D B Y T;
+DBYT: DOT D B Y T;
 WORD: DOT W O R D;
 ADDR: DOT A D D R;
 FARADDR: DOT F A R A D D R;
