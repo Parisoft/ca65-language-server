@@ -52,7 +52,7 @@ inlineLabel
 expression
     : primaryExpression                                             #Primary
     | prefix=(PLUS|MINUS|BITNOT|'<'|'>'|'^') expression             #Unary
-    | prefix=(LOBYTE|HIBYTE|BANKBYTE) LPAREN expression RPAREN      #Extraction
+    | prefix=(LOBYTE|HIBYTE|LOWORD|HIWORD|BANKBYTE) LPAREN expression RPAREN      #Extraction
     | expression op=(MUL|DIV|MOD|BITAND|BITXOR|SHL|SHR) expression  #Multiplicative
     | expression op=(PLUS|MINUS|BITOR) expression                   #Additive
     | expression op=(EQ|NE|LT|GT|LE|GE) expression                  #Comparative
@@ -490,101 +490,32 @@ SEGMENT
 /* END Diretives */
 
 /* Operators */
-PLUS
-    : '+'
-    ;
-
-MINUS
-    : '-'
-    ;
-
-BITNOT
-    : (DOT B I T N O T)|'~'
-    ;
-
-LOBYTE
-    : (DOT L O B Y T E)
-    ;
-
-HIBYTE
-    : (DOT H I B Y T E)
-    ;
-
-BANKBYTE
-    : (DOT B A N K B Y T E)
-    ;
-
-MUL
-    : '*'
-    ;
-
-DIV
-    : '/'
-    ;
-
-MOD
-    : DOT M O D
-    ;
-
-BITAND
-    : (DOT B I T A N D)|'&'
-    ;
-
-BITXOR
-    : (DOT B I T X O R)|'^'
-    ;
-
-SHL
-    : (DOT S H L)|'<<'
-    ;
-
-SHR
-    : (DOT S H R)|'>>'
-    ;
-
-BITOR
-    : (DOT B I T O R)|'|'
-    ;
-
-EQ
-    : '='
-    ;
-
-NE
-    : '<>'
-    ;
-
-LT
-    : '<'
-    ;
-
-LE
-    : '<='
-    ;
-
-GT
-    : '>'
-    ;
-
-GE
-    : '>='
-    ;
-
-BAND
-    : (DOT A N D)|'&&'
-    ;
-
-XOR
-    : (DOT X O R)
-    ;
-
-OR
-    : (DOT O R)|'||'
-    ;
-
-NOT
-    : (DOT N O T)|'!'
-    ;
+PLUS: '+';
+MINUS: '-';
+BITNOT: (DOT B I T N O T) | '~';
+LOBYTE: (DOT L O B Y T E);
+HIBYTE: (DOT H I B Y T E);
+LOWORD: (DOT L O W O R D);
+HIWORD: (DOT H I W O R D);
+BANKBYTE: (DOT B A N K B Y T E);
+MUL: '*';
+DIV: '/';
+MOD: DOT M O D;
+BITAND: (DOT B I T A N D) | '&';
+BITXOR: (DOT B I T X O R) | '^';
+SHL: (DOT S H L) | '<<';
+SHR: (DOT S H R) | '>>';
+BITOR: (DOT B I T O R) | '|';
+EQ: '=';
+NE: '<>';
+LT: '<';
+LE: '<=';
+GT: '>';
+GE: '>=';
+BAND: (DOT A N D) | '&&';
+XOR: (DOT X O R);
+OR: (DOT O R) | '||';
+NOT: (DOT N O T) | '!';
 /* END Operators */
 
 /* Separators */
@@ -602,13 +533,9 @@ COLONCOLON: '::';
 
 /* Assembler chars */
 PC: '*' | '$';
-
 IMMEDIATE: '#';
-
 LOCALCHAR: '@';
-
 INDEX: X | Y | S;
-
 ACC: A;
 /* END Assembler chars */
 
