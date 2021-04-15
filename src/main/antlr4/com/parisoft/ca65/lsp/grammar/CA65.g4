@@ -84,6 +84,7 @@ identifier
 literal
     : NUMBER
     | STRING
+    | PC|'*'
     ;
 
 proc
@@ -451,6 +452,22 @@ DWORD
     : DOT D W O R D
     ;
 
+ASCIIZ
+    : DOT A S C I I Z
+    ;
+
+LOBYTES
+    : LOBYTE S
+    ;
+
+HIBYTES
+    : HIBYTE S
+    ;
+
+BANKBYTES
+    : BANKBYTE S
+    ;
+
 TAG
     : DOT T A G
     ;
@@ -584,7 +601,7 @@ COLONCOLON: '::';
 /* END Separators */
 
 /* Assembler chars */
-PC: MUL | '$';
+PC: '*' | '$';
 
 IMMEDIATE: '#';
 
