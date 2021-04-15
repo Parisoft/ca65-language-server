@@ -368,126 +368,69 @@ Opcode
     ;
 
 /* Diretives */
-IDENT
-    : DOT I D E N T
-    ;
-
-PROC
-    : DOT P R O C
-    ;
-
-ENDPROC
-    : END P R O C
-    ;
-
-ENUM
-    : DOT E N U M
-    ;
-
-ENDENUM
-    : END E N U M
-    ;
-
-STRUCT
-    : DOT S T R U C T
-    ;
-
-ENDSTRUCT
-    : END S T R U C T
-    ;
-
-UNION
-    : DOT U N I O N
-    ;
-
-ENDUNION
-    : END U N I O N
-    ;
-
-END
-    : DOT E N D
-    ;
-
-IF
-    : DOT I F (B L A N K|C O N S T|D E F|N B L A N K|N D E F|N R E F|P '02'|P '4510'|P '816' |P C '02'|P D T V|P S C '02'|R E F)
-    ;
-
-ENDIF
-    : END I F
-    ;
-
-REPEAT
-    : DOT R E P E A T
-    ;
-
-ENDREPEAT
-    : END R E P (E A T)?
-    ;
-
-BYTE
-    : DOT B Y T E
-    ;
-
-RES
-    : DOT R E S
-    ;
-
-DBYTE
-    : DOT D B Y T E
-    ;
-
-WORD
-    : DOT W O R D
-    ;
-
-ADDR
-    : DOT A D D R
-    ;
-
-FARADDR
-    : DOT F A R A D D R
-    ;
-
-DWORD
-    : DOT D W O R D
-    ;
-
-ASCIIZ
-    : DOT A S C I I Z
-    ;
-
-LOBYTES
-    : LOBYTE S
-    ;
-
-HIBYTES
-    : HIBYTE S
-    ;
-
-BANKBYTES
-    : BANKBYTE S
-    ;
-
-TAG
-    : DOT T A G
-    ;
-
-SET
-    : DOT S E T
-    ;
-
-INCLUDE
-    : DOT I N C L U D E
-    ;
-
-INCBIN
-    : DOT I N C B I N
-    ;
-
-SEGMENT
-    : DOT S E G M E N T
-    ;
+PROC: DOT P R O C;
+ENDPROC: END P R O C;
+ENUM: DOT E N U M;
+ENDENUM: END E N U M;
+STRUCT: DOT S T R U C T;
+ENDSTRUCT: END S T R U C T;
+UNION: DOT U N I O N;
+ENDUNION: END U N I O N;
+END: DOT E N D;
+IF: DOT I F (B L A N K|C O N S T|D E F|N B L A N K|N D E F|N R E F|P '02'|P '4510'|P '816' |P C '02'|P D T V|P S C '02'|R E F);
+ENDIF: END I F;
+REPEAT: DOT R E P E A T;
+ENDREPEAT: END R E P (E A T)?;
+BYTE: DOT B Y T E;
+RES: DOT R E S;
+DBYTE: DOT D B Y T E;
+WORD: DOT W O R D;
+ADDR: DOT A D D R;
+FARADDR: DOT F A R A D D R;
+DWORD: DOT D W O R D;
+ASCIIZ: DOT A S C I I Z;
+LOBYTES: LOBYTE S;
+HIBYTES: HIBYTE S;
+BANKBYTES: BANKBYTE S;
+TAG: DOT T A G;
+SET: DOT S E T;
+INCLUDE: DOT I N C L U D E;
+INCBIN: DOT I N C B I N;
+SEGMENT: DOT S E G M E N T;
 /* END Diretives */
+
+/* Pseudo Variables */
+ASIZE: DOT A S I Z E;
+CPU: DOT C P U;
+ISIZE: DOT I S I Z E;
+PARAMCOUNT: DOT P A R A M C O U N T;
+TIME: DOT T I M E;
+VERSION: DOT V E R S I O N;
+/* END Pseudo Variables */
+
+/* Pseudo Functions */
+ADDRSIZE: DOT A D D R S I Z E;
+BANK: DOT B A N K;
+BLANK: DOT B L A N K;
+CONCAT: DOT C O N C A T;
+CONST: DOT C O N S T;
+IDENT: DOT I D E N T;
+LEFT: DOT L E F T;
+MATCH: DOT M A T C H;
+MAX: DOT M A X;
+MID: DOT M I D;
+MIN: DOT M I N;
+REF: DOT R E F;
+REFERENCED: DOT R E F E R E N C E D;
+RIGHT: DOT R I G H T;
+SIZEOF: DOT S I Z E O F;
+STRAT: DOT S T R A T;
+SPRINTF: DOT S P R I N T F;
+STRING_: DOT S T R I N G;
+STRLEN: DOT S T R L E N;
+TCOUNT: DOT T C O U N T;
+XMATCH: DOT X M A T C H;
+/* END Pseudo Functions */
 
 /* Operators */
 PLUS: '+';
