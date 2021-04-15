@@ -1,7 +1,7 @@
 grammar CA65;
 
 program
-    : EOL* line (EOL line?)*
+    : EOL* line (EOL line?)* EOF
     ;
 
 line
@@ -51,8 +51,6 @@ inlineLabel
 //https://cc65.github.io/doc/ca65.html#ss5.5
 expression
     : primaryExpression                                             #Primary
-    | var=Diretive                                                  #PseudoVariable
-    | fn=Diretive LPAREN expression (COMMA expression)* RPAREN      #PseudoFunction
     | prefix=(PLUS|MINUS|BITNOT|'<'|'>'|'^') expression             #Unary
     | prefix=(LOBYTE|HIBYTE|BANKBYTE) LPAREN expression RPAREN      #Extraction
     | expression op=(MUL|DIV|MOD|BITAND|BITXOR|SHL|SHR) expression  #Multiplicative
@@ -65,12 +63,17 @@ expression
 primaryExpression
     : LPAREN expression RPAREN
     | literal
+    | functionRef
     | labelRef
     ;
 
 labelRef
     : Addressing? COLONCOLON? identifier (COLONCOLON identifier)*
     | UnnamedLabel
+    ;
+
+functionRef
+    : name=Diretive LPAREN args+=expression (COMMA args+=expression)* RPAREN
     ;
 
 identifier
