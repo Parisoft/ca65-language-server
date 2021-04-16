@@ -274,6 +274,16 @@ public interface CA65Listener extends ParseTreeListener {
 	 */
 	void exitLiteral(CA65Parser.LiteralContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link CA65Parser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterStatement(CA65Parser.StatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CA65Parser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitStatement(CA65Parser.StatementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link CA65Parser#proc}.
 	 * @param ctx the parse tree
 	 */
@@ -334,43 +344,93 @@ public interface CA65Listener extends ParseTreeListener {
 	 */
 	void exitField(CA65Parser.FieldContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CA65Parser#ifDirective}.
+	 * Enter a parse tree produced by {@link CA65Parser#ifStmt}.
 	 * @param ctx the parse tree
 	 */
-	void enterIfDirective(CA65Parser.IfDirectiveContext ctx);
+	void enterIfStmt(CA65Parser.IfStmtContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link CA65Parser#ifDirective}.
+	 * Exit a parse tree produced by {@link CA65Parser#ifStmt}.
 	 * @param ctx the parse tree
 	 */
-	void exitIfDirective(CA65Parser.IfDirectiveContext ctx);
+	void exitIfStmt(CA65Parser.IfStmtContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CA65Parser#elseifDirective}.
+	 * Enter a parse tree produced by {@link CA65Parser#elseif}.
 	 * @param ctx the parse tree
 	 */
-	void enterElseifDirective(CA65Parser.ElseifDirectiveContext ctx);
+	void enterElseif(CA65Parser.ElseifContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link CA65Parser#elseifDirective}.
+	 * Exit a parse tree produced by {@link CA65Parser#elseif}.
 	 * @param ctx the parse tree
 	 */
-	void exitElseifDirective(CA65Parser.ElseifDirectiveContext ctx);
+	void exitElseif(CA65Parser.ElseifContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CA65Parser#elseDirective}.
+	 * Enter a parse tree produced by {@link CA65Parser#elseStmt}.
 	 * @param ctx the parse tree
 	 */
-	void enterElseDirective(CA65Parser.ElseDirectiveContext ctx);
+	void enterElseStmt(CA65Parser.ElseStmtContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link CA65Parser#elseDirective}.
+	 * Exit a parse tree produced by {@link CA65Parser#elseStmt}.
 	 * @param ctx the parse tree
 	 */
-	void exitElseDirective(CA65Parser.ElseDirectiveContext ctx);
+	void exitElseStmt(CA65Parser.ElseStmtContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CA65Parser#repeatDirective}.
+	 * Enter a parse tree produced by {@link CA65Parser#repeat}.
 	 * @param ctx the parse tree
 	 */
-	void enterRepeatDirective(CA65Parser.RepeatDirectiveContext ctx);
+	void enterRepeat(CA65Parser.RepeatContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link CA65Parser#repeatDirective}.
+	 * Exit a parse tree produced by {@link CA65Parser#repeat}.
 	 * @param ctx the parse tree
 	 */
-	void exitRepeatDirective(CA65Parser.RepeatDirectiveContext ctx);
+	void exitRepeat(CA65Parser.RepeatContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CA65Parser#define}.
+	 * @param ctx the parse tree
+	 */
+	void enterDefine(CA65Parser.DefineContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CA65Parser#define}.
+	 * @param ctx the parse tree
+	 */
+	void exitDefine(CA65Parser.DefineContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CA65Parser#macro}.
+	 * @param ctx the parse tree
+	 */
+	void enterMacro(CA65Parser.MacroContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CA65Parser#macro}.
+	 * @param ctx the parse tree
+	 */
+	void exitMacro(CA65Parser.MacroContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CA65Parser#macline}.
+	 * @param ctx the parse tree
+	 */
+	void enterMacline(CA65Parser.MaclineContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CA65Parser#macline}.
+	 * @param ctx the parse tree
+	 */
+	void exitMacline(CA65Parser.MaclineContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CA65Parser#storage}.
+	 * @param ctx the parse tree
+	 */
+	void enterStorage(CA65Parser.StorageContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CA65Parser#storage}.
+	 * @param ctx the parse tree
+	 */
+	void exitStorage(CA65Parser.StorageContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CA65Parser#control}.
+	 * @param ctx the parse tree
+	 */
+	void enterControl(CA65Parser.ControlContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CA65Parser#control}.
+	 * @param ctx the parse tree
+	 */
+	void exitControl(CA65Parser.ControlContext ctx);
 }

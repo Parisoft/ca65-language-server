@@ -9,12 +9,9 @@ line
     | labelEqu
     | labelDef
     | varDef
-    | proc
-    | scope
-    | enumerator
-    | struct
-    | ifDirective
-    | repeatDirective
+    | statement
+    | storage
+    | control
     ;
 
 instruction
@@ -66,7 +63,7 @@ expression
     | expression op=(MUL|DIV|MOD|BITAND|BITXOR|SHL|SHR) expression              #Multiplicative
     | expression op=(PLUS|MINUS|BITOR) expression                               #Additive
     | expression op=(EQ|NE|LT|GT|LE|GE) expression                              #Comparative
-    | expression op=(BAND|XOR|OR) expression                                    #Bitwise
+    | expression op=(AND_|XOR|OR) expression                                    #Bitwise
     | prefix=NOT expression                                                     #Negation
     ;
 
@@ -84,16 +81,11 @@ labelRef
     ;
 
 varRef
-    : ASIZE
-    | CPU
-    | ISIZE
-    | PARAMCOUNT
-    | TIME
-    | VERSION
+    : var=PseudoVar
     ;
 
 functionRef
-    : identifier LPAREN args+=expression (COMMA args+=expression)* RPAREN
+    : func=PseudoFunc LPAREN args+=expression (COMMA args+=expression)* RPAREN
     ;
 
 identifier
@@ -105,6 +97,18 @@ literal
     : NUMBER
     | STRING
     | PC|'*'
+    ;
+
+statement
+    : proc
+    | scope
+    | enumerator
+    | struct
+    | union
+    | ifStmt
+    | repeat
+    | define
+    | macro
     ;
 
 proc
@@ -131,22 +135,59 @@ field
     : identifier? allocator=(BYTE|RES|DBYT|WORD|ADDR|FARADDR|DWORD|TAG) expression?
     ;
 
-ifDirective
-    : type=IF expression (EOL line?)+ elseifDirective
+ifStmt
+    : type=IF expression (EOL line?)+ elseif
     ;
 
-elseifDirective
-    : ELSEIF expression (EOL line?)+ elseifDirective
-    | elseDirective
+elseif
+    : ELSEIF expression (EOL line?)+ elseif
+    | elseStmt
     ;
 
-elseDirective
+elseStmt
     : ELSE (EOL line?)+ ENDIF
     | ENDIF
     ;
 
-repeatDirective
+repeat
     : REPEAT expression (COMMA identifier)? (EOL line?)+ ENDREPEAT
+    ;
+
+define
+    : DEFINE identifier (LPAREN param+=identifier (COMMA param+=identifier)* RPAREN)? expression
+    ;
+
+macro
+    : MACRO identifier (param+=identifier (COMMA param+=identifier)*)? (EOL macline?)+ ENDMACRO
+    ;
+
+macline
+    : LOCAL identifier (COMMA identifier)*
+    | EXITMACRO
+    | MACRO identifier
+    | instruction
+    | labelEqu
+    | labelDef
+    | varDef
+    // Exclude macro from statements cause you can declare a .mac inside a .mac, but not the .endmac
+    | proc
+    | scope
+    | enumerator
+    | struct
+    | union
+    | ifStmt
+    | repeat
+    | define
+    | storage
+    | control
+    ;
+
+storage
+    : allocator=Allocator (expression (COMMA expression)*)?
+    ;
+
+control
+    : command=Control (expression (COMMA expression)*)?
     ;
 
 fragment A
@@ -425,7 +466,115 @@ Opcode
 	| JVC
     ;
 
-/* Diretives */
+PseudoVar
+    : ASIZE
+    | CPU
+    | ISIZE
+    | PARAMCOUNT
+    | TIME
+    | VERSION
+    ;
+
+PseudoFunc
+    : ADDRSIZE
+    | BANK
+    | BLANK
+    | CONCAT
+    | CONST
+    | IDENT
+    | LEFT
+    | MATCH
+    | MAX
+    | MID
+    | MIN
+    | REF
+    | REFERENCED
+    | RIGHT
+    | SIZEOF
+    | STRAT
+    | SPRINTF
+    | STRING_
+    | STRLEN
+    | TCOUNT
+    | XMATCH
+    | DEFINED
+    | DEFINEDMACRO
+    | ISMNEMONIC
+    ;
+
+Allocator
+    : BYTE
+    | RES
+    | DBYT
+    | WORD
+    | ADDR
+    | FARADDR
+    | DWORD
+    | ASCIIZ
+    | LOBYTES
+    | HIBYTES
+    | BANKBYTES
+    | TAG
+    ;
+
+Control
+    : A16
+    | A8
+    | ALIGN
+    | ASSERT
+    | AUTOIMPORT
+    | BSS
+    | CASE
+    | CHARMAP
+    | CODE
+    | CONDES
+    | CONSTRUCTOR
+    | DATA
+    | DEBUGINFO
+    | DESTRUCTOR
+    | END
+    | ERROR
+    | EXPORT
+    | EXPORTZP
+    | FATAL
+    | FEATURE
+    | FILEOPT
+    | FOPT
+    | FORCEIMPORT
+    | GLOBAL
+    | GLOBALZP
+    | I16
+    | I8
+    | IMPORT
+    | IMPORTZP
+    | INCBIN
+    | INCLUDE
+    | INTERRUPTOR
+    | LINECONT
+    | LIST
+    | LISTBYTES
+    | LOCALCHAR
+    | MACPACK
+    | ORG
+    | OUT
+    | PAGELEN
+    | PAGELENGTH
+    | POPCPU
+    | POPSEG
+    | PUSHCPU
+    | PUSHSEG
+    | RELOC
+    | RODATA
+    | SEGMENT
+    | SETCPU
+    | SMART
+    | WARNING
+    | ZEROPAGE
+    | UNDEFINE
+    | DELMACRO
+    ;
+
+/* Statements */
 SCOPE: DOT S C O P E;
 ENDSCOPE: DOT E N D S C O P E;
 PROC: DOT P R O C;
@@ -443,10 +592,17 @@ ELSEIF: DOT E L S E I F;
 REPEAT: DOT R E P E A T;
 ENDREPEAT: END R E P (E A T)?;
 SET: DOT S E T;
-INCLUDE: DOT I N C L U D E;
-INCBIN: DOT I N C B I N;
-SEGMENT: DOT S E G M E N T;
-/* END Diretives */
+/* END Statements */
+
+/* Macros */
+MACRO: DOT M A C (R O)?;
+ENDMACRO: END M A C (R O)?;
+DELMACRO: DOT D E L M A C (R O)?;
+EXITMACRO: DOT E X I T M A C (R O)?;
+DEFINE: DOT D E F I N E;
+UNDEFINE: DOT U N D E F (I N E)?;
+LOCAL: DOT L O C A L;
+/* END Macros */
 
 /* Pseudo Variables */
 ASIZE: DOT A S I Z E;
@@ -479,6 +635,9 @@ STRING_: DOT S T R I N G;
 STRLEN: DOT S T R L E N;
 TCOUNT: DOT T C O U N T;
 XMATCH: DOT X M A T C H;
+DEFINED: DOT D E F (I N E D)?;
+DEFINEDMACRO: DOT D E F I N E D M A C R O;
+ISMNEMONIC: DOT I S M N E M (O N I C)?;
 /* END Pseudo Functions */
 
 /* Allocators */
@@ -510,7 +669,6 @@ CONDES: DOT C O N D E S;
 CONSTRUCTOR: DOT C O N S T R U C T O R;
 DATA: DOT D A T A;
 DEBUGINFO: DOT D E B U G I N F O;
-DEF: DOT D E F;
 DESTRUCTOR: DOT D E S T R U C T O R;
 END: DOT E N D;
 ERROR: DOT E R R O R;
@@ -527,9 +685,9 @@ I16: DOT I '16';
 I8: DOT I '8';
 IMPORT: DOT I M P O R T;
 IMPORTZP: DOT I M P O R T Z P;
+INCBIN: DOT I N C B I N;
+INCLUDE: DOT I N C L U D E;
 INTERRUPTOR: DOT I N T E R R U P T O R;
-ISMNEM: DOT I S M N E M;
-ISMNEMONIC: DOT I S M N E M O N I C;
 LINECONT: DOT L I N E C O N T;
 LIST: DOT L I S T;
 LISTBYTES: DOT L I S T B Y T E S;
@@ -545,6 +703,7 @@ PUSHCPU: DOT P U S H C P U;
 PUSHSEG: DOT P U S H S E G;
 RELOC: DOT R E L O C;
 RODATA: DOT R O D A T A;
+SEGMENT: DOT S E G M E N T;
 SETCPU: DOT S E T C P U;
 SMART: DOT S M A R T;
 WARNING: DOT W A R N I N G;
@@ -574,7 +733,7 @@ LT: '<';
 LE: '<=';
 GT: '>';
 GE: '>=';
-BAND: (DOT A N D) | '&&';
+AND_: (DOT A N D) | '&&';
 XOR: (DOT X O R);
 OR: (DOT O R) | '||';
 NOT: (DOT N O T) | '!';

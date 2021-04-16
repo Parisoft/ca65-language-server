@@ -16,7 +16,7 @@ public class CodeParser {
         String code = ""
                 + "foo:"
                 + lineSeparator()
-                + ".a8"
+                + ".sizeof(9)"
                 + lineSeparator()
                 + "bar:";
         CA65ErrorListener errorListener = new CA65ErrorListener();

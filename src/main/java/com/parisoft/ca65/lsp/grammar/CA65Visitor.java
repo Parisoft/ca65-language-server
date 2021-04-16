@@ -169,6 +169,12 @@ public interface CA65Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLiteral(CA65Parser.LiteralContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link CA65Parser#statement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStatement(CA65Parser.StatementContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link CA65Parser#proc}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -205,27 +211,57 @@ public interface CA65Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitField(CA65Parser.FieldContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#ifDirective}.
+	 * Visit a parse tree produced by {@link CA65Parser#ifStmt}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitIfDirective(CA65Parser.IfDirectiveContext ctx);
+	T visitIfStmt(CA65Parser.IfStmtContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#elseifDirective}.
+	 * Visit a parse tree produced by {@link CA65Parser#elseif}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitElseifDirective(CA65Parser.ElseifDirectiveContext ctx);
+	T visitElseif(CA65Parser.ElseifContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#elseDirective}.
+	 * Visit a parse tree produced by {@link CA65Parser#elseStmt}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitElseDirective(CA65Parser.ElseDirectiveContext ctx);
+	T visitElseStmt(CA65Parser.ElseStmtContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#repeatDirective}.
+	 * Visit a parse tree produced by {@link CA65Parser#repeat}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitRepeatDirective(CA65Parser.RepeatDirectiveContext ctx);
+	T visitRepeat(CA65Parser.RepeatContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#define}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDefine(CA65Parser.DefineContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#macro}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMacro(CA65Parser.MacroContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#macline}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMacline(CA65Parser.MaclineContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#storage}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStorage(CA65Parser.StorageContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#control}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitControl(CA65Parser.ControlContext ctx);
 }
