@@ -2,7 +2,9 @@ package com.parisoft.ca65.lsp.parser;
 
 import com.parisoft.ca65.lsp.grammar.CA65BaseVisitor;
 import com.parisoft.ca65.lsp.grammar.CA65Parser;
+import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.misc.Interval;
 
 public class CA65POCVisitor extends CA65BaseVisitor<Void> {
 
@@ -32,4 +34,13 @@ public class CA65POCVisitor extends CA65BaseVisitor<Void> {
         return null;
     }
 
+    @Override
+    public Void visitMacro(CA65Parser.MacroContext mac) {
+        System.out.println("[macro] " + getText(mac));
+        return super.visitMacro(mac);
+    }
+
+    private static String getText(ParserRuleContext ctx) {
+        return ctx.getStart().getInputStream().getText(new Interval(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex()));
+    }
 }

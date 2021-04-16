@@ -16,9 +16,13 @@ public class CodeParser {
         String code = ""
                 + "foo:"
                 + lineSeparator()
-                + ".sizeof(9)"
+//                + ".sizeof(9)"
                 + lineSeparator()
-                + "bar:";
+                + "bar:"
+                + lineSeparator()
+                + "\t.mac lza\n"
+                + "\tlda #0\n"
+                + "\t.endmac";
         CA65ErrorListener errorListener = new CA65ErrorListener();
         CA65Lexer lexer = new CA65Lexer(CharStreams.fromString(code));
         CA65Parser parser = new CA65Parser(new CommonTokenStream(lexer));
