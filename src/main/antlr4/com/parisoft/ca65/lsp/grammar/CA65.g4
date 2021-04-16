@@ -14,6 +14,7 @@ line
     | enum
     | struct
     | ifDirective
+    | repeatDirective
     ;
 
 instruction
@@ -72,6 +73,7 @@ expression
 primaryExpression
     : LPAREN expression RPAREN
     | literal
+    | varRef
     | functionRef
     | labelRef
     ;
@@ -79,6 +81,15 @@ primaryExpression
 labelRef
     : Addressing? COLONCOLON? identifier (COLONCOLON identifier)*
     | UnnamedLabel
+    ;
+
+varRef
+    : ASIZE
+    | CPU
+    | ISIZE
+    | PARAMCOUNT
+    | TIME
+    | VERSION
     ;
 
 functionRef
@@ -121,7 +132,7 @@ field
     ;
 
 ifDirective
-    : selector=IF expression (EOL line?)+ elseifDirective
+    : type=IF expression (EOL line?)+ elseifDirective
     ;
 
 elseifDirective
@@ -132,6 +143,10 @@ elseifDirective
 elseDirective
     : ELSE (EOL line?)+ ENDIF
     | ENDIF
+    ;
+
+repeatDirective
+    : REPEAT expression (COMMA identifier)? (EOL line?)+ ENDREPEAT
     ;
 
 fragment A
