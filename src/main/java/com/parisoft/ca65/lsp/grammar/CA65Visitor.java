@@ -23,24 +23,6 @@ public interface CA65Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitLine(CA65Parser.LineContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#labelEqu}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLabelEqu(CA65Parser.LabelEquContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CA65Parser#labelDef}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLabelDef(CA65Parser.LabelDefContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CA65Parser#inlineLabel}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitInlineLabel(CA65Parser.InlineLabelContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link CA65Parser#instruction}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -71,177 +53,179 @@ public interface CA65Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitImplicitInstruction(CA65Parser.ImplicitInstructionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#constantExpression}.
+	 * Visit a parse tree produced by {@link CA65Parser#labelEqu}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitConstantExpression(CA65Parser.ConstantExpressionContext ctx);
+	T visitLabelEqu(CA65Parser.LabelEquContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#notExpression}.
+	 * Visit a parse tree produced by {@link CA65Parser#labelDef}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitNotExpression(CA65Parser.NotExpressionContext ctx);
+	T visitLabelDef(CA65Parser.LabelDefContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#orExpression}.
+	 * Visit a parse tree produced by {@link CA65Parser#varDef}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitOrExpression(CA65Parser.OrExpressionContext ctx);
+	T visitVarDef(CA65Parser.VarDefContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#xorExpression}.
+	 * Visit a parse tree produced by {@link CA65Parser#inlineLabel}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitXorExpression(CA65Parser.XorExpressionContext ctx);
+	T visitInlineLabel(CA65Parser.InlineLabelContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#andExpression}.
+	 * Visit a parse tree produced by the {@code Multiplicative}
+	 * labeled alternative in {@link CA65Parser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAndExpression(CA65Parser.AndExpressionContext ctx);
+	T visitMultiplicative(CA65Parser.MultiplicativeContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#geExpression}.
+	 * Visit a parse tree produced by the {@code Additive}
+	 * labeled alternative in {@link CA65Parser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitGeExpression(CA65Parser.GeExpressionContext ctx);
+	T visitAdditive(CA65Parser.AdditiveContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#leExpression}.
+	 * Visit a parse tree produced by the {@code Bitwise}
+	 * labeled alternative in {@link CA65Parser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitLeExpression(CA65Parser.LeExpressionContext ctx);
+	T visitBitwise(CA65Parser.BitwiseContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#gtExpression}.
+	 * Visit a parse tree produced by the {@code Negation}
+	 * labeled alternative in {@link CA65Parser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitGtExpression(CA65Parser.GtExpressionContext ctx);
+	T visitNegation(CA65Parser.NegationContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#ltExpression}.
+	 * Visit a parse tree produced by the {@code Primary}
+	 * labeled alternative in {@link CA65Parser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitLtExpression(CA65Parser.LtExpressionContext ctx);
+	T visitPrimary(CA65Parser.PrimaryContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#neExpression}.
+	 * Visit a parse tree produced by the {@code Extraction}
+	 * labeled alternative in {@link CA65Parser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitNeExpression(CA65Parser.NeExpressionContext ctx);
+	T visitExtraction(CA65Parser.ExtractionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#eqExpression}.
+	 * Visit a parse tree produced by the {@code Unary}
+	 * labeled alternative in {@link CA65Parser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitEqExpression(CA65Parser.EqExpressionContext ctx);
+	T visitUnary(CA65Parser.UnaryContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#bitorExpression}.
+	 * Visit a parse tree produced by the {@code Comparative}
+	 * labeled alternative in {@link CA65Parser#expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitBitorExpression(CA65Parser.BitorExpressionContext ctx);
+	T visitComparative(CA65Parser.ComparativeContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#subExpression}.
+	 * Visit a parse tree produced by {@link CA65Parser#primaryExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitSubExpression(CA65Parser.SubExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CA65Parser#addExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitAddExpression(CA65Parser.AddExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CA65Parser#mulExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMulExpression(CA65Parser.MulExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CA65Parser#divExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDivExpression(CA65Parser.DivExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CA65Parser#modExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitModExpression(CA65Parser.ModExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CA65Parser#bitandExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBitandExpression(CA65Parser.BitandExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CA65Parser#bitxorExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBitxorExpression(CA65Parser.BitxorExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CA65Parser#shlExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitShlExpression(CA65Parser.ShlExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CA65Parser#shrExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitShrExpression(CA65Parser.ShrExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CA65Parser#bankbyteExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBankbyteExpression(CA65Parser.BankbyteExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CA65Parser#hibyteExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitHibyteExpression(CA65Parser.HibyteExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CA65Parser#lobyteExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitLobyteExpression(CA65Parser.LobyteExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CA65Parser#bitnotExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBitnotExpression(CA65Parser.BitnotExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CA65Parser#negativeExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitNegativeExpression(CA65Parser.NegativeExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CA65Parser#positiveExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitPositiveExpression(CA65Parser.PositiveExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CA65Parser#reference}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitReference(CA65Parser.ReferenceContext ctx);
+	T visitPrimaryExpression(CA65Parser.PrimaryExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link CA65Parser#labelRef}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitLabelRef(CA65Parser.LabelRefContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#varRef}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVarRef(CA65Parser.VarRefContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#functionRef}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunctionRef(CA65Parser.FunctionRefContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#identifier}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIdentifier(CA65Parser.IdentifierContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#literal}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLiteral(CA65Parser.LiteralContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#proc}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProc(CA65Parser.ProcContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#scope}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitScope(CA65Parser.ScopeContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#enumerator}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEnumerator(CA65Parser.EnumeratorContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#struct}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStruct(CA65Parser.StructContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#union}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitUnion(CA65Parser.UnionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#field}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitField(CA65Parser.FieldContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#ifDirective}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIfDirective(CA65Parser.IfDirectiveContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#elseifDirective}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElseifDirective(CA65Parser.ElseifDirectiveContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#elseDirective}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitElseDirective(CA65Parser.ElseDirectiveContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#repeatDirective}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRepeatDirective(CA65Parser.RepeatDirectiveContext ctx);
 }

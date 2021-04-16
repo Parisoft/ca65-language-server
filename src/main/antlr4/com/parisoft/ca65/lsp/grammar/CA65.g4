@@ -11,7 +11,7 @@ line
     | varDef
     | proc
     | scope
-    | enum
+    | enumerator
     | struct
     | ifDirective
     | repeatDirective
@@ -115,7 +115,7 @@ scope
     : SCOPE identifier? (EOL line?)+ ENDSCOPE
     ;
 
-enum
+enumerator
     : ENUM identifier? (EOL (identifier | labelEqu)?)+ ENDENUM
     ;
 
