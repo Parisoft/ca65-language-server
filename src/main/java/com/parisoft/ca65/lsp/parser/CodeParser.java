@@ -16,7 +16,7 @@ public class CodeParser {
         String code = ""
                 + "foo:"
                 + lineSeparator()
-//                + ".sizeof(9)"
+                + "oba boba"
                 + lineSeparator()
                 + "bar:"
                 + lineSeparator()
@@ -28,7 +28,7 @@ public class CodeParser {
         CA65Parser parser = new CA65Parser(new CommonTokenStream(lexer));
         lexer.addErrorListener(errorListener);
         parser.addErrorListener(errorListener);
-        new CA65POCVisitor().visit(parser.program());
+        new CA65POCVisitor(parser, lexer).visit(parser.program());
         System.out.println("Errors: " + errorListener.errors);
     }
 
@@ -39,6 +39,7 @@ public class CodeParser {
         @Override
         public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
             errors++;
+
             super.syntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e);
         }
     }
