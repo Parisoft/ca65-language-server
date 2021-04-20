@@ -1,6 +1,6 @@
 package com.parisoft.ca65.lsp.parser.lang;
 
-public class PseudoFunction {
+public class PseudoFunc {
 
     public static int LOBYTE(int arg) {
         return arg & 0xff;
