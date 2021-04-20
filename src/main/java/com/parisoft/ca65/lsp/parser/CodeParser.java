@@ -4,7 +4,9 @@ import com.parisoft.ca65.lsp.parser.grammar.CA65Token;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Parser;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Visitor;
+import com.parisoft.ca65.lsp.parser.lang.PseudoFunction;
 import com.parisoft.ca65.lsp.parser.lang.PseudoVar;
+import com.parisoft.ca65.lsp.parser.symbol.LabelDef;
 import com.parisoft.ca65.lsp.parser.symbol.Symbol;
 import com.parisoft.ca65.lsp.parser.symbol.VarDef;
 import org.antlr.v4.runtime.BaseErrorListener;
@@ -21,12 +23,22 @@ import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.parisoft.ca65.lsp.parser.lang.PseudoFunction.BANKBYTE;
+import static com.parisoft.ca65.lsp.parser.lang.PseudoFunction.HIBYTE;
+import static com.parisoft.ca65.lsp.parser.lang.PseudoFunction.HIWORD;
+import static com.parisoft.ca65.lsp.parser.lang.PseudoFunction.LOBYTE;
+import static com.parisoft.ca65.lsp.parser.lang.PseudoFunction.LOWORD;
+import static java.lang.Integer.parseInt;
+import static java.lang.String.valueOf;
 import static java.lang.System.lineSeparator;
 
-public class CodeParser extends AbstractParseTreeVisitor<Integer> implements CA65Visitor<Integer> {
+public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65Visitor<String> {
 
     private Path path;
     private String code;
@@ -40,6 +52,7 @@ public class CodeParser extends AbstractParseTreeVisitor<Integer> implements CA6
     private Deque<Integer> isizeStack = new ArrayDeque<>();
     private List<String> macros = new ArrayList<>();
     private List<String> defines = new ArrayList<>();
+    private Deque<Symbol> layer = new ArrayDeque<>();
 
     public static void main(String[] args) {
         String code = ""
@@ -64,229 +77,385 @@ public class CodeParser extends AbstractParseTreeVisitor<Integer> implements CA6
     }
 
     @Override
-    public Integer visitProgram(CA65Parser.ProgramContext ctx) {
+    public String visitProgram(CA65Parser.ProgramContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitLine(CA65Parser.LineContext ctx) {
+    public String visitLine(CA65Parser.LineContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitInstruction(CA65Parser.InstructionContext ctx) {
+    public String visitInstruction(CA65Parser.InstructionContext ctx) {
         setCheckpoint(ctx);
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitIndirectInstruction(CA65Parser.IndirectInstructionContext ctx) {
+    public String visitIndirectInstruction(CA65Parser.IndirectInstructionContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitAbsoluteInstruction(CA65Parser.AbsoluteInstructionContext ctx) {
+    public String visitAbsoluteInstruction(CA65Parser.AbsoluteInstructionContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitImmediateInstruction(CA65Parser.ImmediateInstructionContext ctx) {
+    public String visitImmediateInstruction(CA65Parser.ImmediateInstructionContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitImplicitInstruction(CA65Parser.ImplicitInstructionContext ctx) {
+    public String visitImplicitInstruction(CA65Parser.ImplicitInstructionContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitLabelEqu(CA65Parser.LabelEquContext ctx) {
-        return visitChildren(ctx);
-    }
-
-    @Override
-    public Integer visitLabelDef(CA65Parser.LabelDefContext ctx) {
-        return visitChildren(ctx);
-    }
-
-    @Override
-    public Integer visitVarDef(CA65Parser.VarDefContext ctx) {
+    public String visitLabelEqu(CA65Parser.LabelEquContext ctx) {
         setCheckpoint(ctx);
 
-        Token token = ctx.identifier().Identifier().getSymbol();
-        String name = token.getText();
-        int line = token.getLine();
+        String name = visit(ctx.identifier());
+        int line = getLine(ctx);
+        LabelDef symbol = new LabelDef(name, path, line);
+        symbol.setParent(layer.peek());
+
+        visit(ctx.expression());
+
+        Symbol.Table.put(symbol);
+
+        return name;
+    }
+
+    @Override
+    public String visitLabelDef(CA65Parser.LabelDefContext ctx) {
+        if (ctx.inlineLabel() != null) {
+            return visit(ctx.inlineLabel());
+        }
+
+        setCheckpoint(ctx);
+
+        String name = visit(ctx.identifier());
+        int line = getLine(ctx);
+        LabelDef symbol = new LabelDef(name, path, line);
+        symbol.setParent(layer.peek());
+
+        layer.push(symbol);
+
+        Symbol.Table.put(symbol);
+
+        return name;
+    }
+
+    @Override
+    public String visitVarDef(CA65Parser.VarDefContext ctx) {
+        setCheckpoint(ctx);
+
+        String name = visit(ctx.identifier());
+        int line = getLine(ctx);
         VarDef symbol = new VarDef(name, path, line);
+        symbol.setParent(layer.peek());
+        symbol.setValue(parseInt(eval(ctx.expression())));
 
-        eval = true;
-        symbol.setValue(visitChildren(ctx));
-        eval = false;
+        Symbol.Table.put(symbol);
 
-        Symbol.TABLE
-                .computeIfAbsent(name, s -> new ConcurrentHashMap<>())
-                .computeIfAbsent(path, s->new ConcurrentHashMap<>())
-                .put(line, symbol);
-
-        return symbol.getValue();
+        return name;
     }
 
     @Override
-    public Integer visitInlineLabel(CA65Parser.InlineLabelContext ctx) {
+    public String visitInlineLabel(CA65Parser.InlineLabelContext ctx) {
+        setCheckpoint(ctx);
+
+        String name = ctx.identifier() != null ? visit(ctx.identifier()) : "";
+        int line = getLine(ctx);
+        LabelDef symbol = new LabelDef(name, path, line);
+        symbol.setParent(layer.peek());
+
+        layer.push(symbol);
+
+        Symbol.Table.put(symbol);
+
+        return name;
+    }
+
+    @Override
+    public String visitMultiplicative(CA65Parser.MultiplicativeContext ctx) {
+        if (eval) {
+            int left = parseInt(visit(ctx.expression(0)));
+            int right = parseInt(visit(ctx.expression(1)));
+
+            if (ctx.MUL() != null) {
+                return valueOf(left * right);
+            } else if (ctx.DIV() != null) {
+                return valueOf(left / right);
+            } else if (ctx.MOD() != null) {
+                return valueOf(left % right);
+            } else if (ctx.BITAND() != null) {
+                return valueOf(left & right);
+            } else if (ctx.BITXOR() != null) {
+                return valueOf(left ^ right);
+            } else if (ctx.SHL() != null) {
+                return valueOf(left << right);
+            } else if (ctx.SHR() != null) {
+                return valueOf(left >> right);
+            } else {
+                throw new IllegalArgumentException("Unknown Multiplicative operator: " + ctx.op.getText());
+            }
+        }
+
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitMultiplicative(CA65Parser.MultiplicativeContext ctx) {
+    public String visitAdditive(CA65Parser.AdditiveContext ctx) {
+        if (eval) {
+            int left = parseInt(visit(ctx.expression(0)));
+            int right = parseInt(visit(ctx.expression(1)));
+
+            if (ctx.PLUS() != null) {
+                return valueOf(left + right);
+            } else if (ctx.MINUS() != null) {
+                return valueOf(left - right);
+            } else if (ctx.BITOR() != null) {
+                return valueOf(left | right);
+            } else {
+                throw new IllegalArgumentException("Unknown Additive operator: " + ctx.op.getText());
+            }
+        }
+
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitAdditive(CA65Parser.AdditiveContext ctx) {
+    public String visitBitwise(CA65Parser.BitwiseContext ctx) {
+        if (eval) {
+            int left = parseInt(visit(ctx.expression(0)));
+            int right = parseInt(visit(ctx.expression(1)));
+
+            if (ctx.AND_() != null) {
+                return valueOf(left != 0 && right != 0);
+            } else if (ctx.OR() != null) {
+                return valueOf(left != 0 || right != 0);
+            } else if (ctx.XOR() != null) {
+                return valueOf(left ^ right);
+            } else {
+                throw new IllegalArgumentException("Unknown Bitwise operator: " + ctx.op.getText());
+            }
+        }
+
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitBitwise(CA65Parser.BitwiseContext ctx) {
+    public String visitNegation(CA65Parser.NegationContext ctx) {
+        if (eval) {
+            return parseInt(visit(ctx.expression())) == 0 ? "0" : "1";
+        }
+
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitNegation(CA65Parser.NegationContext ctx) {
+    public String visitPrimary(CA65Parser.PrimaryContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitPrimary(CA65Parser.PrimaryContext ctx) {
+    public String visitExtraction(CA65Parser.ExtractionContext ctx) {
+        if (eval) {
+            int value = parseInt(visit(ctx.expression()));
+
+            if (ctx.LOBYTE() != null) {
+                return valueOf(LOBYTE(value));
+            } else if (ctx.HIBYTE() != null) {
+                return valueOf(HIBYTE(value));
+            } else if (ctx.LOWORD() != null) {
+                return valueOf(LOWORD(value));
+            } else if (ctx.HIWORD() != null) {
+                return valueOf(HIWORD(value));
+            } else {
+                return valueOf(BANKBYTE(value));
+            }
+        }
+
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitExtraction(CA65Parser.ExtractionContext ctx) {
+    public String visitUnary(CA65Parser.UnaryContext ctx) {
+        if (eval) {
+            int value = parseInt(visit(ctx.expression()));
+
+            if (ctx.PLUS() != null) {
+                return valueOf(value);
+            } else if (ctx.MINUS() != null) {
+                return valueOf(-value);
+            } else if (ctx.BITNOT() != null) {
+                return valueOf(~value);
+            } else if (ctx.prefix.getText().equals("<")) {
+                return valueOf(LOBYTE(value));
+            } else if (ctx.prefix.getText().equals(">")) {
+                return valueOf(HIBYTE(value));
+            } else if (ctx.prefix.getText().equals("^")) {
+                return valueOf(BANKBYTE(value));
+            } else {
+                throw new IllegalArgumentException("Unknown Unary operator: " + ctx.prefix.getText());
+            }
+        }
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitUnary(CA65Parser.UnaryContext ctx) {
+    public String visitComparative(CA65Parser.ComparativeContext ctx) {
+        if (eval) {
+            int left = parseInt(visit(ctx.expression(0)));
+            int right = parseInt(visit(ctx.expression(1)));
+
+            if (ctx.EQ() != null) {
+                return valueOf(left == right ? 1 : 0);
+            } else if (ctx.NE() != null) {
+                return valueOf(left != right ? 1 : 0);
+            } else if (ctx.LT() != null) {
+                return valueOf(left < right ? 1 : 0);
+            } else if (ctx.GT() != null) {
+                return valueOf(left > right ? 1 : 0);
+            } else if (ctx.LE() != null) {
+                return valueOf(left <= right ? 1 : 0);
+            } else if (ctx.GE() != null) {
+                return valueOf(left >= right ? 1 : 0);
+            } else throw new IllegalArgumentException("Unknown Comparative operator: " + ctx.op.getText());
+        }
+
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitComparative(CA65Parser.ComparativeContext ctx) {
+    public String visitPrimaryExpression(CA65Parser.PrimaryExpressionContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitPrimaryExpression(CA65Parser.PrimaryExpressionContext ctx) {
+    public String visitLabelRef(CA65Parser.LabelRefContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitLabelRef(CA65Parser.LabelRefContext ctx) {
+    public String visitVarRef(CA65Parser.VarRefContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitVarRef(CA65Parser.VarRefContext ctx) {
+    public String visitFunctionRef(CA65Parser.FunctionRefContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitFunctionRef(CA65Parser.FunctionRefContext ctx) {
+    public String visitIdentifier(CA65Parser.IdentifierContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitIdentifier(CA65Parser.IdentifierContext ctx) {
+    public String visitLiteral(CA65Parser.LiteralContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitLiteral(CA65Parser.LiteralContext ctx) {
+    public String visitStatement(CA65Parser.StatementContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitStatement(CA65Parser.StatementContext ctx) {
+    public String visitProc(CA65Parser.ProcContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitProc(CA65Parser.ProcContext ctx) {
+    public String visitScope(CA65Parser.ScopeContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitScope(CA65Parser.ScopeContext ctx) {
+    public String visitEnumerator(CA65Parser.EnumeratorContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitEnumerator(CA65Parser.EnumeratorContext ctx) {
+    public String visitStruct(CA65Parser.StructContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitStruct(CA65Parser.StructContext ctx) {
+    public String visitUnion(CA65Parser.UnionContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitUnion(CA65Parser.UnionContext ctx) {
+    public String visitField(CA65Parser.FieldContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitField(CA65Parser.FieldContext ctx) {
+    public String visitIfStmt(CA65Parser.IfStmtContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitIfStmt(CA65Parser.IfStmtContext ctx) {
+    public String visitElseif(CA65Parser.ElseifContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitElseif(CA65Parser.ElseifContext ctx) {
+    public String visitElseStmt(CA65Parser.ElseStmtContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitElseStmt(CA65Parser.ElseStmtContext ctx) {
+    public String visitRepeat(CA65Parser.RepeatContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitRepeat(CA65Parser.RepeatContext ctx) {
+    public String visitDefine(CA65Parser.DefineContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitDefine(CA65Parser.DefineContext ctx) {
+    public String visitMacro(CA65Parser.MacroContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitMacro(CA65Parser.MacroContext ctx) {
+    public String visitMacline(CA65Parser.MaclineContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitMacline(CA65Parser.MaclineContext ctx) {
+    public String visitStorage(CA65Parser.StorageContext ctx) {
         return visitChildren(ctx);
     }
 
     @Override
-    public Integer visitStorage(CA65Parser.StorageContext ctx) {
-        return visitChildren(ctx);
-    }
-
-    @Override
-    public Integer visitControl(CA65Parser.ControlContext ctx) {
+    public String visitControl(CA65Parser.ControlContext ctx) {
         return visitChildren(ctx);
     }
 
     private void setCheckpoint(ParserRuleContext ctx) {
         checkpoint = ((CA65Token) ctx.start).getPrvIndex();
+    }
+
+    private static int getLine(ParserRuleContext ctx) {
+        return ctx.getStart().getLine();
+    }
+
+    private String eval(ParserRuleContext ctx) {
+        eval = true;
+
+        try {
+            return visit(ctx);
+        } finally {
+            eval = false;
+        }
     }
 
     static class CA65ErrorListener extends BaseErrorListener {

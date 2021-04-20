@@ -1,22 +1,42 @@
 package com.parisoft.ca65.lsp.parser.symbol;
 
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Symbol {
 
-    public static final Map<String, Map<Path, Map<Integer, Symbol>>> TABLE = new ConcurrentHashMap<>();
-
     private final String name;
     private final Path path;
     private final int line;
+    private Symbol parent;
 
     public Symbol(String name, Path path, int line) {
         this.name = name;
         this.path = path;
         this.line = line;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Path getPath() {
+        return path;
+    }
+
+    public int getLine() {
+        return line;
+    }
+
+    public Symbol getParent() {
+        return parent;
+    }
+
+    public void setParent(Symbol parent) {
+        this.parent = parent;
     }
 
     @Override
@@ -39,5 +59,16 @@ public class Symbol {
     @Override
     public int hashCode() {
         return Objects.hash(name, path, line);
+    }
+
+    public static class Table {
+
+        public static final Map<String, Map<Path, Map<Integer, Symbol>>> map = new ConcurrentHashMap<>();
+
+        public static Symbol put(Symbol symbol) {
+            return map.computeIfAbsent(symbol.name, s -> new HashMap<>())
+                    .computeIfAbsent(symbol.path, p -> new HashMap<>())
+                    .put(symbol.line, symbol);
+        }
     }
 }
