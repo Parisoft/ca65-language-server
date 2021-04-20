@@ -1,5 +1,5 @@
-// Generated from com/parisoft/ca65/lsp/grammar/CA65.g4 by ANTLR 4.9.2
-package com.parisoft.ca65.lsp.grammar;
+// Generated from com/parisoft/ca65/lsp/parser/grammar/CA65.g4 by ANTLR 4.9.2
+package com.parisoft.ca65.lsp.parser.grammar.g4;
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;

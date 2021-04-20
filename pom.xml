@@ -25,16 +25,6 @@
             <artifactId>logback-classic</artifactId>
             <version>1.2.3</version>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>org.slf4j</groupId>-->
-            <!--<artifactId>slf4j-api</artifactId>-->
-            <!--<version>1.7.30</version>-->
-        <!--</dependency>-->
-        <!--<dependency>-->
-            <!--<groupId>org.slf4j</groupId>-->
-            <!--<artifactId>slf4j-simple</artifactId>-->
-            <!--<version>1.7.30</version>-->
-        <!--</dependency>-->
     </dependencies>
 
     <build>
@@ -94,7 +84,7 @@
                     </filters>
                     <transformers>
                         <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                            <mainClass>com.parisoft.ca65.lsp.launcher.StdioLauncher</mainClass>
+                            <mainClass>com.parisoft.ca65.lsp.server.StdioLauncher</mainClass>
                         </transformer>
                     </transformers>
                     <finalName>${project.artifactId}</finalName>

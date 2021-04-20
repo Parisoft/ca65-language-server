@@ -1,4 +1,4 @@
-package com.parisoft.ca65.lsp.launcher;
+package com.parisoft.ca65.lsp.server;
 
 import com.parisoft.ca65.lsp.server.CA65LanguageServer;
 import org.eclipse.lsp4j.jsonrpc.Launcher;

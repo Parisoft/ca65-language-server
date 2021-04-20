@@ -1,12 +1,10 @@
-// Generated from com/parisoft/ca65/lsp/grammar/CA65.g4 by ANTLR 4.9.2
-package com.parisoft.ca65.lsp.grammar;
+// Generated from com/parisoft/ca65/lsp/parser/grammar/CA65.g4 by ANTLR 4.9.2
+package com.parisoft.ca65.lsp.parser.grammar.g4;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
 import java.util.List;
-import java.util.Iterator;
 import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})

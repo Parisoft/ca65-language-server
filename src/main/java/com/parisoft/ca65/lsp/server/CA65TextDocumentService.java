@@ -10,13 +10,21 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 
 public class CA65TextDocumentService implements TextDocumentService {
 
     @Override
     public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> declaration(DeclarationParams params) {
-        return supplyAsync(() ->  Either.forLeft(emptyList()));
+        return supplyAsync(() -> {
+            Location location = new Location(params.getTextDocument().getUri(),
+                                             new Range(
+                                                     new Position(0, 0),
+                                                     new Position(0, 3)));
+            return Either.forLeft(singletonList(location));
+        });
     }
 
     @Override

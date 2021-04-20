@@ -39,10 +39,10 @@ public class CA65LanguageServer implements LanguageServer, LanguageClientAware {
     public CompletableFuture<InitializeResult> initialize(InitializeParams params) {
         // Set the capabilities of the LS to inform the client.
         ServerCapabilities capabilities = new ServerCapabilities();
-        capabilities.setTextDocumentSync(TextDocumentSyncKind.Incremental);
+        capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
         capabilities.setDeclarationProvider(true);
         capabilities.setDefinitionProvider(true);
-        capabilities.setCompletionProvider(new CompletionOptions());
+//        capabilities.setCompletionProvider(new CompletionOptions());
 
         ServerInfo info = new ServerInfo("ca65 Language Server Provider");
 

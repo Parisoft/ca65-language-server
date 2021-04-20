@@ -1,9 +1,10 @@
 package com.parisoft.ca65.lsp.parser;
 
-import com.parisoft.ca65.lsp.grammar.CA65Lexer;
-import com.parisoft.ca65.lsp.grammar.CA65Parser;
+import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer;
+import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Parser;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CodePointCharStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
@@ -14,7 +15,7 @@ public class CodeParser {
 
     public static void main(String[] args) {
         String code = ""
-                + "foo:"
+                + "foo: ;comment"
                 + lineSeparator()
                 + "oba boba"
                 + lineSeparator()
@@ -24,7 +25,9 @@ public class CodeParser {
                 + "\tlda #0\n"
                 + "\t.endmac";
         CA65ErrorListener errorListener = new CA65ErrorListener();
-        CA65Lexer lexer = new CA65Lexer(CharStreams.fromString(code));
+        CodePointCharStream input = CharStreams.fromString(code);
+//        input.seek(23);//start before "bar:"
+        CA65Lexer lexer = new CA65Lexer(input);
         CA65Parser parser = new CA65Parser(new CommonTokenStream(lexer));
         lexer.addErrorListener(errorListener);
         parser.addErrorListener(errorListener);
