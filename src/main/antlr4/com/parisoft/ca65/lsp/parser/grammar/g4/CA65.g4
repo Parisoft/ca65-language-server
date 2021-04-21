@@ -120,15 +120,26 @@ scope
     ;
 
 enumerator
-    : ENUM identifier? (EOL (identifier | labelEqu)?)+ ENDENUM
+    : ENUM identifier? (EOL member+=enumMember?)+ ENDENUM
+    ;
+
+enumMember
+    : identifier
+    | labelEqu
     ;
 
 struct
-    : STRUCT identifier? (EOL (struct|union|field)?)+ ENDSTRUCT
+    : STRUCT identifier? (EOL member+=structMember?)+ ENDSTRUCT
     ;
 
 union
-    : UNION identifier? (EOL (struct|union|field)?)+ ENDUNION
+    : UNION identifier? (EOL member+=structMember?)+ ENDUNION
+    ;
+
+structMember
+    : struct
+    | union
+    | field
     ;
 
 field
@@ -473,6 +484,26 @@ PseudoVar
     | PARAMCOUNT
     | TIME
     | VERSION
+    | CPU_ISET_NONE
+    | CPU_ISET_6502
+    | CPU_ISET_6502X
+    | CPU_ISET_6502DTV
+    | CPU_ISET_65SC02
+    | CPU_ISET_65C02
+    | CPU_ISET_65816
+    | CPU_ISET_SWEET16
+    | CPU_ISET_HUC6280
+    | CPU_ISET_4510
+    | CPU_NONE
+    | CPU_6502
+    | CPU_6502X
+    | CPU_6502DTV
+    | CPU_65SC02
+    | CPU_65C02
+    | CPU_65816
+    | CPU_SWEET16
+    | CPU_HUC6280
+    | CPU_4510
     ;
 
 PseudoFunc
@@ -611,6 +642,26 @@ ISIZE: DOT I S I Z E;
 PARAMCOUNT: DOT P A R A M C O U N T;
 TIME: DOT T I M E;
 VERSION: DOT V E R S I O N;
+CPU_ISET_NONE: C P U '_' I S E T '_' N O N E;
+CPU_ISET_6502: C P U '_' I S E T '_6502';
+CPU_ISET_6502X: C P U '_' I S E T '_6502' X;
+CPU_ISET_6502DTV: C P U '_' I S E T '_6502' D T V;
+CPU_ISET_65SC02: C P U '_' I S E T '_65' S C '02';
+CPU_ISET_65C02: C P U '_' I S E T '_65' C '02';
+CPU_ISET_65816: C P U '_' I S E T '_65816';
+CPU_ISET_SWEET16: C P U '_' I S E T '_' S W E E T '16';
+CPU_ISET_HUC6280: C P U '_' I S E T '_' H U C '6280';
+CPU_ISET_4510: C P U '_' I S E T '_4510';
+CPU_NONE: C P U '_' N O N E;
+CPU_6502: C P U '_6502';
+CPU_6502X: C P U '_6502' X;
+CPU_6502DTV: C P U '_6502' D T V;
+CPU_65SC02: C P U '_65' S C '02';
+CPU_65C02: C P U '_65' C '02';
+CPU_65816: C P U '_65816';
+CPU_SWEET16: C P U '_' S W E E T '16';
+CPU_HUC6280: C P U '_' H U C '6280';
+CPU_4510: C P U '_4510';
 /* END Pseudo Variables */
 
 /* Pseudo Functions */

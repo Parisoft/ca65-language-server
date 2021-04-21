@@ -2,9 +2,9 @@ package com.parisoft.ca65.lsp.parser.symbol;
 
 import java.nio.file.Path;
 
-public class LabelRef extends Symbol {
+public class EnumDcl extends Symbol {
 
-    public LabelRef(String name, Path path, int line) {
+    public EnumDcl(String name, Path path, int line) {
         super(name, path, line);
     }
 }

@@ -19,6 +19,10 @@ public class Symbol {
         this.line = line;
     }
 
+    public void save(){
+        Table.put(this);
+    }
+
     public String getName() {
         return name;
     }

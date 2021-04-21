@@ -1,4 +1,4 @@
-// Generated from com/parisoft/ca65/lsp/parser/grammar/CA65.g4 by ANTLR 4.9.2
+// Generated from com/parisoft/ca65/lsp/parser/grammar/g4/CA65.g4 by ANTLR 4.9.2
 package com.parisoft.ca65.lsp.parser.grammar.g4;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -364,6 +364,18 @@ public class CA65BaseListener implements CA65Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterEnumMember(CA65Parser.EnumMemberContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitEnumMember(CA65Parser.EnumMemberContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterStruct(CA65Parser.StructContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -383,6 +395,18 @@ public class CA65BaseListener implements CA65Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitUnion(CA65Parser.UnionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterStructMember(CA65Parser.StructMemberContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitStructMember(CA65Parser.StructMemberContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

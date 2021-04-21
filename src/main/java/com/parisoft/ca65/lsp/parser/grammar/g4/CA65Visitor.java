@@ -1,4 +1,4 @@
-// Generated from com/parisoft/ca65/lsp/parser/grammar/CA65.g4 by ANTLR 4.9.2
+// Generated from com/parisoft/ca65/lsp/parser/grammar/g4/CA65.g4 by ANTLR 4.9.2
 package com.parisoft.ca65.lsp.parser.grammar.g4;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -193,6 +193,12 @@ public interface CA65Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitEnumerator(CA65Parser.EnumeratorContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link CA65Parser#enumMember}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEnumMember(CA65Parser.EnumMemberContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link CA65Parser#struct}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -204,6 +210,12 @@ public interface CA65Visitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitUnion(CA65Parser.UnionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#structMember}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitStructMember(CA65Parser.StructMemberContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link CA65Parser#field}.
 	 * @param ctx the parse tree
