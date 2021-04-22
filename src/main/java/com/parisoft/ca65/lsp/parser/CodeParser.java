@@ -15,8 +15,8 @@ import com.parisoft.ca65.lsp.parser.symbol.StructDcl;
 import com.parisoft.ca65.lsp.parser.symbol.Symbol;
 import com.parisoft.ca65.lsp.parser.symbol.SymbolRef;
 import com.parisoft.ca65.lsp.parser.symbol.UnnamedRef;
+import com.parisoft.ca65.lsp.parser.symbol.Constant;
 import com.parisoft.ca65.lsp.parser.symbol.VarDef;
-import com.sun.org.apache.bcel.internal.generic.RET;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -26,11 +26,14 @@ import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Map;
 
 import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.BANKBYTE;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.HIBYTE;
@@ -40,12 +43,17 @@ import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.LOWORD;
 import static java.lang.Integer.parseInt;
 import static java.lang.String.valueOf;
 import static java.lang.System.lineSeparator;
+import static java.util.Collections.emptyMap;
+import static java.util.Collections.reverseOrder;
+import static java.util.Comparator.comparingInt;
 
 @SuppressWarnings("Duplicates")
 public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65Visitor<String> {
 
-    private Path path;
     private String code;
+    private Path ctxPath;
+    private Path symPath;
+    private int ctxLine = 0;
     private int checkpoint = 0;
     private boolean eval = false;
     private int paramcount = 0;
@@ -79,6 +87,14 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         parser.addErrorListener(errorListener);
         new CA65POCVisitor(parser, lexer).visit(parser.program());
         System.out.println("Errors: " + errorListener.errors);
+    }
+
+    public CodeParser(String code, Path path) {
+        this.code = code;
+        this.ctxPath = path;
+        this.symPath = path;
+
+        layer.push(new ScopeDef("", ctxPath, 0)); // Push the global scope
     }
 
     @Override
@@ -122,9 +138,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         setCheckpoint(ctx);
 
         String name = visitIdentifier(ctx.identifier());
-        LabelDef symbol = new LabelDef(name, path, getLine(ctx));
-        symbol.setParent(layer.peek());
-        symbol.save();
+        newSymbol(LabelDef.class, name, ctx);
 
         visit(ctx.expression());
 
@@ -140,9 +154,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         setCheckpoint(ctx);
 
         String name = visit(ctx.identifier());
-        LabelDef symbol = new LabelDef(name, path, getLine(ctx));
-        symbol.setParent(layer.peek());
-        symbol.save();
+        Symbol symbol = newSymbol(LabelDef.class, name, ctx);
 
         layer.push(symbol);
 
@@ -155,9 +167,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
         String name = visitIdentifier(ctx.identifier());
         int value = parseInt(eval(ctx.expression()));
-        VarDef symbol = new VarDef(name, path, getLine(ctx), value);
-        symbol.setParent(layer.peek());
-        symbol.save();
+        newConstant(VarDef.class, name, value, ctx);
 
         return name;
     }
@@ -167,9 +177,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         setCheckpoint(ctx);
 
         String name = ctx.identifier() != null ? visitIdentifier(ctx.identifier()) : "";
-        LabelDef symbol = new LabelDef(name, path, getLine(ctx));
-        symbol.setParent(layer.peek());
-        symbol.save();
+        LabelDef symbol = newSymbol(LabelDef.class, name, ctx);
 
         layer.push(symbol);
 
@@ -336,20 +344,37 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     public String visitLabelRef(CA65Parser.LabelRefContext ctx) {
         if (ctx.UnnamedLabel() != null) {
             String name = ctx.UnnamedLabel().getSymbol().getText().substring(1);
-            UnnamedRef symbol = new UnnamedRef(name, path, getLine(ctx));
-            symbol.setParent(layer.peek());
-            symbol.save();
+            newSymbol(UnnamedRef.class, name, ctx);
 
             return name;
         }
 
         String owner = null;
 
-        for (CA65Parser.IdentifierContext identifier : ctx.identifier()) {
+        for (int i = 0; i < ctx.identifier().size(); i++) {
+            CA65Parser.IdentifierContext identifier = ctx.identifier(i);
             String name = visitIdentifier(identifier);
-            SymbolRef symbol = new SymbolRef(name, path, getLine(identifier), owner);
+            SymbolRef symbol = new SymbolRef(name, symPath, getLine(identifier), owner);
             symbol.setParent(layer.peek());
-            symbol.save();
+            symbol.save(ctxPath);
+
+            if (eval && i == ctx.identifier().size() - 1) {
+                // Search for a constant definition whose parent is owner
+                return Symbol.Table.map
+                        .getOrDefault(name, emptyMap())
+                        .getOrDefault(ctxPath, emptyMap())
+                        .entrySet()
+                        .stream()
+                        .filter(entry -> entry.getKey() <= symbol.getLine())
+                        .sorted(reverseOrder(comparingInt(Map.Entry::getKey)))
+                        .map(Map.Entry::getValue)
+                        .filter(sym -> sym instanceof Constant)
+                        .filter(sym -> sym.getParent().getName().equals(symbol.getOwner()))
+                        .map(sym -> valueOf(((Constant) sym).getValue()))
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException("Undefined constant: " + name));
+            }
+
             owner = name;
         }
 
@@ -426,9 +451,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         setCheckpoint(ctx);
 
         String name = visitIdentifier(ctx.identifier());
-        ProcDef symbol = new ProcDef(name, path, getLine(ctx));
-        symbol.setParent(layer.peek());
-        symbol.save();
+        ProcDef symbol = newSymbol(ProcDef.class, name, ctx);
 
         layer.push(symbol);
         ctx.line().forEach(this::visitLine);
@@ -443,9 +466,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         setCheckpoint(ctx);
 
         String name = ctx.identifier() != null ? visitIdentifier(ctx.identifier()) : "";
-        ScopeDef symbol = new ScopeDef(name, path, getLine(ctx));
-        symbol.setParent(layer.peek());
-        symbol.save();
+        ScopeDef symbol = newSymbol(ScopeDef.class, name, ctx);
 
         layer.push(symbol);
         ctx.line().forEach(this::visitLine);
@@ -460,9 +481,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
         if (ctx.identifier() != null) {
             String name = visitIdentifier(ctx.identifier());
-            EnumDcl enumDcl = new EnumDcl(name, path, getLine(ctx));
-            enumDcl.setParent(layer.peek());
-            enumDcl.save();
+            EnumDcl enumDcl = newSymbol(EnumDcl.class, name, ctx);
 
             layer.push(enumDcl);
         }
@@ -480,9 +499,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 name = visitIdentifier(member.identifier());
             }
 
-            EnumDef enumDef = new EnumDef(name, path, getLine(member), val++);
-            enumDef.setParent(layer.peek());
-            enumDef.save();
+            newConstant(EnumDef.class, name, val++, member);
         }
 
         if (ctx.identifier() != null) {
@@ -506,9 +523,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
         if (ctx.identifier() != null) {
             String name = visitIdentifier(ctx.identifier());
-            structDcl = new StructDcl(name, path, getLine(ctx));
-            structDcl.setParent(layer.peek());
-            structDcl.save();
+            structDcl = newSymbol(StructDcl.class, name, ctx);
 
             layer.push(structDcl);
         }
@@ -532,12 +547,10 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 }
 
                 if (name != null) {
-                    FieldDef fieldDef = new FieldDef(name, path, getLine(field), size, bytes);
-                    fieldDef.setParent(layer.peek());
-                    fieldDef.save();
+                    newConstant(FieldDef.class, name, size, field).setSize(bytes);
                 }
 
-                size+=bytes;
+                size += bytes;
             }
         }
 
@@ -557,9 +570,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
         if (ctx.identifier() != null) {
             String name = visitIdentifier(ctx.identifier());
-            unionDcl = new StructDcl(name, path, getLine(ctx));
-            unionDcl.setParent(layer.peek());
-            unionDcl.save();
+            unionDcl = newSymbol( StructDcl.class,name, ctx);
 
             layer.push(unionDcl);
         }
@@ -583,9 +594,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 }
 
                 if (name != null) {
-                    FieldDef fieldDef = new FieldDef(name, path, getLine(field), 0, bytes);
-                    fieldDef.setParent(layer.peek());
-                    fieldDef.save();
+                    newConstant(FieldDef.class, name, size, field).setSize(bytes);
                 }
 
                 size = Math.max(size, bytes);
@@ -656,6 +665,42 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     private void setCheckpoint(ParserRuleContext ctx) {
         checkpoint = ((CA65Token) ctx.start).getPrvIndex();
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends Symbol> T newSymbol(Class<T> type, String name, ParserRuleContext ctx) {
+        int symLine = getLine(ctx);
+
+        if (ctxPath.equals(symPath)) {
+            ctxLine = symLine;
+        }
+
+        try {
+            return (T) type.getConstructor(String.class, Path.class, int.class)
+                    .newInstance(name, symPath, symLine)
+                    .setParent(layer.peek())
+                    .save(ctxPath, ctxLine);
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T extends Symbol> T newConstant(Class<T> type, String name, int value, ParserRuleContext ctx) {
+        int symLine = getLine(ctx);
+
+        if (ctxPath.equals(symPath)) {
+            ctxLine = symLine;
+        }
+
+        try {
+            return (T) type.getConstructor(String.class, Path.class, int.class, int.class)
+                    .newInstance(name, symPath, symLine, value)
+                    .setParent(layer.peek())
+                    .save(ctxPath, ctxLine);
+        } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static int getLine(ParserRuleContext ctx) {

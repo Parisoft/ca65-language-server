@@ -2,22 +2,23 @@ package com.parisoft.ca65.lsp.parser.symbol;
 
 import java.nio.file.Path;
 
-public class FieldDef extends Symbol {
+public class FieldDef extends Constant {
 
-    private final int offset;
-    private final int size;
+    private int size;
 
-    public FieldDef(String name, Path path, int line, int offset, int size) {
-        super(name, path, line);
-        this.offset = offset;
-        this.size = size;
+    public FieldDef(String name, Path path, int line, int offset) {
+        super(name, path, line, offset);
     }
 
     public int getOffset() {
-        return offset;
+        return value;
     }
 
     public int getSize() {
         return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
     }
 }

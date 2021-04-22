@@ -19,8 +19,9 @@ public class Symbol {
         this.line = line;
     }
 
-    public void save(){
-        Table.put(this);
+    public Symbol save(Path ctxPath, int ctxLine) {
+        Table.put(ctxPath, ctxLine, this);
+        return this;
     }
 
     public String getName() {
@@ -39,8 +40,9 @@ public class Symbol {
         return parent;
     }
 
-    public void setParent(Symbol parent) {
+    public Symbol setParent(Symbol parent) {
         this.parent = parent;
+        return this;
     }
 
     @Override
@@ -69,9 +71,9 @@ public class Symbol {
 
         public static final Map<String, Map<Path, Map<Integer, Symbol>>> map = new ConcurrentHashMap<>();
 
-        public static Symbol put(Symbol symbol) {
+        public static Symbol put(Path ctxPath, int ctxLine, Symbol symbol) {
             return map.computeIfAbsent(symbol.name, s -> new HashMap<>())
-                    .computeIfAbsent(symbol.path, p -> new HashMap<>())
+                    .computeIfAbsent(ctxPath, p -> new HashMap<>())
                     .put(symbol.line, symbol);
         }
     }
