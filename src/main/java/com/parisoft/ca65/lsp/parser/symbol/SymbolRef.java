@@ -4,14 +4,18 @@ import java.nio.file.Path;
 
 public class SymbolRef extends Symbol {
 
-    private final String owner;
+    private String owner;
 
-    public SymbolRef(String name, Path path, int line, String owner) {
+    public SymbolRef(String name, Path path, int line) {
         super(name, path, line);
-        this.owner = owner;
     }
 
     public String getOwner() {
         return owner;
+    }
+
+    public SymbolRef setOwner(String owner) {
+        this.owner = owner;
+        return this;
     }
 }

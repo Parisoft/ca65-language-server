@@ -1,7 +1,7 @@
 package com.parisoft.ca65.lsp.parser;
 
+import com.parisoft.ca65.lsp.parser.grammar.CA65Lexer;
 import com.parisoft.ca65.lsp.parser.grammar.CA65Token;
-import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Parser;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Visitor;
 import com.parisoft.ca65.lsp.parser.lang.PseudoVar;
@@ -25,10 +25,14 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Constructor;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -50,10 +54,12 @@ import static java.util.Comparator.comparingInt;
 @SuppressWarnings("Duplicates")
 public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65Visitor<String> {
 
-    private String code;
-    private Path ctxPath;
+    private static final Logger log = LoggerFactory.getLogger(CodeParser.class);
+
+    private String srcCode;
+    private Path srcPath;
     private Path symPath;
-    private int ctxLine = 0;
+    private int srcLine = 0;
     private int checkpoint = 0;
     private boolean eval = false;
     private int paramcount = 0;
@@ -67,34 +73,33 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     private List<String> defines = new ArrayList<>();
     private Deque<Symbol> layer = new ArrayDeque<>();
 
-    public static void main(String[] args) {
-        String code = ""
-                + "foo: ;comment"
-                + lineSeparator()
-                + "oba boba"
-                + lineSeparator()
-                + "bar:"
-                + lineSeparator()
-                + "\t.mac lza\n"
-                + "\tlda #0\n"
-                + "\t.endmac";
-        CA65ErrorListener errorListener = new CA65ErrorListener();
-        CodePointCharStream input = CharStreams.fromString(code);
-//        input.seek(23);//start before "bar:"
-        CA65Lexer lexer = new CA65Lexer(input);
-        CA65Parser parser = new CA65Parser(new CommonTokenStream(lexer));
-        lexer.addErrorListener(errorListener);
-        parser.addErrorListener(errorListener);
-        new CA65POCVisitor(parser, lexer).visit(parser.program());
-        System.out.println("Errors: " + errorListener.errors);
+    public static void main(String[] args) throws IOException {
+        Path path = Paths.get(args[0]).normalize();
+        byte[] bytes = Files.readAllBytes(path);
+        new CodeParser(new String(bytes), path).parse();
     }
 
     public CodeParser(String code, Path path) {
-        this.code = code;
-        this.ctxPath = path;
+        this.srcCode = code;
+        this.srcPath = path;
         this.symPath = path;
 
-        layer.push(new ScopeDef("", ctxPath, 0)); // Push the global scope
+        layer.push(new ScopeDef("", srcPath, 0)); // Push the global scope
+    }
+
+    public void parse() {
+        CA65ErrorListener errorListener = new CA65ErrorListener();
+        CodePointCharStream input = CharStreams.fromString(srcCode);
+
+        CA65Lexer lexer = new CA65Lexer(input);
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(errorListener);
+
+        CA65Parser parser = new CA65Parser(new CommonTokenStream(lexer));
+        parser.removeErrorListeners();
+        parser.addErrorListener(errorListener);
+
+        visit(parser.program());
     }
 
     @Override
@@ -354,18 +359,16 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         for (int i = 0; i < ctx.identifier().size(); i++) {
             CA65Parser.IdentifierContext identifier = ctx.identifier(i);
             String name = visitIdentifier(identifier);
-            SymbolRef symbol = new SymbolRef(name, symPath, getLine(identifier), owner);
-            symbol.setParent(layer.peek());
-            symbol.save(ctxPath);
+            SymbolRef symbol = newSymbol(SymbolRef.class, name, identifier).setOwner(owner);
 
             if (eval && i == ctx.identifier().size() - 1) {
                 // Search for a constant definition whose parent is owner
                 return Symbol.Table.map
                         .getOrDefault(name, emptyMap())
-                        .getOrDefault(ctxPath, emptyMap())
+                        .getOrDefault(srcPath, emptyMap())
                         .entrySet()
                         .stream()
-                        .filter(entry -> entry.getKey() <= symbol.getLine())
+                        .filter(entry -> entry.getKey() <= srcLine)
                         .sorted(reverseOrder(comparingInt(Map.Entry::getKey)))
                         .map(Map.Entry::getValue)
                         .filter(sym -> sym instanceof Constant)
@@ -570,7 +573,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
         if (ctx.identifier() != null) {
             String name = visitIdentifier(ctx.identifier());
-            unionDcl = newSymbol( StructDcl.class,name, ctx);
+            unionDcl = newSymbol(StructDcl.class, name, ctx);
 
             layer.push(unionDcl);
         }
@@ -671,15 +674,15 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     private <T extends Symbol> T newSymbol(Class<T> type, String name, ParserRuleContext ctx) {
         int symLine = getLine(ctx);
 
-        if (ctxPath.equals(symPath)) {
-            ctxLine = symLine;
+        if (srcPath.equals(symPath)) {
+            srcLine = symLine;
         }
 
         try {
             return (T) type.getConstructor(String.class, Path.class, int.class)
                     .newInstance(name, symPath, symLine)
                     .setParent(layer.peek())
-                    .save(ctxPath, ctxLine);
+                    .save(srcPath, srcLine);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
@@ -689,15 +692,15 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     private <T extends Symbol> T newConstant(Class<T> type, String name, int value, ParserRuleContext ctx) {
         int symLine = getLine(ctx);
 
-        if (ctxPath.equals(symPath)) {
-            ctxLine = symLine;
+        if (srcPath.equals(symPath)) {
+            srcLine = symLine;
         }
 
         try {
             return (T) type.getConstructor(String.class, Path.class, int.class, int.class)
                     .newInstance(name, symPath, symLine, value)
                     .setParent(layer.peek())
-                    .save(ctxPath, ctxLine);
+                    .save(srcPath, srcLine);
         } catch (NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
@@ -719,13 +722,9 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     static class CA65ErrorListener extends BaseErrorListener {
 
-        int errors = 0;
-
         @Override
         public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
-            errors++;
-
-            super.syntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e);
+            log.warn("line " + line + ":" + charPositionInLine + " " + msg);
         }
     }
 }
