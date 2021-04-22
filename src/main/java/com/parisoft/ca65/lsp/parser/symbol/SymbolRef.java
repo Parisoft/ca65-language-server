@@ -2,7 +2,7 @@ package com.parisoft.ca65.lsp.parser.symbol;
 
 import java.nio.file.Path;
 
-public class SymbolRef extends Symbol {
+public class SymbolRef extends Reference {
 
     private String owner;
 

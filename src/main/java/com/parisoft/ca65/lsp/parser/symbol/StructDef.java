@@ -2,11 +2,11 @@ package com.parisoft.ca65.lsp.parser.symbol;
 
 import java.nio.file.Path;
 
-public class StructDcl extends Symbol {
+public class StructDef extends Definition {
 
     private int size;
 
-    public StructDcl(String name, Path path, int line) {
+    public StructDef(String name, Path path, int line) {
         super(name, path, line);
     }
 

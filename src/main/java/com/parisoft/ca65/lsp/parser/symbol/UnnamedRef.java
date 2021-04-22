@@ -2,7 +2,7 @@ package com.parisoft.ca65.lsp.parser.symbol;
 
 import java.nio.file.Path;
 
-public class UnnamedRef extends Symbol {
+public class UnnamedRef extends Reference {
 
     private final int fwd;
     private final int bwd;

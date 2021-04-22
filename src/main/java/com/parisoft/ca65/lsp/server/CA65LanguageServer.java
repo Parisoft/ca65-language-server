@@ -42,6 +42,7 @@ public class CA65LanguageServer implements LanguageServer, LanguageClientAware {
         capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
         capabilities.setDeclarationProvider(true);
         capabilities.setDefinitionProvider(true);
+        capabilities.setReferencesProvider(true);
 //        capabilities.setCompletionProvider(new CompletionOptions());
 
         ServerInfo info = new ServerInfo("ca65 Language Server Provider");

@@ -5,13 +5,13 @@ import com.parisoft.ca65.lsp.parser.grammar.CA65Token;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Parser;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Visitor;
 import com.parisoft.ca65.lsp.parser.lang.PseudoVar;
-import com.parisoft.ca65.lsp.parser.symbol.EnumDcl;
 import com.parisoft.ca65.lsp.parser.symbol.EnumDef;
+import com.parisoft.ca65.lsp.parser.symbol.Enumeration;
 import com.parisoft.ca65.lsp.parser.symbol.FieldDef;
 import com.parisoft.ca65.lsp.parser.symbol.LabelDef;
 import com.parisoft.ca65.lsp.parser.symbol.ProcDef;
 import com.parisoft.ca65.lsp.parser.symbol.ScopeDef;
-import com.parisoft.ca65.lsp.parser.symbol.StructDcl;
+import com.parisoft.ca65.lsp.parser.symbol.StructDef;
 import com.parisoft.ca65.lsp.parser.symbol.Symbol;
 import com.parisoft.ca65.lsp.parser.symbol.SymbolRef;
 import com.parisoft.ca65.lsp.parser.symbol.UnnamedRef;
@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,7 +47,6 @@ import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.LOBYTE;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.LOWORD;
 import static java.lang.Integer.parseInt;
 import static java.lang.String.valueOf;
-import static java.lang.System.lineSeparator;
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.reverseOrder;
 import static java.util.Comparator.comparingInt;
@@ -74,9 +74,10 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     private Deque<Symbol> layer = new ArrayDeque<>();
 
     public static void main(String[] args) throws IOException {
-        Path path = Paths.get(args[0]).normalize();
+        Path path = Paths.get(URI.create(args[0])).normalize();
         byte[] bytes = Files.readAllBytes(path);
         new CodeParser(new String(bytes), path).parse();
+        System.out.println(IdentFinder.find(path, 6,16));
     }
 
     public CodeParser(String code, Path path) {
@@ -484,7 +485,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
         if (ctx.identifier() != null) {
             String name = visitIdentifier(ctx.identifier());
-            EnumDcl enumDcl = newSymbol(EnumDcl.class, name, ctx);
+            EnumDef enumDcl = newSymbol(EnumDef.class, name, ctx);
 
             layer.push(enumDcl);
         }
@@ -502,7 +503,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 name = visitIdentifier(member.identifier());
             }
 
-            newConstant(EnumDef.class, name, val++, member);
+            newConstant(Enumeration.class, name, val++, member);
         }
 
         if (ctx.identifier() != null) {
@@ -521,12 +522,12 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     public String visitStruct(CA65Parser.StructContext ctx) {
         setCheckpoint(ctx);
 
-        StructDcl structDcl = null;
+        StructDef structDcl = null;
         int size = 0;
 
         if (ctx.identifier() != null) {
             String name = visitIdentifier(ctx.identifier());
-            structDcl = newSymbol(StructDcl.class, name, ctx);
+            structDcl = newSymbol(StructDef.class, name, ctx);
 
             layer.push(structDcl);
         }
@@ -568,12 +569,12 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     public String visitUnion(CA65Parser.UnionContext ctx) {
         setCheckpoint(ctx);
 
-        StructDcl unionDcl = null;
+        StructDef unionDcl = null;
         int size = 0;
 
         if (ctx.identifier() != null) {
             String name = visitIdentifier(ctx.identifier());
-            unionDcl = newSymbol(StructDcl.class, name, ctx);
+            unionDcl = newSymbol(StructDef.class, name, ctx);
 
             layer.push(unionDcl);
         }
@@ -707,7 +708,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     }
 
     private static int getLine(ParserRuleContext ctx) {
-        return ctx.getStart().getLine();
+        return ctx.getStart().getLine() - 1;
     }
 
     private String eval(ParserRuleContext ctx) {
