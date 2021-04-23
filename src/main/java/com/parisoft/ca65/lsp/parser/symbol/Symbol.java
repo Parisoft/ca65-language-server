@@ -24,6 +24,16 @@ public abstract class Symbol {
         this.pos = pos;
     }
 
+    public boolean canAccess(Symbol other) {
+        Symbol thisParent = parent;
+
+        while (thisParent != null && !thisParent.equals(other.parent)) {
+            thisParent = thisParent.parent;
+        }
+
+        return thisParent != null;
+    }
+
     public abstract <S extends Symbol> S save();
 
     public String getName() {
@@ -82,6 +92,7 @@ public abstract class Symbol {
         public static final Map<Path, Set<Reference>> references = new ConcurrentHashMap<>();
         public static final Map<Path, Set<Import>> imports = new ConcurrentHashMap<>();
         public static final Map<Path, Set<Export>> exports = new ConcurrentHashMap<>();
+        public static final Map<Path, Set<Global>> globals = new ConcurrentHashMap<>();
         public static final Map<Path, Set<Include>> includes = new ConcurrentHashMap<>();
         public static final Set<Path> autoimport = ConcurrentHashMap.newKeySet();
 
@@ -107,6 +118,34 @@ public abstract class Symbol {
 
         public static Stream<Symbol> symbols() {
             return Stream.concat(definitions(), references());
+        }
+
+        public static Stream<Import> imports(Path path) {
+            return imports.getOrDefault(path, emptySet()).stream();
+        }
+
+        public static Stream<Import> imports() {
+            return imports.values().stream().flatMap(Set::stream);
+        }
+
+        public static Stream<Export> exports(Path path) {
+            return exports.getOrDefault(path, emptySet()).stream();
+        }
+
+        public static Stream<Export> exports() {
+            return exports.values().stream().flatMap(Set::stream);
+        }
+
+        public static Stream<Global> globals(Path path) {
+            return globals.getOrDefault(path, emptySet()).stream();
+        }
+
+        public static Stream<Global> globals() {
+            return globals.values().stream().flatMap(Set::stream);
+        }
+
+        public static Stream<Include> includes(Path path) {
+            return includes.get(path).stream();
         }
     }
 }

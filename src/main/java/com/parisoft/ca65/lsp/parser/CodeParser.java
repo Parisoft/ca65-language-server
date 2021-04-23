@@ -9,6 +9,7 @@ import com.parisoft.ca65.lsp.parser.symbol.EnumDef;
 import com.parisoft.ca65.lsp.parser.symbol.Enumeration;
 import com.parisoft.ca65.lsp.parser.symbol.Export;
 import com.parisoft.ca65.lsp.parser.symbol.FieldDef;
+import com.parisoft.ca65.lsp.parser.symbol.Global;
 import com.parisoft.ca65.lsp.parser.symbol.Import;
 import com.parisoft.ca65.lsp.parser.symbol.Include;
 import com.parisoft.ca65.lsp.parser.symbol.LabelDef;
@@ -48,6 +49,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.AUTOIMPORT;
 import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.EXPORT;
 import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.EXPORTZP;
+import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.GLOBAL;
+import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.GLOBALZP;
 import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.IMPORT;
 import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.IMPORTZP;
 import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.INCLUDE;
@@ -722,6 +725,18 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             for (CA65Parser.ExpressionContext expression : ctx.expression()) {
                 String name = visit(expression);
                 new Export(name, path, positionOf(ctx))
+                        .setParent(layer.peek())
+                        .save();
+            }
+
+            return null;
+        }
+
+        if (command.equalsIgnoreCase(VOCABULARY.getSymbolicName(GLOBAL))
+                || command.equalsIgnoreCase(VOCABULARY.getSymbolicName(GLOBALZP))) {
+            for (CA65Parser.ExpressionContext expression : ctx.expression()) {
+                String name = visit(expression);
+                new Global(name, path, positionOf(ctx))
                         .setParent(layer.peek())
                         .save();
             }
