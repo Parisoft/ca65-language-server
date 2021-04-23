@@ -379,6 +379,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         for (int i = 0; i < ctx.identifier().size(); i++) {
             CA65Parser.IdentifierContext identifier = ctx.identifier(i);
             String name = visitIdentifier(identifier);
+
             Reference ref = new Reference(name, path, positionOf(identifier), ancestor)
                     .setParent(layer.peek())
                     .save();

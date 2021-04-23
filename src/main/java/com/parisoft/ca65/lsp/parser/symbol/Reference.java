@@ -15,6 +15,26 @@ public class Reference extends Symbol {
         this.ancestor = ancestor;
     }
 
+    public boolean canReference(Definition def) {
+        Reference refAncestor = this.ancestor;
+        Symbol defParent = def.parent;
+
+        // matches the reference ancestry with definition hierarchy
+        while (refAncestor != null) {
+            if (defParent == null || !refAncestor.getName().equals(defParent.getName())) {
+                return false;
+            }
+
+            refAncestor = refAncestor.ancestor;
+            defParent = defParent.parent;
+        }
+
+        // matches the reference hierarchy with definition hierarchy
+
+
+        return false;
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public Reference save() {
