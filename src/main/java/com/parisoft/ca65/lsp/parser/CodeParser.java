@@ -7,7 +7,10 @@ import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Visitor;
 import com.parisoft.ca65.lsp.parser.lang.PseudoVar;
 import com.parisoft.ca65.lsp.parser.symbol.EnumDef;
 import com.parisoft.ca65.lsp.parser.symbol.Enumeration;
+import com.parisoft.ca65.lsp.parser.symbol.Export;
 import com.parisoft.ca65.lsp.parser.symbol.FieldDef;
+import com.parisoft.ca65.lsp.parser.symbol.Import;
+import com.parisoft.ca65.lsp.parser.symbol.Include;
 import com.parisoft.ca65.lsp.parser.symbol.LabelDef;
 import com.parisoft.ca65.lsp.parser.symbol.ProcDef;
 import com.parisoft.ca65.lsp.parser.symbol.Reference;
@@ -39,6 +42,13 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
+import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.AUTOIMPORT;
+import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.EXPORT;
+import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.EXPORTZP;
+import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.IMPORT;
+import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.IMPORTZP;
+import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.INCLUDE;
+import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.VOCABULARY;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.BANKBYTE;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.HIBYTE;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.HIWORD;
@@ -386,17 +396,17 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             String var = ctx.var.getText().toUpperCase();
 
             switch (var) {
-                case "ASIZE":
+                case ".ASIZE":
                     return valueOf(asize);
-                case "ISIZE":
+                case ".ISIZE":
                     return valueOf(isize);
-                case "CPU":
+                case ".CPU":
                     return valueOf(cpu);
-                case "TIME":
+                case ".TIME":
                     return valueOf(System.currentTimeMillis() / 1000);
-                case "VERSION": //TODO find out a way to get version
+                case ".VERSION": //TODO find out a way to get version
                     return "0";
-                case "PARAMCOUNT":
+                case ".PARAMCOUNT":
                     return valueOf(paramcount);
                 default:
                     return valueOf(PseudoVar.CPU.valueOf(var).value());
@@ -676,6 +686,54 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitControl(CA65Parser.ControlContext ctx) {
+        setCheckpoint(ctx);
+
+        String command = ctx.command.getText();
+
+        if (command.equalsIgnoreCase(VOCABULARY.getSymbolicName(IMPORT))
+                || command.equalsIgnoreCase(VOCABULARY.getSymbolicName(IMPORTZP))) {
+            for (CA65Parser.ExpressionContext expression : ctx.expression()) {
+                String name = visit(expression);
+                new Import(name, path, positionOf(ctx))
+                        .setParent(layer.peek())
+                        .save();
+            }
+
+            return null;
+        }
+
+        if (command.equalsIgnoreCase(VOCABULARY.getSymbolicName(AUTOIMPORT))) {
+            if (ctx.PLUS() != null) {
+                Symbol.Table.autoimport.add(path);
+            } else if (ctx.MINUS() != null) {
+                Symbol.Table.autoimport.remove(path);
+            }
+
+            return null;
+        }
+
+        if (command.equalsIgnoreCase(VOCABULARY.getSymbolicName(EXPORT))
+                || command.equalsIgnoreCase(VOCABULARY.getSymbolicName(EXPORTZP))) {
+            for (CA65Parser.ExpressionContext expression : ctx.expression()) {
+                String name = visit(expression);
+                new Export(name, path, positionOf(ctx))
+                        .setParent(layer.peek())
+                        .save();
+            }
+        }
+
+        if (command.equalsIgnoreCase(VOCABULARY.getSymbolicName(INCLUDE))) {
+            if (ctx.expression().isEmpty()) {
+                return visitChildren(ctx);
+            }
+
+            String file = visit(ctx.expression(0));
+            //TODO find the file
+            new Include(Paths.get(URI.create(file)), positionOf(ctx))
+                    .setParent(layer.peek())
+                    .save();
+            //TODO parse included file
+        }
 
         return visitChildren(ctx);
     }

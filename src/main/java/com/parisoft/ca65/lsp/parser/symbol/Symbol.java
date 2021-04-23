@@ -83,6 +83,7 @@ public abstract class Symbol {
         public static final Map<Path, Set<Import>> imports = new ConcurrentHashMap<>();
         public static final Map<Path, Set<Export>> exports = new ConcurrentHashMap<>();
         public static final Map<Path, Set<Include>> includes = new ConcurrentHashMap<>();
+        public static final Set<Path> autoimport = ConcurrentHashMap.newKeySet();
 
         public static Stream<Definition> definitions(Path path) {
             return definitions.getOrDefault(path, emptySet()).stream();

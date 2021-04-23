@@ -198,7 +198,7 @@ storage
     ;
 
 control
-    : command=Control (expression (COMMA expression)*)?
+    : command=Control ((expression (COMMA expression)*) | (PLUS|MINUS))?
     ;
 
 fragment A
