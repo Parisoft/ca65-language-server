@@ -3,6 +3,7 @@ package com.parisoft.ca65.lsp.server;
 import com.parisoft.ca65.lsp.parser.CodeParser;
 import com.parisoft.ca65.lsp.parser.IdentFinder;
 import com.parisoft.ca65.lsp.parser.symbol.Definition;
+import com.parisoft.ca65.lsp.parser.symbol.Reference;
 import com.parisoft.ca65.lsp.parser.symbol.Symbol;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
@@ -65,16 +66,33 @@ public class CA65TextDocumentService implements TextDocumentService {
         try {
             Path path = Paths.get(URI.create(params.getTextDocument().getUri())).normalize();
             Position position = params.getPosition();
-            String ident = IdentFinder.find(path, position.getLine(), position.getCharacter());
-            int sep = ident.indexOf(IdentFinder.SEPARATOR);
-            final String owner;
+            Reference ref = Symbol.Table.references(path)
+                    .filter(reference -> reference.getPos().getLine() == position.getLine())
+                    .filter(reference -> reference.getPos().getCharacter() <= position.getCharacter())
+                    .filter(reference -> reference.getPos().getCharacter() + reference.getName().length() >= position.getCharacter())
+                    .findFirst()
+                    .orElse(null);
+            if (ref != null) {
+                Definition definition = Symbol.Table.definitions()
+                        .filter(def -> ref.getName().equals(def.getName()))
+                        .filter(ref::canReference)
+                        .findFirst()//TODO find the enclosing scope
+                        .orElse(null);
 
-            if (sep > 0) {
-                owner = ident.substring(0, sep);
-                ident = ident.substring(sep + 1);
-            } else {
-                owner = null;
+                if (definition != null) {
+                    return supplyAsync(() -> Either.forLeft(singletonList(definition.toLocation())));
+                }
             }
+//            String ident = IdentFinder.find(path, position.getLine(), position.getCharacter());
+//            int sep = ident.indexOf(IdentFinder.SEPARATOR);
+//            final String owner;
+//
+//            if (sep > 0) {
+//                owner = ident.substring(0, sep);
+//                ident = ident.substring(sep + 1);
+//            } else {
+//                owner = null;
+//            }
 
 //            Symbol symbol = Symbol.Table.map
 //                    .getOrDefault(ident, emptyMap())
@@ -95,7 +113,7 @@ public class CA65TextDocumentService implements TextDocumentService {
 //
 //                return supplyAsync(() -> Either.forLeft(singletonList(location)));
 //            }
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.error("Could not find a identifier from params={}", params, e);
         }
 

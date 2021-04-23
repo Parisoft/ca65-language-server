@@ -76,7 +76,7 @@ primaryExpression
     ;
 
 labelRef
-    : Addressing? COLONCOLON? identifier (COLONCOLON identifier)*
+    : Addressing? global=COLONCOLON? identifier (COLONCOLON identifier)*
     | UnnamedLabel
     ;
 

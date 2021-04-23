@@ -377,7 +377,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             return name;
         }
 
-        Reference ancestor = null;
+        Reference ancestor = ctx.global != null ? new Reference("", path, positionOf(ctx), null) : null;
 
         for (int i = 0; i < ctx.identifier().size(); i++) {
             CA65Parser.IdentifierContext identifier = ctx.identifier(i);

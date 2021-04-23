@@ -1,6 +1,7 @@
 package com.parisoft.ca65.lsp.parser.symbol;
 
 import org.eclipse.lsp4j.Position;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.stream.Stream;
@@ -22,6 +23,7 @@ public class Reference extends Symbol {
 
         // matches the reference ancestry with definition hierarchy
         while (refAncestor != null) {
+            LoggerFactory.getLogger(Reference.class).debug("Comparing\n{}\nVS\n{}", refAncestor, defParent);
             if (defParent == null || !refAncestor.getName().equals(defParent.getName())) {
                 return false;
             }

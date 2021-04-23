@@ -1,6 +1,9 @@
 package com.parisoft.ca65.lsp.parser.symbol;
 
+import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
+import org.eclipse.lsp4j.Range;
+import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.util.Map;
@@ -25,13 +28,29 @@ public abstract class Symbol {
     }
 
     public boolean canAccess(Symbol other) {
-        Symbol thisParent = parent;
+        Symbol otherParent = other.parent;
 
-        while (thisParent != null && !thisParent.equals(other.parent)) {
-            thisParent = thisParent.parent;
+        while (otherParent != null) {
+            Symbol thisParent = this.parent;
+
+            while (thisParent != null) {
+                if (thisParent.equals(otherParent)) {
+                    return true;
+                }
+
+                thisParent = thisParent.parent;
+            }
+
+            otherParent = otherParent.parent;
         }
 
-        return thisParent != null;
+        return false;
+    }
+
+    public Location toLocation() {
+        Position end = new Position(pos.getLine(), pos.getCharacter());
+        end.setCharacter(end.getCharacter() + name.length());
+        return new Location(path.toUri().toString(), new Range(pos, end));
     }
 
     public abstract <S extends Symbol> S save();
@@ -42,6 +61,10 @@ public abstract class Symbol {
 
     public Path getPath() {
         return path;
+    }
+
+    public Position getPos() {
+        return pos;
     }
 
     public Symbol getParent() {

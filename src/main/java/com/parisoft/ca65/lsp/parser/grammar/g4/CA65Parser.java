@@ -1612,6 +1612,7 @@ public class CA65Parser extends Parser {
 	}
 
 	public static class LabelRefContext extends ParserRuleContext {
+		public Token global;
 		public List<IdentifierContext> identifier() {
 			return getRuleContexts(IdentifierContext.class);
 		}
@@ -1674,7 +1675,7 @@ public class CA65Parser extends Parser {
 				if (_la==COLONCOLON) {
 					{
 					setState(216);
-					match(COLONCOLON);
+					((LabelRefContext)_localctx).global = match(COLONCOLON);
 					}
 				}
 
