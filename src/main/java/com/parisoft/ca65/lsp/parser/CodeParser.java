@@ -32,8 +32,10 @@ import org.eclipse.lsp4j.Position;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -41,6 +43,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.AUTOIMPORT;
 import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.EXPORT;
@@ -54,6 +57,7 @@ import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.HIBYTE;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.HIWORD;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.LOBYTE;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.LOWORD;
+import static com.parisoft.ca65.lsp.server.CA65LanguageServer.workspaceDir;
 import static java.lang.Integer.parseInt;
 import static java.lang.String.valueOf;
 
@@ -729,23 +733,47 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 return visitChildren(ctx);
             }
 
-            String file = visit(ctx.expression(0));
-            //TODO find the file
-            Path incPath = Paths.get(URI.create(file));
-            new Include(incPath, positionOf(ctx))
-                    .setParent(layer.peek())
-                    .save();
-            // parse included file
-            try {
-                Path tmpPath = path;
-                String tmpCode = code;
-                path = incPath;
-                code = new String(Files.readAllBytes(incPath));
-                parse();
-                path = tmpPath;
-                code = tmpCode;
-            } catch (IOException e) {
-                log.error("Could not open included file to parse: {}", incPath, e);
+            File incFile = new File(visit(ctx.expression(0)));
+            Path incPath = null;
+
+            // find the file
+            if (incFile.exists()) {
+                incPath = incFile.toPath().toAbsolutePath().normalize();
+            } else {
+                AtomicReference<Path> searchPath = new AtomicReference<>(path.getParent());
+
+                while (incPath == null
+                        && searchPath.get() != null
+                        && workspaceDir.stream().anyMatch(dir -> dir.compareTo(searchPath.get()) <= 0)) {
+                    try {
+                        incPath = Files.walk(searchPath.get(), 5, FileVisitOption.FOLLOW_LINKS)
+                                .filter(visited -> visited.getFileName().toString().equals(incFile.getName()))
+                                .findFirst()
+                                .orElse(null);
+                    } catch (IOException e) {
+                        log.error("Could not search included file: {}", incFile, e);
+                    }
+
+                    searchPath.set(searchPath.get().getParent());
+                }
+            }
+
+            if (incPath != null) {
+                new Include(incPath, positionOf(ctx))
+                        .setParent(layer.peek())
+                        .save();
+                // parse included file
+                try {
+                    Path tmpPath = path;
+                    String tmpCode = code;
+                    path = incPath;
+                    code = new String(Files.readAllBytes(incPath));
+                    parse();
+                    path = tmpPath;
+                    code = tmpCode;
+                } catch (IOException e) {
+                    log.error("Could not open included file to parse: {}", incPath, e);
+                }
             }
 
             for (int i = 1; i < ctx.expression().size(); i++) {
