@@ -1,13 +1,15 @@
 package com.parisoft.ca65.lsp.parser.symbol;
 
+import org.eclipse.lsp4j.Position;
+
 import java.nio.file.Path;
 
 public class StructDef extends Definition {
 
-    private int size;
+    int size;
 
-    public StructDef(String name, Path path, int line) {
-        super(name, path, line);
+    public StructDef(String name, Path path, Position pos) {
+        super(name, path, pos);
     }
 
     public int getSize() {

@@ -1,14 +1,16 @@
 package com.parisoft.ca65.lsp.parser.symbol;
 
+import org.eclipse.lsp4j.Position;
+
 import java.nio.file.Path;
 
 public class UnnamedRef extends Reference {
 
-    private final int fwd;
-    private final int bwd;
+    final int fwd;
+    final int bwd;
 
-    public UnnamedRef(String name, Path path, int line) {
-        super(name, path, line);
+    public UnnamedRef(String name, Path path, Position pos, Reference ancestor) {
+        super(name, path, pos, ancestor);
 
         if (name.charAt(1) == '+') {
             fwd = name.length();

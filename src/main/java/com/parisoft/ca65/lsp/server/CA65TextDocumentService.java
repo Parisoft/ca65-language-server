@@ -76,25 +76,25 @@ public class CA65TextDocumentService implements TextDocumentService {
                 owner = null;
             }
 
-            Symbol symbol = Symbol.Table.map
-                    .getOrDefault(ident, emptyMap())
-                    .getOrDefault(path, emptyMap())
-                    .entrySet()
-                    .stream()
-                    .filter(entry -> entry.getKey() <= position.getLine())
-                    .sorted(reverseOrder(comparingInt(Map.Entry::getKey)))
-                    .map(Map.Entry::getValue)
-                    .filter(sym -> sym instanceof Definition)
-                    .filter(sym -> owner == null || sym.getParent().getName().equals(owner))
-                    .findFirst()
-                    .orElse(null);
-
-            if (symbol != null) {
-                Range range = new Range(new Position(symbol.getLine(), 0), new Position(symbol.getLine(), 0));
-                Location location = new Location(symbol.getPath().toUri().toString(), range);
-
-                return supplyAsync(() -> Either.forLeft(singletonList(location)));
-            }
+//            Symbol symbol = Symbol.Table.map
+//                    .getOrDefault(ident, emptyMap())
+//                    .getOrDefault(path, emptyMap())
+//                    .entrySet()
+//                    .stream()
+//                    .filter(entry -> entry.getKey() <= position.getLine())
+//                    .sorted(reverseOrder(comparingInt(Map.Entry::getKey)))
+//                    .map(Map.Entry::getValue)
+//                    .filter(sym -> sym instanceof Definition)
+//                    .filter(sym -> owner == null || sym.getParent().getName().equals(owner))
+//                    .findFirst()
+//                    .orElse(null);
+//
+//            if (symbol != null) {
+//                Range range = new Range(new Position(symbol.getLine(), 0), new Position(symbol.getLine(), 0));
+//                Location location = new Location(symbol.getPath().toUri().toString(), range);
+//
+//                return supplyAsync(() -> Either.forLeft(singletonList(location)));
+//            }
         } catch (IOException e) {
             log.error("Could not find a identifier from params={}", params, e);
         }

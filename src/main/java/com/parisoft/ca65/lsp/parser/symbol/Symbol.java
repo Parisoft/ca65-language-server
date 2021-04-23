@@ -1,28 +1,30 @@
 package com.parisoft.ca65.lsp.parser.symbol;
 
+import org.eclipse.lsp4j.Position;
+
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
-public class Symbol {
+import static java.util.Collections.emptySet;
 
-    private final String name;
-    private final Path path;
-    private final int line;
-    private Symbol parent;
+public abstract class Symbol {
 
-    public Symbol(String name, Path path, int line) {
+    final String name;
+    final Path path;
+    final Position pos;
+    Symbol parent;
+
+    Symbol(String name, Path path, Position pos) {
         this.name = name;
         this.path = path;
-        this.line = line;
+        this.pos = pos;
     }
 
-    public Symbol save(Path ctxPath, int ctxLine) {
-        Table.put(ctxPath, ctxLine, this);
-        return this;
-    }
+    public abstract <S extends Symbol> S save();
 
     public String getName() {
         return name;
@@ -30,10 +32,6 @@ public class Symbol {
 
     public Path getPath() {
         return path;
-    }
-
-    public int getLine() {
-        return line;
     }
 
     public Symbol getParent() {
@@ -55,11 +53,17 @@ public class Symbol {
             return false;
         }
 
-        Symbol that = (Symbol) o;
+        Symbol symbol = (Symbol) o;
 
-        return this.line == that.line &&
-                this.name.equals(that.name) &&
-                this.path.equals(that.path);
+        return name.equals(symbol.name) &&
+                path.equals(symbol.path) &&
+                pos.equals(symbol.pos) &&
+                Objects.equals(parent, symbol.parent);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, path, pos, parent);
     }
 
     @Override
@@ -67,24 +71,41 @@ public class Symbol {
         return getClass().getSimpleName() + "{" +
                 "name='" + name + '\'' +
                 ", path=" + path +
-                ", line=" + line +
+                ", pos=" + pos +
                 ", parent=" + parent +
                 '}';
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, path, line);
-    }
-
     public static class Table {
 
-        public static final Map<String, Map<Path, Map<Integer, Symbol>>> map = new ConcurrentHashMap<>();
+        public static final Map<Path, Set<Definition>> definitions = new ConcurrentHashMap<>();
+        public static final Map<Path, Set<Reference>> references = new ConcurrentHashMap<>();
+        public static final Map<Path, Set<Import>> imports = new ConcurrentHashMap<>();
+        public static final Map<Path, Set<Export>> exports = new ConcurrentHashMap<>();
+        public static final Map<Path, Set<Include>> includes = new ConcurrentHashMap<>();
 
-        public static Symbol put(Path ctxPath, int ctxLine, Symbol symbol) {
-            return map.computeIfAbsent(symbol.name, s -> new HashMap<>())
-                    .computeIfAbsent(ctxPath, p -> new HashMap<>())
-                    .put(symbol.line, symbol);
+        public static Stream<Definition> definitions(Path path) {
+            return definitions.getOrDefault(path, emptySet()).stream();
+        }
+
+        public static Stream<Definition> definitions() {
+            return definitions.values().stream().flatMap(Set::stream);
+        }
+
+        public static Stream<Reference> references(Path path) {
+            return references.getOrDefault(path, emptySet()).stream();
+        }
+
+        public static Stream<Reference> references() {
+            return references.values().stream().flatMap(Set::stream);
+        }
+
+        public static Stream<Symbol> symbols(Path path) {
+            return Stream.concat(definitions(path), references(path));
+        }
+
+        public static Stream<Symbol> symbols() {
+            return Stream.concat(definitions(), references());
         }
     }
 }

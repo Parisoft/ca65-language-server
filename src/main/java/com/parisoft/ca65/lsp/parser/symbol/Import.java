@@ -6,19 +6,16 @@ import java.nio.file.Path;
 
 import static java.util.concurrent.ConcurrentHashMap.newKeySet;
 
-public class Reference extends Symbol {
+public class Import extends Symbol {
 
-    final Reference ancestor;
-
-    public Reference(String name, Path path, Position pos, Reference ancestor) {
+    public Import(String name, Path path, Position pos) {
         super(name, path, pos);
-        this.ancestor = ancestor;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public Reference save() {
-        Table.references.computeIfAbsent(path, p -> newKeySet()).add(this);
+    public Import save() {
+        Table.imports.computeIfAbsent(path, p -> newKeySet()).add(this);
         return this;
     }
 }
