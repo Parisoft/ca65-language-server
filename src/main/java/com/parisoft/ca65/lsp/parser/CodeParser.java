@@ -688,7 +688,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     public String visitControl(CA65Parser.ControlContext ctx) {
         setCheckpoint(ctx);
 
-        String command = ctx.command.getText();
+        String command = ctx.command.getText().substring(1);
 
         if (command.equalsIgnoreCase(VOCABULARY.getSymbolicName(IMPORT))
                 || command.equalsIgnoreCase(VOCABULARY.getSymbolicName(IMPORTZP))) {
@@ -720,6 +720,8 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                         .setParent(layer.peek())
                         .save();
             }
+
+            return null;
         }
 
         if (command.equalsIgnoreCase(VOCABULARY.getSymbolicName(INCLUDE))) {
@@ -729,10 +731,28 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
             String file = visit(ctx.expression(0));
             //TODO find the file
-            new Include(Paths.get(URI.create(file)), positionOf(ctx))
+            Path incPath = Paths.get(URI.create(file));
+            new Include(incPath, positionOf(ctx))
                     .setParent(layer.peek())
                     .save();
-            //TODO parse included file
+            // parse included file
+            try {
+                Path tmpPath = path;
+                String tmpCode = code;
+                path = incPath;
+                code = new String(Files.readAllBytes(incPath));
+                parse();
+                path = tmpPath;
+                code = tmpCode;
+            } catch (IOException e) {
+                log.error("Could not open included file to parse: {}", incPath, e);
+            }
+
+            for (int i = 1; i < ctx.expression().size(); i++) {
+                visit(ctx.expression(i)); // consumes invalid args
+            }
+
+            return null;
         }
 
         return visitChildren(ctx);
