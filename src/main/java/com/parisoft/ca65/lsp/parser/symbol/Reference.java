@@ -4,6 +4,7 @@ import org.eclipse.lsp4j.Position;
 
 import java.nio.file.Path;
 
+import static java.util.Comparator.comparingInt;
 import static java.util.concurrent.ConcurrentHashMap.newKeySet;
 
 public class Reference extends Symbol {
@@ -15,26 +16,14 @@ public class Reference extends Symbol {
         this.ancestor = ancestor;
     }
 
-    public boolean match(Position position) {
-        return pos.getLine() == position.getLine()
-                && pos.getCharacter() <= position.getCharacter()
-                && pos.getCharacter() + name.length() >= position.getCharacter();
+    public Definition getDefinition() {
+        return Table.definitions()
+                .filter(this::canReference)
+                .min(comparingInt(this::distanceFrom))
+                .orElse(null);
     }
 
-    public int distanceFrom(Definition def) {
-        Symbol defParent = topParentOf(def);
-        Symbol refParent = this.parent;
-        int dist = 0;
-
-        while (refParent != null && !refParent.equals(defParent)){
-            refParent = refParent.parent;
-            dist++;
-        }
-
-        return dist;
-    }
-
-    public boolean canReference(Definition def) {
+    private boolean canReference(Definition def) {
         if (canAccess(def)) { // reference and definition in same file
             if (def instanceof LabelDef) {
                 return true; // labels can have forward reference
@@ -95,6 +84,19 @@ public class Reference extends Symbol {
         return Table.imports()
                 .filter(anImport -> anImport.name.equals(this.name))
                 .anyMatch(this::canAccess);
+    }
+
+    private int distanceFrom(Definition def) {
+        Symbol defParent = topParentOf(def);
+        Symbol refParent = this.parent;
+        int dist = 0;
+
+        while (refParent != null && !refParent.equals(defParent)){
+            refParent = refParent.parent;
+            dist++;
+        }
+
+        return dist;
     }
 
     @Override

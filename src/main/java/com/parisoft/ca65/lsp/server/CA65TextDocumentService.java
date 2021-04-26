@@ -33,12 +33,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.reverseOrder;
 import static java.util.Collections.singletonList;
 import static java.util.Comparator.comparingInt;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
+import static java.util.stream.Collectors.toList;
 
 public class CA65TextDocumentService implements TextDocumentService {
 
@@ -60,23 +62,17 @@ public class CA65TextDocumentService implements TextDocumentService {
     public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> definition(DefinitionParams params) {
         log.debug("definition({})", params);
 
-        try {
-            Path path = Paths.get(URI.create(params.getTextDocument().getUri())).normalize();
-            Position position = params.getPosition();
-            Definition definition = Symbol.Table.references(path)
-                    .filter(ref -> ref.match(position))
-                    .map(ref -> Symbol.Table.definitions()
-                            .filter(ref::canReference)
-                            .min(comparingInt(ref::distanceFrom))
-                            .orElse(null))
-                    .filter(Objects::nonNull)
-                    .findFirst()
-                    .orElse(null);
-            if (definition != null) {
-                return supplyAsync(() -> Either.forLeft(singletonList(definition.toLocation())));
-            }
-        } catch (Exception e) {
-            log.error("Could not find a identifier from params={}", params, e);
+        Path path = Paths.get(URI.create(params.getTextDocument().getUri())).normalize();
+        Position position = params.getPosition();
+        Definition definition = Symbol.Table.references(path)
+                .filter(ref -> ref.match(position))
+                .map(Reference::getDefinition)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+
+        if (definition != null) {
+            return supplyAsync(() -> Either.forLeft(singletonList(definition.toLocation())));
         }
 
         return supplyAsync(() -> Either.forLeft(emptyList()));
@@ -85,6 +81,29 @@ public class CA65TextDocumentService implements TextDocumentService {
     @Override
     public CompletableFuture<List<? extends Location>> references(ReferenceParams params) {
         log.debug("references({})", params);
+
+
+        Path path = Paths.get(URI.create(params.getTextDocument().getUri())).normalize();
+        Position position = params.getPosition();
+        Definition definition = Symbol.Table.definitions(path).filter(def -> def.match(position)).findFirst().orElse(null);
+
+        if (definition == null) {
+            definition = Symbol.Table.references(path)
+                    .filter(ref -> ref.match(position))
+                    .map(Reference::getDefinition)
+                    .findFirst()
+                    .orElse(null);
+        }
+
+        if (definition != null) {
+            Definition def = definition;
+            List<Location> locations = Symbol.Table.references()
+                    .filter(ref -> def.equals(ref.getDefinition()))
+                    .map(Symbol::toLocation)
+                    .collect(toList());
+            return supplyAsync(() -> locations);
+        }
+
         return supplyAsync(Collections::emptyList);
     }
 

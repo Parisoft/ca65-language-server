@@ -27,6 +27,13 @@ public abstract class Symbol {
         this.pos = pos;
     }
 
+
+    public boolean match(Position position) {
+        return pos.getLine() == position.getLine()
+                && pos.getCharacter() <= position.getCharacter()
+                && pos.getCharacter() + name.length() >= position.getCharacter();
+    }
+
     public boolean sameParents(Symbol that) {
         if (that == null) {
             return false;
