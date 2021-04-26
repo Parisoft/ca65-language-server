@@ -3,6 +3,7 @@ package com.parisoft.ca65.lsp.parser.symbol;
 import org.eclipse.lsp4j.Position;
 
 import java.nio.file.Path;
+import java.util.Objects;
 
 import static java.util.Comparator.comparingInt;
 import static java.util.concurrent.ConcurrentHashMap.newKeySet;
@@ -25,7 +26,7 @@ public class Reference extends Symbol {
 
     private boolean canReference(Definition def) {
         if (canAccess(def)) { // reference and definition in same file
-            if (def instanceof LabelDef) {
+            if (def instanceof LabelDef || def instanceof ProcDef) {
                 return true; // labels can have forward reference
             }
 
@@ -69,12 +70,17 @@ public class Reference extends Symbol {
         Reference ancestor = this;
 
         while (ancestor != null) {
-            if (symbol == null || !ancestor.name.equals(symbol.name)) {
+            if (!ancestor.name.equals(symbol.name)) {
                 return null;
             }
 
             ancestor = ancestor.ancestor;
-            symbol = symbol.parent;
+
+            if (symbol.parent != null) {
+                symbol = symbol.parent;
+            } else if (ancestor != null) {
+                return null;
+            }
         }
 
         return symbol;
@@ -91,7 +97,7 @@ public class Reference extends Symbol {
         Symbol refParent = this.parent;
         int dist = 0;
 
-        while (refParent != null && !refParent.equals(defParent)){
+        while (refParent != null && !refParent.equals(defParent)) {
             refParent = refParent.parent;
             dist++;
         }
@@ -104,5 +110,29 @@ public class Reference extends Symbol {
     public Reference save() {
         Table.references.computeIfAbsent(path, p -> newKeySet()).add(this);
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        Reference reference = (Reference) o;
+
+        return Objects.equals(ancestor, reference.ancestor);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), ancestor);
     }
 }

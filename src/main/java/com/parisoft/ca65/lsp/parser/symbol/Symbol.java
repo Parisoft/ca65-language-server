@@ -3,6 +3,7 @@ package com.parisoft.ca65.lsp.parser.symbol;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.Position;
 import org.eclipse.lsp4j.Range;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
@@ -16,6 +17,8 @@ import static java.util.Collections.emptySet;
 
 public abstract class Symbol {
 
+    @SuppressWarnings("unused") static final Logger log = LoggerFactory.getLogger(Symbol.class);
+
     final String name;
     final Path path;
     final Position pos;
@@ -27,27 +30,10 @@ public abstract class Symbol {
         this.pos = pos;
     }
 
-
     public boolean match(Position position) {
         return pos.getLine() == position.getLine()
                 && pos.getCharacter() <= position.getCharacter()
                 && pos.getCharacter() + name.length() >= position.getCharacter();
-    }
-
-    public boolean sameParents(Symbol that) {
-        if (that == null) {
-            return false;
-        }
-
-        Symbol thisParent = this.parent;
-        Symbol thatParent = that.parent;
-
-        while (thisParent != null && thisParent.equals(thatParent)) {
-            thisParent = thisParent.parent;
-            thatParent = thatParent.parent;
-        }
-
-        return thatParent == null;
     }
 
     public Location toLocation() {
@@ -110,6 +96,22 @@ public abstract class Symbol {
                 ", pos=" + pos +
                 ", parent=" + parent +
                 '}';
+    }
+
+    boolean sameParents(Symbol that) {
+        if (that == null) {
+            return false;
+        }
+
+        Symbol thisParent = this.parent;
+        Symbol thatParent = that.parent;
+
+        while (thisParent != null && thisParent.equals(thatParent)) {
+            thisParent = thisParent.parent;
+            thatParent = thatParent.parent;
+        }
+
+        return thatParent == null;
     }
 
     public static class Table {
