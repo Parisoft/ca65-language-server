@@ -1,61 +1,100 @@
 package com.parisoft.ca65.lsp.parser.symbol;
 
 import org.eclipse.lsp4j.Position;
-import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
-import java.util.stream.Stream;
 
 import static java.util.concurrent.ConcurrentHashMap.newKeySet;
 
 public class Reference extends Symbol {
 
-    final Reference ancestor;
+    private final Reference ancestor;
 
     public Reference(String name, Path path, Position pos, Reference ancestor) {
         super(name, path, pos);
         this.ancestor = ancestor;
     }
 
+    public boolean match(Position position) {
+        return pos.getLine() == position.getLine()
+                && pos.getCharacter() <= position.getCharacter()
+                && pos.getCharacter() + name.length() >= position.getCharacter();
+    }
+
+    public int distanceFrom(Definition def) {
+        Symbol defParent = topParentOf(def);
+        Symbol refParent = this.parent;
+        int dist = 0;
+
+        while (refParent != null && !refParent.equals(defParent)){
+            refParent = refParent.parent;
+            dist++;
+        }
+
+        return dist;
+    }
+
     public boolean canReference(Definition def) {
-        Reference refAncestor = this.ancestor;
-        Symbol defParent = def.parent;
-
-        // matches the reference ancestry with definition hierarchy
-        while (refAncestor != null) {
-            LoggerFactory.getLogger(Reference.class).debug("Comparing\n{}\nVS\n{}", refAncestor, defParent);
-            if (defParent == null || !refAncestor.getName().equals(defParent.getName())) {
-                return false;
+        if (canAccess(def)) { // reference and definition in same file
+            if (def instanceof LabelDef) {
+                return true; // labels can have forward reference
             }
 
-            refAncestor = refAncestor.ancestor;
-            defParent = defParent.parent;
+            if (def.path.equals(this.path)) { // reference and definition in exactly same file
+                return def.pos.getLine() <= this.pos.getLine();
+            } else { // definition is included by the reference
+                return Table.includes(this.path)
+                        .anyMatch(include -> include.isOrIncludes(def.path));
+            }
         }
 
-        // same file, no need to export/import
-        if (this.path.equals(def.path)) {
-            return this.canAccess(def);
+        return def instanceof LabelDef
+                && ((LabelDef) def).isExported()
+                && this.isImported();
+    }
+
+    private boolean canAccess(Symbol symbol) {
+        // matches the reference ancestry with symbol hierarchy
+        Symbol thatTopParent = topParentOf(symbol);
+
+        if (thatTopParent == null) {
+            return false;
         }
 
-        // definition file included into reference file
-        if (Table.includes(this.path).anyMatch(include -> include.path.equals(def.path))) {
-            return this.canAccess(def);
+        // reference must access the symbol parent
+        Symbol thisTopParent = this.parent;
+
+        while (thisTopParent != null && !thisTopParent.equals(thatTopParent)) {
+            thisTopParent = thisTopParent.parent;
         }
 
-        if (def instanceof LabelDef) {
-            if (Stream.concat(Table.exports(), Table.globals())
-                    .filter(export -> export.name.equals(def.name))
-                    .allMatch(this::canAccess)) {
-                return false; // definition not exported
+        if (thisTopParent == null) {
+            return false;
+        }
+
+        // matches left most ancestor hierarchy with symbol hierarchy
+        return thisTopParent.sameParents(thatTopParent);
+    }
+
+    private Symbol topParentOf(Symbol symbol) {
+        Reference ancestor = this;
+
+        while (ancestor != null) {
+            if (symbol == null || !ancestor.name.equals(symbol.name)) {
+                return null;
             }
 
-            return Table.autoimport.contains(this.path) // return if it is imported
-                    || Stream.concat(Table.imports(), Table.globals())
-                    .filter(imp -> imp.name.equals(def.name))
-                    .anyMatch(this::canAccess);
+            ancestor = ancestor.ancestor;
+            symbol = symbol.parent;
         }
 
-        return false;
+        return symbol;
+    }
+
+    private boolean isImported() {
+        return Table.imports()
+                .filter(anImport -> anImport.name.equals(this.name))
+                .anyMatch(this::canAccess);
     }
 
     @Override

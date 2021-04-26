@@ -12,6 +12,12 @@ public class Include extends Symbol {
         super("", path, pos);
     }
 
+    public boolean isOrIncludes(Path path) {
+        return this.path.equals(path)
+                || Table.includes(this.path)
+                .anyMatch(include -> include.isOrIncludes(path));
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public Include save() {

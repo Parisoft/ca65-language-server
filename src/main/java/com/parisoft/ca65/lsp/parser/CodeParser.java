@@ -370,7 +370,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             Token symbol = ctx.UnnamedLabel().getSymbol();
             String name = symbol.getText().substring(1);
             Position pos = new Position(symbol.getLine() - 1, symbol.getCharPositionInLine());
-            new UnnamedRef(name, path, pos, null)
+            new UnnamedRef(name, path, pos)
                     .setParent(layer.peek())
                     .save();
 

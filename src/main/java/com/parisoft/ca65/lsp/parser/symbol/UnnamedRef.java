@@ -9,8 +9,8 @@ public class UnnamedRef extends Reference {
     final int fwd;
     final int bwd;
 
-    public UnnamedRef(String name, Path path, Position pos, Reference ancestor) {
-        super(name, path, pos, ancestor);
+    public UnnamedRef(String name, Path path, Position pos) {
+        super(name, path, pos, null);
 
         if (name.charAt(1) == '+') {
             fwd = name.length();

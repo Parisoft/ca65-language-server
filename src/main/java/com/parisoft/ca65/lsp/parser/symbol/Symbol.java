@@ -27,24 +27,20 @@ public abstract class Symbol {
         this.pos = pos;
     }
 
-    public boolean canAccess(Symbol other) {
-        Symbol otherParent = other.parent;
-
-        while (otherParent != null) {
-            Symbol thisParent = this.parent;
-
-            while (thisParent != null) {
-                if (thisParent.equals(otherParent)) {
-                    return true;
-                }
-
-                thisParent = thisParent.parent;
-            }
-
-            otherParent = otherParent.parent;
+    public boolean sameParents(Symbol that) {
+        if (that == null) {
+            return false;
         }
 
-        return false;
+        Symbol thisParent = this.parent;
+        Symbol thatParent = that.parent;
+
+        while (thisParent != null && thisParent.equals(thatParent)) {
+            thisParent = thisParent.parent;
+            thatParent = thatParent.parent;
+        }
+
+        return thatParent == null;
     }
 
     public Location toLocation() {
