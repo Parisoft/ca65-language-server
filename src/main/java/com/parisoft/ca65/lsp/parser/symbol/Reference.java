@@ -45,7 +45,7 @@ public class Reference extends Symbol {
 
     private boolean canAccess(Symbol symbol) {
         // matches the reference ancestry with symbol hierarchy
-        Symbol thatTopParent = topParentOf(symbol);
+        Symbol thatTopParent = relativeParentOf(symbol);
 
         if (thatTopParent == null) {
             return false;
@@ -66,7 +66,7 @@ public class Reference extends Symbol {
         return thisTopParent.sameParents(thatTopParent);
     }
 
-    private Symbol topParentOf(Symbol symbol) {
+    private Symbol relativeParentOf(Symbol symbol) {
         Reference ancestor = this;
 
         while (ancestor != null) {
@@ -93,7 +93,7 @@ public class Reference extends Symbol {
     }
 
     private int distanceFrom(Definition def) {
-        Symbol defParent = topParentOf(def);
+        Symbol defParent = relativeParentOf(def);
         Symbol refParent = this.parent;
         int dist = 0;
 
