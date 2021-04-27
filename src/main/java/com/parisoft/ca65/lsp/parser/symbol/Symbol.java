@@ -30,8 +30,9 @@ public abstract class Symbol {
         this.pos = pos;
     }
 
-    public boolean match(Position position) {
-        return pos.getLine() == position.getLine()
+    public boolean match(Path path, Position position) {
+        return this.path.equals(path)
+                && pos.getLine() == position.getLine()
                 && pos.getCharacter() <= position.getCharacter()
                 && pos.getCharacter() + name.length() >= position.getCharacter();
     }
@@ -63,6 +64,22 @@ public abstract class Symbol {
     public Symbol setParent(Symbol parent) {
         this.parent = parent;
         return this;
+    }
+
+    public boolean same(Object o ) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Symbol symbol = (Symbol) o;
+
+        return name.equals(symbol.name) &&
+                path.equals(symbol.path) &&
+                pos.equals(symbol.pos);
     }
 
     @Override
@@ -173,7 +190,7 @@ public abstract class Symbol {
         }
 
         public static Stream<Include> includes(Path path) {
-            return includes.get(path).stream();
+            return includes.getOrDefault(path, emptySet()).stream();
         }
     }
 }

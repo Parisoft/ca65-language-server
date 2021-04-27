@@ -5,6 +5,8 @@ import com.parisoft.ca65.lsp.parser.grammar.CA65Token;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Parser;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Visitor;
 import com.parisoft.ca65.lsp.parser.lang.PseudoVar;
+import com.parisoft.ca65.lsp.parser.symbol.Constant;
+import com.parisoft.ca65.lsp.parser.symbol.Definition;
 import com.parisoft.ca65.lsp.parser.symbol.EnumDef;
 import com.parisoft.ca65.lsp.parser.symbol.Enumeration;
 import com.parisoft.ca65.lsp.parser.symbol.Export;
@@ -44,6 +46,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.AUTOIMPORT;
@@ -69,6 +73,8 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     private static final Logger log = LoggerFactory.getLogger(CodeParser.class);
 
+    private static final ExecutorService pool = Executors.newWorkStealingPool();
+
     private String code;
     private Path path;
     private int checkpoint = 0;
@@ -88,7 +94,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         Path path = Paths.get(URI.create(args[0])).normalize();
         byte[] bytes = Files.readAllBytes(path);
         new CodeParser(new String(bytes), path).parse();
-        System.out.println(IdentFinder.find(path, 6, 16));
     }
 
     public CodeParser(String code, Path path) {
@@ -172,11 +177,9 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         setCheckpoint(ctx);
 
         String name = visit(ctx.identifier());
-        Symbol symbol = new LabelDef(name, path, positionOf(ctx.identifier()))
+        new LabelDef(name, path, positionOf(ctx.identifier()))
                 .setParent(layer.peek())
                 .save();
-
-        layer.push(symbol);
 
         return name;
     }
@@ -388,8 +391,10 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                     .save();
 
             if (eval && i == ctx.identifier().size() - 1) {
-                // TODO Search for a constant definition whose parent is owner
-                return null;
+                Definition def = ref.getDefinition();
+                return def instanceof Constant
+                        ? valueOf(((Constant) def).getValue())
+                        : null;
             }
 
             ancestor = ref;
@@ -749,7 +754,9 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 return visitChildren(ctx);
             }
 
-            File incFile = new File(visit(ctx.expression(0)));
+            String incname = visit(ctx.expression(0));
+            incname = incname.startsWith("\"") && incname.endsWith("\"") ? incname.substring(1, incname.length() - 1) : incname;
+            File incFile = new File(incname);
             Path incPath = null;
 
             // find the file
@@ -790,6 +797,8 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 } catch (IOException e) {
                     log.error("Could not open included file to parse: {}", incPath, e);
                 }
+            } else {
+                log.warn("Included file not found in workspace: {}", incFile.getName());
             }
 
             for (int i = 1; i < ctx.expression().size(); i++) {

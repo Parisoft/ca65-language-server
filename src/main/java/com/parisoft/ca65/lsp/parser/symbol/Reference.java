@@ -4,6 +4,7 @@ import org.eclipse.lsp4j.Position;
 
 import java.nio.file.Path;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import static java.util.Comparator.comparingInt;
 import static java.util.concurrent.ConcurrentHashMap.newKeySet;
@@ -32,14 +33,18 @@ public class Reference extends Symbol {
 
             if (def.path.equals(this.path)) { // reference and definition in exactly same file
                 return def.pos.getLine() <= this.pos.getLine();
-            } else { // definition is included by the reference
-                return Table.includes(this.path)
-                        .anyMatch(include -> include.isOrIncludes(def.path));
+            } else {
+                return Table.includes(this.path)// definition is included by the reference
+                        .filter(include -> include.isOrIncludes(def.path))
+                        .anyMatch(include -> include.pos.getLine() <= this.pos.getLine())
+                        || Table.includes(def.path)// OR reference is included by the definition
+                        .filter(include -> include.isOrIncludes(this.path))
+                        .anyMatch(include -> include.pos.getLine() >= def.pos.getLine());
             }
         }
 
-        return def instanceof LabelDef
-                && ((LabelDef) def).isExported()
+        return (def instanceof LabelDef || def instanceof ProcDef)
+                && def.isExported()
                 && this.isImported();
     }
 
@@ -87,7 +92,7 @@ public class Reference extends Symbol {
     }
 
     private boolean isImported() {
-        return Table.imports()
+        return Stream.concat(Table.imports(), Table.globals())
                 .filter(anImport -> anImport.name.equals(this.name))
                 .anyMatch(this::canAccess);
     }

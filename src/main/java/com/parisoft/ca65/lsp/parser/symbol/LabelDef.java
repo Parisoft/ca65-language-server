@@ -9,10 +9,4 @@ public class LabelDef extends Definition {
     public LabelDef(String name, Path path, Position pos) {
         super(name, path, pos);
     }
-
-    public boolean isExported() {
-        return Table.exports()
-                .filter(export -> export.name.equals(this.name))
-                .anyMatch(this::sameParents);
-    }
 }

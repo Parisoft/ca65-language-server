@@ -194,7 +194,7 @@ macline
     ;
 
 storage
-    : allocator=Allocator (expression (COMMA expression)*)?
+    : inlineLabel? allocator=Allocator (expression (COMMA expression)*)?
     ;
 
 control

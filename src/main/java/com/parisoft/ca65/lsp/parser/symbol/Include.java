@@ -21,7 +21,7 @@ public class Include extends Symbol {
     @Override
     @SuppressWarnings("unchecked")
     public Include save() {
-        Table.includes.computeIfAbsent(path, p -> newKeySet()).add(this);
+        Table.includes.computeIfAbsent(parent.path, p -> newKeySet()).add(this);
         return this;
     }
 }

@@ -61,33 +61,36 @@ public class CA65TextDocumentService implements TextDocumentService {
 
         Path path = Paths.get(URI.create(params.getTextDocument().getUri())).normalize();
         Position position = params.getPosition();
-        Definition definition = Symbol.Table.references(path)
-                .filter(ref -> ref.match(position))
+        Definition definition = Symbol.Table.references()
+                .filter(ref -> ref.match(path, position))
                 .map(Reference::getDefinition)
                 .filter(Objects::nonNull)
                 .findFirst()
-                .orElse(null);
+                .orElse(Symbol.Table.definitions()
+                                .filter(def -> def.match(path, position))
+                                .findFirst()
+                                .orElse(null));
 
         if (definition != null) {
             return supplyAsync(() -> Either.forLeft(singletonList(definition.toLocation())));
+        } else {
+            return supplyAsync(() -> Either.forLeft(emptyList()));
         }
-
-        return supplyAsync(() -> Either.forLeft(emptyList()));
     }
 
     @Override
     public CompletableFuture<List<? extends Location>> references(ReferenceParams params) {
         log.debug("references({})", params);
 
-
         Path path = Paths.get(URI.create(params.getTextDocument().getUri())).normalize();
         Position position = params.getPosition();
-        Definition definition = Symbol.Table.definitions(path).filter(def -> def.match(position)).findFirst().orElse(null);
+        Definition definition = Symbol.Table.definitions().filter(def -> def.match(path, position)).findFirst().orElse(null);
 
         if (definition == null) {
-            definition = Symbol.Table.references(path)
-                    .filter(ref -> ref.match(position))
+            definition = Symbol.Table.references()
+                    .filter(ref -> ref.match(path, position))
                     .map(Reference::getDefinition)
+                    .filter(Objects::nonNull)
                     .findFirst()
                     .orElse(null);
         }
@@ -95,7 +98,8 @@ public class CA65TextDocumentService implements TextDocumentService {
         if (definition != null) {
             Definition def = definition;
             List<Location> locations = Symbol.Table.references()
-                    .filter(ref -> def.equals(ref.getDefinition()))
+                    .filter(ref -> ref.getName().equals(def.getName()))
+                    .filter(ref -> def.same(ref.getDefinition()))
                     .map(Symbol::toLocation)
                     .collect(toList());
             return supplyAsync(() -> locations);
