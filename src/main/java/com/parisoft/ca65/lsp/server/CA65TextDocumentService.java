@@ -150,11 +150,9 @@ public class CA65TextDocumentService implements TextDocumentService {
 
     @Override
     public void didClose(DidCloseTextDocumentParams params) {
-
     }
 
     @Override
     public void didSave(DidSaveTextDocumentParams params) {
-        log.debug("didSave({})", params);
     }
 }
