@@ -2,13 +2,14 @@ package com.parisoft.ca65.lsp.server;
 
 import com.parisoft.ca65.lsp.parser.CodeParser;
 import com.parisoft.ca65.lsp.parser.symbol.Definition;
+import com.parisoft.ca65.lsp.parser.symbol.Include;
 import com.parisoft.ca65.lsp.parser.symbol.Reference;
 import com.parisoft.ca65.lsp.parser.symbol.Symbol;
+import com.parisoft.ca65.lsp.util.Locations;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.CompletionList;
 import org.eclipse.lsp4j.CompletionParams;
-import org.eclipse.lsp4j.DeclarationParams;
 import org.eclipse.lsp4j.DefinitionParams;
 import org.eclipse.lsp4j.DidChangeTextDocumentParams;
 import org.eclipse.lsp4j.DidCloseTextDocumentParams;
@@ -17,7 +18,6 @@ import org.eclipse.lsp4j.DidSaveTextDocumentParams;
 import org.eclipse.lsp4j.Location;
 import org.eclipse.lsp4j.LocationLink;
 import org.eclipse.lsp4j.Position;
-import org.eclipse.lsp4j.Range;
 import org.eclipse.lsp4j.ReferenceParams;
 import org.eclipse.lsp4j.TextDocumentContentChangeEvent;
 import org.eclipse.lsp4j.jsonrpc.messages.Either;
@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static java.util.stream.Collectors.toList;
 
@@ -44,38 +42,33 @@ public class CA65TextDocumentService implements TextDocumentService {
     private static final Logger log = LoggerFactory.getLogger(CA65TextDocumentService.class);
 
     @Override
-    public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> declaration(DeclarationParams params) {
-        log.debug("declaration({})", params);
-        return supplyAsync(() -> {
-            Location location = new Location(params.getTextDocument().getUri(),
-                                             new Range(
-                                                     new Position(0, 0),
-                                                     new Position(0, 3)));
-            return Either.forLeft(singletonList(location));
-        });
-    }
-
-    @Override
     public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> definition(DefinitionParams params) {
         log.debug("definition({})", params);
 
         Path path = Paths.get(URI.create(params.getTextDocument().getUri())).normalize();
         Position position = params.getPosition();
-        Definition definition = Symbol.Table.references()
-                .filter(ref -> ref.match(path, position))
-                .map(Reference::getDefinition)
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElse(Symbol.Table.definitions()
-                                .filter(def -> def.match(path, position))
-                                .findFirst()
-                                .orElse(null));
 
-        if (definition != null) {
-            return supplyAsync(() -> Either.forLeft(singletonList(definition.toLocation())));
-        } else {
-            return supplyAsync(() -> Either.forLeft(emptyList()));
-        }
+        return Symbol.Table.includes(path)
+                .parallel()
+                .filter(inc -> inc.match(position))
+                .map(Include::toLocationLink)
+                .map(Locations::toFutureList)
+                .findFirst()
+                .orElse(Symbol.Table.references()
+                                .parallel()
+                                .filter(ref -> ref.match(path, position))
+                                .map(Reference::getDefinition)
+                                .filter(Objects::nonNull)
+                                .map(Symbol::toLocation)
+                                .map(Locations::toFutureList)
+                                .findFirst()
+                                .orElse(Symbol.Table.definitions()
+                                                .parallel()
+                                                .filter(def -> def.match(path, position))
+                                                .map(Symbol::toLocation)
+                                                .map(Locations::toFutureList)
+                                                .findFirst()
+                                                .orElse(Locations.empty())));
     }
 
     @Override
@@ -84,25 +77,23 @@ public class CA65TextDocumentService implements TextDocumentService {
 
         Path path = Paths.get(URI.create(params.getTextDocument().getUri())).normalize();
         Position position = params.getPosition();
-        Definition definition = Symbol.Table.definitions().filter(def -> def.match(path, position)).findFirst().orElse(null);
-
-        if (definition == null) {
-            definition = Symbol.Table.references()
-                    .filter(ref -> ref.match(path, position))
-                    .map(Reference::getDefinition)
-                    .filter(Objects::nonNull)
-                    .findFirst()
-                    .orElse(null);
-        }
-
+        Definition definition = Symbol.Table.definitions()
+                .parallel()
+                .filter(def -> def.match(path, position))
+                .findFirst()
+                .orElse(Symbol.Table.references()
+                                .parallel()
+                                .filter(ref -> ref.match(path, position))
+                                .map(Reference::getDefinition)
+                                .filter(Objects::nonNull)
+                                .findFirst()
+                                .orElse(null));
         if (definition != null) {
-            Definition def = definition;
-            List<Location> locations = Symbol.Table.references()
-                    .filter(ref -> ref.getName().equals(def.getName()))
-                    .filter(ref -> def.same(ref.getDefinition()))
+            return supplyAsync(() -> Symbol.Table.references()
+                    .parallel()
+                    .filter(definition::isDefinitionOf)
                     .map(Symbol::toLocation)
-                    .collect(toList());
-            return supplyAsync(() -> locations);
+                    .collect(toList()));
         }
 
         return supplyAsync(Collections::emptyList);

@@ -65,7 +65,6 @@ public class CA65LanguageServer implements LanguageServer, LanguageClientAware {
         ServerCapabilities capabilities = new ServerCapabilities();
         capabilities.setTextDocumentSync(TextDocumentSyncKind.Full);
         capabilities.setWorkspace(new WorkspaceServerCapabilities(workspaceFoldersOptions));
-        capabilities.setDeclarationProvider(true);
         capabilities.setDefinitionProvider(true);
         capabilities.setReferencesProvider(true);
 //        capabilities.setCompletionProvider(new CompletionOptions());

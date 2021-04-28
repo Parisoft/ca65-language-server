@@ -66,22 +66,6 @@ public abstract class Symbol {
         return this;
     }
 
-    public boolean same(Object o ) {
-        if (this == o) {
-            return true;
-        }
-
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        Symbol symbol = (Symbol) o;
-
-        return name.equals(symbol.name) &&
-                path.equals(symbol.path) &&
-                pos.equals(symbol.pos);
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {

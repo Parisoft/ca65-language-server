@@ -65,6 +65,7 @@ import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.HIWORD;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.LOBYTE;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.LOWORD;
 import static com.parisoft.ca65.lsp.server.CA65LanguageServer.workspaceDir;
+import static com.parisoft.ca65.lsp.util.Strings.unquote;
 import static java.lang.Integer.parseInt;
 import static java.lang.String.valueOf;
 
@@ -754,9 +755,8 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 return visitChildren(ctx);
             }
 
-            String incname = visit(ctx.expression(0));
-            incname = incname.startsWith("\"") && incname.endsWith("\"") ? incname.substring(1, incname.length() - 1) : incname;
-            File incFile = new File(incname);
+            String incName = unquote(visit(ctx.expression(0)));
+            File incFile = new File(incName);
             Path incPath = null;
 
             // find the file
@@ -782,7 +782,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             }
 
             if (incPath != null) {
-                new Include(incPath, positionOf(ctx))
+                new Include(incName, incPath, positionOf(ctx.expression(0)))
                         .setParent(layer.peek())
                         .save();
                 // parse included file

@@ -13,6 +13,30 @@ public abstract class Definition extends Symbol {
         super(name, path, pos);
     }
 
+    public boolean isDefinitionOf(Reference reference) {
+        if (reference == null) {
+            return false;
+        }
+
+        if (this.name.equals(reference.name)) {
+            Definition that = reference.getDefinition();
+
+            if (this == that) {
+                return true;
+            }
+
+            if (that == null || this.getClass() != that.getClass()) {
+                return false;
+            }
+
+            return this.name.equals(that.name) &&
+                    this.path.equals(that.path) &&
+                    this.pos.equals(that.pos);
+        }
+
+        return false;
+    }
+
     boolean isExported() {
         return Stream.concat(Table.exports(), Table.globals())
                 .filter(export -> export.name.equals(this.name))
