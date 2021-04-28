@@ -1,14 +1,13 @@
 package com.parisoft.ca65.lsp.server;
 
-import org.eclipse.lsp4j.CompletionOptions;
-import org.eclipse.lsp4j.DeclarationRegistrationOptions;
-import org.eclipse.lsp4j.DefinitionOptions;
+import com.parisoft.ca65.lsp.parser.CodeParser;
+import com.parisoft.ca65.lsp.util.Paths;
 import org.eclipse.lsp4j.InitializeParams;
 import org.eclipse.lsp4j.InitializeResult;
 import org.eclipse.lsp4j.ServerCapabilities;
 import org.eclipse.lsp4j.ServerInfo;
 import org.eclipse.lsp4j.TextDocumentSyncKind;
-import org.eclipse.lsp4j.TextDocumentSyncOptions;
+import org.eclipse.lsp4j.WorkspaceFolder;
 import org.eclipse.lsp4j.WorkspaceFoldersOptions;
 import org.eclipse.lsp4j.WorkspaceServerCapabilities;
 import org.eclipse.lsp4j.services.LanguageClient;
@@ -19,15 +18,15 @@ import org.eclipse.lsp4j.services.WorkspaceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
+import java.io.IOException;
+import java.nio.file.FileVisitOption;
+import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
+import static java.util.concurrent.CompletableFuture.runAsync;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static java.util.stream.Collectors.toList;
 
@@ -54,8 +53,8 @@ public class CA65LanguageServer implements LanguageServer, LanguageClientAware {
         if (params.getWorkspaceFolders() != null) {
             workspaceDir = params.getWorkspaceFolders()
                     .stream()
-                    .map(folder -> URI.create(folder.getUri()))
-                    .map(Paths::get)
+                    .map(WorkspaceFolder::getUri)
+                    .map(Paths::fromURI)
                     .collect(toList());
         }
 
@@ -69,11 +68,20 @@ public class CA65LanguageServer implements LanguageServer, LanguageClientAware {
         capabilities.setReferencesProvider(true);
 //        capabilities.setCompletionProvider(new CompletionOptions());
 
-        ServerInfo info = new ServerInfo(NAME);
+        workspaceDir.forEach(path -> {
+            try {
+                Files.walk(path, FileVisitOption.FOLLOW_LINKS)
+                        .filter(Paths::isASM)
+                        .map(CodeParser::new)
+                        .forEach(codeParser -> runAsync(codeParser::parse));
+            } catch (IOException e) {
+                log.warn("Could not read from directory {}: {}", path, e.getMessage());
+            }
+        });
 
         log.info("{} Started", NAME);
 
-        return supplyAsync(() -> new InitializeResult(capabilities, info));
+        return supplyAsync(() -> new InitializeResult(capabilities, new ServerInfo(NAME)));
     }
 
     @Override
@@ -81,6 +89,7 @@ public class CA65LanguageServer implements LanguageServer, LanguageClientAware {
         // If shutdown request comes from client, set the error code to 0.
         log.info("Bye");
         errorCode = 0;
+        CodeParser.pool.shutdownNow();
         return null;
     }
 
@@ -88,6 +97,7 @@ public class CA65LanguageServer implements LanguageServer, LanguageClientAware {
     public void exit() {
         // Kill the LS on exit request from client.
         log.info("Bye");
+        CodeParser.pool.shutdownNow();
         System.exit(errorCode);
     }
 

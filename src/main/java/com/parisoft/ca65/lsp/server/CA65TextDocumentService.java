@@ -6,6 +6,7 @@ import com.parisoft.ca65.lsp.parser.symbol.Include;
 import com.parisoft.ca65.lsp.parser.symbol.Reference;
 import com.parisoft.ca65.lsp.parser.symbol.Symbol;
 import com.parisoft.ca65.lsp.util.Locations;
+import com.parisoft.ca65.lsp.util.Paths;
 import org.eclipse.lsp4j.CompletionItem;
 import org.eclipse.lsp4j.CompletionItemKind;
 import org.eclipse.lsp4j.CompletionList;
@@ -25,9 +26,7 @@ import org.eclipse.lsp4j.services.TextDocumentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.URI;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,7 +44,7 @@ public class CA65TextDocumentService implements TextDocumentService {
     public CompletableFuture<Either<List<? extends Location>, List<? extends LocationLink>>> definition(DefinitionParams params) {
         log.debug("definition({})", params);
 
-        Path path = Paths.get(URI.create(params.getTextDocument().getUri())).normalize();
+        Path path = Paths.fromURI(params.getTextDocument().getUri());
         Position position = params.getPosition();
 
         return Symbol.Table.includes(path)
@@ -75,7 +74,7 @@ public class CA65TextDocumentService implements TextDocumentService {
     public CompletableFuture<List<? extends Location>> references(ReferenceParams params) {
         log.debug("references({})", params);
 
-        Path path = Paths.get(URI.create(params.getTextDocument().getUri())).normalize();
+        Path path = Paths.fromURI(params.getTextDocument().getUri());
         Position position = params.getPosition();
         Definition definition = Symbol.Table.definitions()
                 .parallel()
@@ -88,6 +87,7 @@ public class CA65TextDocumentService implements TextDocumentService {
                                 .filter(Objects::nonNull)
                                 .findFirst()
                                 .orElse(null));
+
         if (definition != null) {
             return supplyAsync(() -> Symbol.Table.references()
                     .parallel()
@@ -134,17 +134,17 @@ public class CA65TextDocumentService implements TextDocumentService {
     public void didOpen(DidOpenTextDocumentParams params) {
         log.debug("didOpen({})", params);
         String code = params.getTextDocument().getText();
-        Path path = Paths.get(URI.create(params.getTextDocument().getUri())).normalize();
-        new CodeParser(code, path).parse();
+        Path path = Paths.fromURI(params.getTextDocument().getUri());
+        new CodeParser(code, path).asyncParse();
     }
 
     @Override
     public void didChange(DidChangeTextDocumentParams params) {
         log.debug("didChange({})", params);
-        Path path = Paths.get(URI.create(params.getTextDocument().getUri())).normalize();
+        Path path = Paths.fromURI(params.getTextDocument().getUri());
 
         for (TextDocumentContentChangeEvent change : params.getContentChanges()) {
-            new CodeParser(change.getText(), path).parse();
+            new CodeParser(change.getText(), path).asyncParse();
         }
     }
 
@@ -155,6 +155,6 @@ public class CA65TextDocumentService implements TextDocumentService {
 
     @Override
     public void didSave(DidSaveTextDocumentParams params) {
-
+        log.debug("didSave({})", params);
     }
 }

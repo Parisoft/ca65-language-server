@@ -5,6 +5,7 @@ import com.parisoft.ca65.lsp.parser.grammar.CA65Token;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Parser;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Visitor;
 import com.parisoft.ca65.lsp.parser.lang.PseudoVar;
+import com.parisoft.ca65.lsp.parser.pool.ThreadPool;
 import com.parisoft.ca65.lsp.parser.symbol.Constant;
 import com.parisoft.ca65.lsp.parser.symbol.Definition;
 import com.parisoft.ca65.lsp.parser.symbol.EnumDef;
@@ -22,6 +23,7 @@ import com.parisoft.ca65.lsp.parser.symbol.StructDef;
 import com.parisoft.ca65.lsp.parser.symbol.Symbol;
 import com.parisoft.ca65.lsp.parser.symbol.UnnamedRef;
 import com.parisoft.ca65.lsp.parser.symbol.VarDef;
+import com.parisoft.ca65.lsp.util.Paths;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -37,17 +39,15 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.AUTOIMPORT;
@@ -70,11 +70,10 @@ import static java.lang.Integer.parseInt;
 import static java.lang.String.valueOf;
 
 @SuppressWarnings("Duplicates")
-public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65Visitor<String> {
+public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65Visitor<String>, Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(CodeParser.class);
-
-    private static final ExecutorService pool = Executors.newWorkStealingPool();
+    public static final ExecutorService pool = ThreadPool.newThreadPool();
 
     private String code;
     private Path path;
@@ -92,7 +91,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     private Deque<Symbol> layer = new ArrayDeque<>();
 
     public static void main(String[] args) throws IOException {
-        Path path = Paths.get(URI.create(args[0])).normalize();
+        Path path = Paths.fromURI(args[0]);
         byte[] bytes = Files.readAllBytes(path);
         new CodeParser(new String(bytes), path).parse();
     }
@@ -104,7 +103,34 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         layer.push(new ScopeDef("", path, new Position(0, 0))); // Push the global scope
     }
 
+    public CodeParser(Path path) {
+        this(null, path);
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public Path getPath() {
+        return path;
+    }
+
+    public void asyncParse() {
+        pool.submit(this);
+    }
+
     public void parse() {
+        log.debug("Parsing {}", path);
+
+        if (code == null) {
+            try {
+                code = new String(Files.readAllBytes(path));
+            } catch (IOException e) {
+                log.error("Could not read a file for parse: {}", path, e);
+                return;
+            }
+        }
+
         CA65ErrorListener errorListener = new CA65ErrorListener();
         CodePointCharStream input = CharStreams.fromString(code);
 
@@ -117,6 +143,15 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         parser.addErrorListener(errorListener);
 
         visit(parser.program());
+    }
+
+    @Override
+    public void run() {
+        Symbol.Table.clean(path)
+                .parallel()
+                .map(CodeParser::new)
+                .forEach(pool::submit);
+        parse();
     }
 
     @Override

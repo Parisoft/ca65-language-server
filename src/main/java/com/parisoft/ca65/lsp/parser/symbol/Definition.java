@@ -40,7 +40,7 @@ public abstract class Definition extends Symbol {
     boolean isExported() {
         return Stream.concat(Table.exports(), Table.globals())
                 .filter(export -> export.name.equals(this.name))
-                .anyMatch(this::sameParents);
+                .anyMatch(this::equalParents);
     }
 
     @Override

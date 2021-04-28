@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptySet;
+import static java.util.stream.Collectors.toSet;
 
 public abstract class Symbol {
 
@@ -99,7 +100,7 @@ public abstract class Symbol {
                 '}';
     }
 
-    boolean sameParents(Symbol that) {
+    boolean equalParents(Symbol that) {
         if (that == null) {
             return false;
         }
@@ -113,6 +114,17 @@ public abstract class Symbol {
         }
 
         return thatParent == null;
+    }
+
+
+    Symbol getRoot() {
+        Symbol root = this;
+
+        while (root.parent != null) {
+            root = root.parent;
+        }
+
+        return root;
     }
 
     public static class Table {
@@ -175,6 +187,35 @@ public abstract class Symbol {
 
         public static Stream<Include> includes(Path path) {
             return includes.getOrDefault(path, emptySet()).stream();
+        }
+
+        public static Stream<Include> includes() {
+            return includes.values().stream().flatMap(Set::stream);
+        }
+
+        public static Stream<Symbol> all() {
+            return Stream.concat(definitions(), Stream.concat(references(), Stream.concat(imports(), Stream.concat(exports(), Stream.concat(globals(), includes())))));
+        }
+
+        @SuppressWarnings({"SuspiciousMethodCalls", "Duplicates"})
+        public static Stream<Path> clean(Path path) {
+            Set<Symbol> invalidSymbols = all()
+                    .filter(symbol -> !(symbol instanceof Include))
+                    .filter(symbol -> symbol.path.equals(path))
+                    .collect(toSet());
+            definitions.values().forEach(defs -> defs.removeAll(invalidSymbols));
+            references.values().forEach(refs -> refs.removeAll(invalidSymbols));
+            imports.values().forEach(imps -> imps.removeAll(invalidSymbols));
+            exports.values().forEach(exps -> exps.removeAll(invalidSymbols));
+            globals.values().forEach(globs -> globs.removeAll(invalidSymbols));
+            includes.remove(path);
+            autoimport.remove(path);
+
+            return invalidSymbols.stream()
+                    .map(Symbol::getRoot)
+                    .map(Symbol::getPath)
+                    .filter(root -> !root.equals(path))
+                    .distinct();
         }
     }
 }

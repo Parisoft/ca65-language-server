@@ -68,7 +68,7 @@ public class Reference extends Symbol {
         }
 
         // matches left most ancestor hierarchy with symbol hierarchy
-        return thisTopParent.sameParents(thatTopParent);
+        return thisTopParent.equalParents(thatTopParent);
     }
 
     private Symbol relativeParentOf(Symbol symbol) {
