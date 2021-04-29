@@ -3,7 +3,6 @@ package com.parisoft.ca65.lsp.util;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
-import org.antlr.v4.runtime.tree.TerminalNode;
 import org.eclipse.lsp4j.Position;
 
 public class RuleContexts {
@@ -27,9 +26,5 @@ public class RuleContexts {
     public static Position positionOf(ParserRuleContext ctx, Position offset) {
         return new Position(offset.getLine() + ctx.getStart().getLine() - 1,
                             offset.getCharacter() + ctx.getStart().getCharPositionInLine());
-    }
-
-    public static Position xpositionOf(ParserRuleContext ctx, int lineOffset) {
-        return new Position(lineOffset + ctx.getStart().getLine() - 1, ctx.getStart().getCharPositionInLine());
     }
 }

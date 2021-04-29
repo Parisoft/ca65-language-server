@@ -96,9 +96,9 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     private final Deque<Integer> asizeStack = new ArrayDeque<>();
     private final Deque<Integer> isizeStack = new ArrayDeque<>();
     private final List<String> macros = new ArrayList<>();
-    private final List<String> defines = new ArrayList<>();
+    private final Map<String, DefineDef> defines = new HashMap<>();
     private final Deque<Symbol> layer = new ArrayDeque<>();
-    private final Map<String, Function<CA65Parser.ControlContext, String>> controlFunctions = new HashMap<>();
+    private final Map<String, Function<CA65Parser.ControlContext, String>> controlCommands = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
         Path path = Paths.fromURI(args[0]);
@@ -109,14 +109,14 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         this.code = code;
         this.path = path;
 
-        controlFunctions.put(VOCABULARY.getSymbolicName(IMPORT), this::visitImport);
-        controlFunctions.put(VOCABULARY.getSymbolicName(IMPORTZP), this::visitImport);
-        controlFunctions.put(VOCABULARY.getSymbolicName(EXPORT), this::visitExport);
-        controlFunctions.put(VOCABULARY.getSymbolicName(EXPORTZP), this::visitExport);
-        controlFunctions.put(VOCABULARY.getSymbolicName(GLOBAL), this::visitGlobal);
-        controlFunctions.put(VOCABULARY.getSymbolicName(GLOBALZP), this::visitGlobal);
-        controlFunctions.put(VOCABULARY.getSymbolicName(INCLUDE), this::visitInclude);
-        controlFunctions.put(VOCABULARY.getSymbolicName(AUTOIMPORT), this::visitAutoImport);
+        controlCommands.put(VOCABULARY.getSymbolicName(IMPORT), this::visitImport);
+        controlCommands.put(VOCABULARY.getSymbolicName(IMPORTZP), this::visitImport);
+        controlCommands.put(VOCABULARY.getSymbolicName(EXPORT), this::visitExport);
+        controlCommands.put(VOCABULARY.getSymbolicName(EXPORTZP), this::visitExport);
+        controlCommands.put(VOCABULARY.getSymbolicName(GLOBAL), this::visitGlobal);
+        controlCommands.put(VOCABULARY.getSymbolicName(GLOBALZP), this::visitGlobal);
+        controlCommands.put(VOCABULARY.getSymbolicName(INCLUDE), this::visitInclude);
+        controlCommands.put(VOCABULARY.getSymbolicName(AUTOIMPORT), this::visitAutoImport);
 
         layer.push(new ScopeDef("", path, new Position(0, 0))); // Push the global scope
     }
@@ -752,6 +752,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         DefineDef define = new DefineDef(name, path, positionOf(ctx.name))
                 .setParent(layer.peekFirst())
                 .save();
+        defines.put(name, define);
 
         for (CA65Parser.IdentifierContext param : ctx.param) {
             String paramName = visitIdentifier(param);
@@ -817,7 +818,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
         String command = ctx.command.getText().substring(1).toUpperCase();
 
-        return controlFunctions.getOrDefault(command, this::visitUnknownControl).apply(ctx);
+        return controlCommands.getOrDefault(command, this::visitUnknownControl).apply(ctx);
     }
 
     private String visitImport(CA65Parser.ControlContext ctx) {
