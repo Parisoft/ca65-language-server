@@ -502,7 +502,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         //TODO check if identifier is a macro/define
 
         if (ctx.IDENT() != null) {
-            return visit(ctx.expression());
+            return unquote(visit(ctx.expression()));
         }
 
         return ctx.Identifier().getSymbol().getText();

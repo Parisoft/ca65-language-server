@@ -512,7 +512,6 @@ PseudoFunc
     | BLANK
     | CONCAT
     | CONST
-    | IDENT
     | LEFT
     | MATCH
     | MAX
