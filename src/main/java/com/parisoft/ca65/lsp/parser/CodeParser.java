@@ -46,7 +46,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -68,6 +67,7 @@ import static com.parisoft.ca65.lsp.server.CA65LanguageServer.workspaceDir;
 import static com.parisoft.ca65.lsp.util.Strings.unquote;
 import static java.lang.Integer.parseInt;
 import static java.lang.String.valueOf;
+import static java.util.concurrent.CompletableFuture.runAsync;
 
 @SuppressWarnings("Duplicates")
 public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65Visitor<String>, Runnable {
@@ -115,16 +115,38 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         return path;
     }
 
+    public static void parseWorkspace() {
+        workspaceDir.forEach(workspace -> {
+            try {
+                Files.walk(workspace, FileVisitOption.FOLLOW_LINKS)
+                        .filter(Paths::isASM)
+                        .map(CodeParser::new)
+                        .forEach(codeParser -> runAsync(codeParser::parse));
+            } catch (IOException e) {
+                log.warn("Could not read from directory {}: {}", workspace, e.toString());
+            }
+        });
+    }
+
     public void asyncParse() {
         pool.submit(this);
     }
 
-    public void parse() {
+    @Override
+    public void run() {
+        Symbol.Table.clean(path)
+                .parallel()
+                .map(CodeParser::new)
+                .forEach(pool::submit);
+        parse();
+    }
+
+    private void parse() {
         log.debug("Parsing {}", path);
 
         if (code == null) {
             try {
-                code = new String(Files.readAllBytes(path));
+                code = Paths.read(path);
             } catch (IOException e) {
                 log.error("Could not read a file for parse: {}", path, e);
                 return;
@@ -143,15 +165,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         parser.addErrorListener(errorListener);
 
         visit(parser.program());
-    }
-
-    @Override
-    public void run() {
-        Symbol.Table.clean(path)
-                .parallel()
-                .map(CodeParser::new)
-                .forEach(pool::submit);
-        parse();
     }
 
     @Override
@@ -817,7 +830,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             }
 
             if (incPath != null) {
-                new Include(incName, incPath, positionOf(ctx.expression(0)))
+                new Include(incName, path, positionOf(ctx.expression(0)), incPath)
                         .setParent(layer.peek())
                         .save();
                 // parse included file

@@ -68,16 +68,7 @@ public class CA65LanguageServer implements LanguageServer, LanguageClientAware {
         capabilities.setReferencesProvider(true);
 //        capabilities.setCompletionProvider(new CompletionOptions());
 
-        workspaceDir.forEach(path -> {
-            try {
-                Files.walk(path, FileVisitOption.FOLLOW_LINKS)
-                        .filter(Paths::isASM)
-                        .map(CodeParser::new)
-                        .forEach(codeParser -> runAsync(codeParser::parse));
-            } catch (IOException e) {
-                log.warn("Could not read from directory {}: {}", path, e.getMessage());
-            }
-        });
+        CodeParser.parseWorkspace();
 
         log.info("{} Started", NAME);
 

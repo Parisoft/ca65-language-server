@@ -1,6 +1,8 @@
 package com.parisoft.ca65.lsp.util;
 
+import java.io.IOException;
 import java.net.URI;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -27,6 +29,10 @@ public class Paths {
         }
 
         return null;
+    }
+
+    public static String read(Path path) throws IOException {
+        return new String(Files.readAllBytes(path));
     }
 
     public static boolean isASM(Path path) {

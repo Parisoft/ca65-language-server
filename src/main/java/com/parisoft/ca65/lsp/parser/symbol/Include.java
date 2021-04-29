@@ -11,8 +11,11 @@ import static java.util.concurrent.ConcurrentHashMap.newKeySet;
 
 public class Include extends Symbol {
 
-    public Include(String name, Path path, Position pos) {
+    private final Path target;
+
+    public Include(String name, Path path, Position pos, Path target) {
         super(name, path, new Position(pos.getLine(), pos.getCharacter() + 1));
+        this.target = target;
     }
 
     public boolean match(Position position) {
@@ -22,24 +25,22 @@ public class Include extends Symbol {
     }
 
     public LocationLink toLocationLink() {
-        Location location = toLocation();
         Range targetRange = new Range(new Position(0, 0), new Position(10, 0));
         Range originSelectionRange = new Range(pos, new Position(pos.getLine(), pos.getCharacter() + name.length()));
         Range targetSelectionRange = new Range(targetRange.getStart(), new Position(0, 0));
 
-        return new LocationLink(location.getUri(), targetRange, targetSelectionRange, originSelectionRange);
+        return new LocationLink(target.toUri().toString(), targetRange, targetSelectionRange, originSelectionRange);
     }
 
     boolean isOrIncludes(Path path) {
-        return this.path.equals(path)
-                || Table.includes(this.path)
-                .anyMatch(include -> include.isOrIncludes(path));
+        return target.equals(path)
+                || Table.includes(target).anyMatch(include -> include.isOrIncludes(path));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public Include save() {
-        Table.includes.computeIfAbsent(parent.path, p -> newKeySet()).add(this);
+        Table.includes.computeIfAbsent(path, p -> newKeySet()).add(this);
         return this;
     }
 }
