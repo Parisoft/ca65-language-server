@@ -3187,17 +3187,18 @@ public class CA65Parser extends Parser {
 	}
 
 	public static class DefineContext extends ParserRuleContext {
+		public IdentifierContext name;
 		public IdentifierContext identifier;
 		public List<IdentifierContext> param = new ArrayList<IdentifierContext>();
 		public TerminalNode DEFINE() { return getToken(CA65Parser.DEFINE, 0); }
+		public ExpressionContext expression() {
+			return getRuleContext(ExpressionContext.class,0);
+		}
 		public List<IdentifierContext> identifier() {
 			return getRuleContexts(IdentifierContext.class);
 		}
 		public IdentifierContext identifier(int i) {
 			return getRuleContext(IdentifierContext.class,i);
-		}
-		public ExpressionContext expression() {
-			return getRuleContext(ExpressionContext.class,0);
 		}
 		public TerminalNode LPAREN() { return getToken(CA65Parser.LPAREN, 0); }
 		public TerminalNode RPAREN() { return getToken(CA65Parser.RPAREN, 0); }
@@ -3234,7 +3235,7 @@ public class CA65Parser extends Parser {
 			setState(405);
 			match(DEFINE);
 			setState(406);
-			identifier();
+			((DefineContext)_localctx).name = identifier();
 			setState(418);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,59,_ctx) ) {
@@ -3283,16 +3284,17 @@ public class CA65Parser extends Parser {
 	}
 
 	public static class MacroContext extends ParserRuleContext {
+		public IdentifierContext name;
 		public IdentifierContext identifier;
 		public List<IdentifierContext> param = new ArrayList<IdentifierContext>();
 		public TerminalNode MACRO() { return getToken(CA65Parser.MACRO, 0); }
+		public TerminalNode ENDMACRO() { return getToken(CA65Parser.ENDMACRO, 0); }
 		public List<IdentifierContext> identifier() {
 			return getRuleContexts(IdentifierContext.class);
 		}
 		public IdentifierContext identifier(int i) {
 			return getRuleContext(IdentifierContext.class,i);
 		}
-		public TerminalNode ENDMACRO() { return getToken(CA65Parser.ENDMACRO, 0); }
 		public List<TerminalNode> EOL() { return getTokens(CA65Parser.EOL); }
 		public TerminalNode EOL(int i) {
 			return getToken(CA65Parser.EOL, i);
@@ -3336,7 +3338,7 @@ public class CA65Parser extends Parser {
 			setState(422);
 			match(MACRO);
 			setState(423);
-			identifier();
+			((MacroContext)_localctx).name = identifier();
 			setState(432);
 			_errHandler.sync(this);
 			_la = _input.LA(1);

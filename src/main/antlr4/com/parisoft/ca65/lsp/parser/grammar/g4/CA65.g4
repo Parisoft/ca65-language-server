@@ -165,11 +165,11 @@ repeat
     ;
 
 define
-    : DEFINE identifier (LPAREN param+=identifier (COMMA param+=identifier)* RPAREN)? expression
+    : DEFINE name=identifier (LPAREN param+=identifier (COMMA param+=identifier)* RPAREN)? expression
     ;
 
 macro
-    : MACRO identifier (param+=identifier (COMMA param+=identifier)*)? (EOL macline?)+ ENDMACRO
+    : MACRO name=identifier (param+=identifier (COMMA param+=identifier)*)? (EOL macline?)+ ENDMACRO
     ;
 
 macline

@@ -2,10 +2,12 @@ package com.parisoft.ca65.lsp.parser;
 
 import com.parisoft.ca65.lsp.parser.grammar.CA65Lexer;
 import com.parisoft.ca65.lsp.parser.grammar.CA65Token;
+import com.parisoft.ca65.lsp.parser.grammar.g4.CA65BaseVisitor;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Parser;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Visitor;
 import com.parisoft.ca65.lsp.parser.lang.PseudoVar;
 import com.parisoft.ca65.lsp.parser.symbol.Constant;
+import com.parisoft.ca65.lsp.parser.symbol.DefineDef;
 import com.parisoft.ca65.lsp.parser.symbol.Definition;
 import com.parisoft.ca65.lsp.parser.symbol.EnumDef;
 import com.parisoft.ca65.lsp.parser.symbol.Enumeration;
@@ -15,6 +17,7 @@ import com.parisoft.ca65.lsp.parser.symbol.Global;
 import com.parisoft.ca65.lsp.parser.symbol.Import;
 import com.parisoft.ca65.lsp.parser.symbol.Include;
 import com.parisoft.ca65.lsp.parser.symbol.LabelDef;
+import com.parisoft.ca65.lsp.parser.symbol.ParamDef;
 import com.parisoft.ca65.lsp.parser.symbol.ProcDef;
 import com.parisoft.ca65.lsp.parser.symbol.Reference;
 import com.parisoft.ca65.lsp.parser.symbol.ScopeDef;
@@ -23,6 +26,7 @@ import com.parisoft.ca65.lsp.parser.symbol.Symbol;
 import com.parisoft.ca65.lsp.parser.symbol.UnnamedRef;
 import com.parisoft.ca65.lsp.parser.symbol.VarDef;
 import com.parisoft.ca65.lsp.util.Paths;
+import com.parisoft.ca65.lsp.util.RuleContexts;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -68,6 +72,7 @@ import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.LOBYTE;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.LOWORD;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoVar.CPU.CPU_6502;
 import static com.parisoft.ca65.lsp.server.CA65LanguageServer.workspaceDir;
+import static com.parisoft.ca65.lsp.util.RuleContexts.positionOf;
 import static com.parisoft.ca65.lsp.util.Strings.unquote;
 import static java.lang.Integer.parseInt;
 import static java.lang.String.valueOf;
@@ -741,7 +746,53 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitDefine(CA65Parser.DefineContext ctx) {
-        return visitChildren(ctx);
+        setCheckpoint(ctx);
+
+        String name = visitIdentifier(ctx.name);
+        DefineDef define = new DefineDef(name, path, positionOf(ctx.name))
+                .setParent(layer.peekFirst())
+                .save();
+
+        for (CA65Parser.IdentifierContext param : ctx.param) {
+            String paramName = visitIdentifier(param);
+            new ParamDef(paramName, path, positionOf(param))
+                    .setParent(define)
+                    .save();
+            define.addParam(paramName);
+        }
+
+        Token defineToken = ctx.DEFINE().getSymbol();
+        define.setBody(RuleContexts.sourceText(ctx.expression()));
+
+        CodePointCharStream input = CharStreams.fromString(RuleContexts.sourceText(ctx));
+        CA65Lexer lexer = new CA65Lexer(input);
+        CA65Parser parser = new CA65Parser(new CommonTokenStream(lexer));
+        lexer.removeErrorListeners();
+        parser.removeErrorListeners();
+
+        CA65BaseVisitor<String> paramVisitor = new CA65BaseVisitor<String>() {
+            @Override
+            public String visitDefine(CA65Parser.DefineContext ctx) {
+                return visit(ctx.expression());
+            }
+
+            @Override
+            public String visitIdentifier(CA65Parser.IdentifierContext ctx) {
+                String name = ctx.Identifier().getSymbol().getText();
+
+                if (define.getParams().contains(name)) {
+                    new Reference(name, path, positionOf(ctx, positionOf(defineToken)), null)
+                            .setParent(define)
+                            .save();
+                }
+
+                return visitChildren(ctx);
+            }
+        };
+
+        paramVisitor.visit(parser.program());
+
+        return name;
     }
 
     @Override
@@ -873,10 +924,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     private void setCheckpoint(ParserRuleContext ctx) {
         checkpoint = ((CA65Token) ctx.start).getPrvIndex();
-    }
-
-    private static Position positionOf(ParserRuleContext ctx) {
-        return new Position(ctx.getStart().getLine() - 1, ctx.getStart().getCharPositionInLine());
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
