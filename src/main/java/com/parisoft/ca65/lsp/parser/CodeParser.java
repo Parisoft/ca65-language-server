@@ -5,7 +5,6 @@ import com.parisoft.ca65.lsp.parser.grammar.CA65Token;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Parser;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Visitor;
 import com.parisoft.ca65.lsp.parser.lang.PseudoVar;
-import com.parisoft.ca65.lsp.parser.pool.ThreadPool;
 import com.parisoft.ca65.lsp.parser.symbol.Constant;
 import com.parisoft.ca65.lsp.parser.symbol.Definition;
 import com.parisoft.ca65.lsp.parser.symbol.EnumDef;
@@ -45,10 +44,13 @@ import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.AUTOIMPORT;
 import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.EXPORT;
@@ -64,6 +66,7 @@ import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.HIBYTE;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.HIWORD;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.LOBYTE;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.LOWORD;
+import static com.parisoft.ca65.lsp.parser.lang.PseudoVar.CPU.CPU_6502;
 import static com.parisoft.ca65.lsp.server.CA65LanguageServer.workspaceDir;
 import static com.parisoft.ca65.lsp.util.Strings.unquote;
 import static java.lang.Integer.parseInt;
@@ -81,25 +84,34 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     private int checkpoint = 0;
     private int paramcount = 0;
     private boolean eval = false;
-    private int cpu = PseudoVar.CPU.CPU_6502.value();
+    private int cpu = CPU_6502.value();
     private int asize = 8;
     private int isize = 8;
-    private Deque<Integer> cpuStack = new ArrayDeque<>();
-    private Deque<Integer> asizeStack = new ArrayDeque<>();
-    private Deque<Integer> isizeStack = new ArrayDeque<>();
-    private List<String> macros = new ArrayList<>();
-    private List<String> defines = new ArrayList<>();
-    private Deque<Symbol> layer = new ArrayDeque<>();
+    private final Deque<Integer> cpuStack = new ArrayDeque<>();
+    private final Deque<Integer> asizeStack = new ArrayDeque<>();
+    private final Deque<Integer> isizeStack = new ArrayDeque<>();
+    private final List<String> macros = new ArrayList<>();
+    private final List<String> defines = new ArrayList<>();
+    private final Deque<Symbol> layer = new ArrayDeque<>();
+    private final Map<String, Function<CA65Parser.ControlContext, String>> controlFunctions = new HashMap<>();
 
     public static void main(String[] args) throws IOException {
         Path path = Paths.fromURI(args[0]);
-        byte[] bytes = Files.readAllBytes(path);
-        new CodeParser(new String(bytes), path).parse();
+        new CodeParser(path).parse();
     }
 
     public CodeParser(String code, Path path) {
         this.code = code;
         this.path = path;
+
+        controlFunctions.put(VOCABULARY.getSymbolicName(IMPORT), this::visitImport);
+        controlFunctions.put(VOCABULARY.getSymbolicName(IMPORTZP), this::visitImport);
+        controlFunctions.put(VOCABULARY.getSymbolicName(EXPORT), this::visitExport);
+        controlFunctions.put(VOCABULARY.getSymbolicName(EXPORTZP), this::visitExport);
+        controlFunctions.put(VOCABULARY.getSymbolicName(GLOBAL), this::visitGlobal);
+        controlFunctions.put(VOCABULARY.getSymbolicName(GLOBALZP), this::visitGlobal);
+        controlFunctions.put(VOCABULARY.getSymbolicName(INCLUDE), this::visitInclude);
+        controlFunctions.put(VOCABULARY.getSymbolicName(AUTOIMPORT), this::visitAutoImport);
 
         layer.push(new ScopeDef("", path, new Position(0, 0))); // Push the global scope
     }
@@ -752,108 +764,110 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     public String visitControl(CA65Parser.ControlContext ctx) {
         setCheckpoint(ctx);
 
-        String command = ctx.command.getText().substring(1);
+        String command = ctx.command.getText().substring(1).toUpperCase();
 
-        if (command.equalsIgnoreCase(VOCABULARY.getSymbolicName(IMPORT))
-                || command.equalsIgnoreCase(VOCABULARY.getSymbolicName(IMPORTZP))) {
-            for (CA65Parser.ExpressionContext expression : ctx.expression()) {
-                String name = visit(expression);
-                new Import(name, path, positionOf(ctx))
-                        .setParent(layer.peek())
-                        .save();
-            }
+        return controlFunctions.getOrDefault(command, this::visitUnknownControl).apply(ctx);
+    }
 
-            return null;
+    private String visitImport(CA65Parser.ControlContext ctx) {
+        for (CA65Parser.ExpressionContext expression : ctx.expression()) {
+            String name = visit(expression);
+            new Import(name, path, positionOf(ctx))
+                    .setParent(layer.peek())
+                    .save();
         }
 
-        if (command.equalsIgnoreCase(VOCABULARY.getSymbolicName(AUTOIMPORT))) {
-            if (ctx.PLUS() != null) {
-                Symbol.Table.autoimport.add(path);
-            } else if (ctx.MINUS() != null) {
-                Symbol.Table.autoimport.remove(path);
-            }
+        return null;
+    }
 
-            return null;
+    private String visitAutoImport(CA65Parser.ControlContext ctx) {
+        if (ctx.PLUS() != null) {
+            Symbol.Table.autoimport.add(path);
+        } else if (ctx.MINUS() != null) {
+            Symbol.Table.autoimport.remove(path);
         }
 
-        if (command.equalsIgnoreCase(VOCABULARY.getSymbolicName(EXPORT))
-                || command.equalsIgnoreCase(VOCABULARY.getSymbolicName(EXPORTZP))) {
-            for (CA65Parser.ExpressionContext expression : ctx.expression()) {
-                String name = visit(expression);
-                new Export(name, path, positionOf(ctx))
-                        .setParent(layer.peek())
-                        .save();
-            }
+        return null;
+    }
 
-            return null;
+    private String visitExport(CA65Parser.ControlContext ctx) {
+        for (CA65Parser.ExpressionContext expression : ctx.expression()) {
+            String name = visit(expression);
+            new Export(name, path, positionOf(ctx))
+                    .setParent(layer.peek())
+                    .save();
         }
 
-        if (command.equalsIgnoreCase(VOCABULARY.getSymbolicName(GLOBAL))
-                || command.equalsIgnoreCase(VOCABULARY.getSymbolicName(GLOBALZP))) {
-            for (CA65Parser.ExpressionContext expression : ctx.expression()) {
-                String name = visit(expression);
-                new Global(name, path, positionOf(ctx))
-                        .setParent(layer.peek())
-                        .save();
-            }
+        return null;
+    }
 
-            return null;
+    private String visitGlobal(CA65Parser.ControlContext ctx) {
+        for (CA65Parser.ExpressionContext expression : ctx.expression()) {
+            String name = visit(expression);
+            new Global(name, path, positionOf(ctx))
+                    .setParent(layer.peek())
+                    .save();
         }
 
-        if (command.equalsIgnoreCase(VOCABULARY.getSymbolicName(INCLUDE))) {
-            if (ctx.expression().isEmpty()) {
-                return visitChildren(ctx);
-            }
+        return null;
+    }
 
-            String incName = unquote(visit(ctx.expression(0)));
-            File incFile = new File(incName);
-            Path incPath = null;
+    private String visitInclude(CA65Parser.ControlContext ctx) {
+        if (ctx.expression().isEmpty()) {
+            return visitChildren(ctx);
+        }
 
-            // find the file
-            if (incFile.exists()) {
-                incPath = incFile.toPath().toAbsolutePath().normalize();
-            } else {
-                AtomicReference<Path> searchPath = new AtomicReference<>(path.getParent());
+        String incName = unquote(visit(ctx.expression(0)));
+        File incFile = new File(incName);
+        Path incPath = null;
 
-                while (incPath == null
-                        && searchPath.get() != null
-                        && workspaceDir.stream().anyMatch(dir -> dir.compareTo(searchPath.get()) <= 0)) {
-                    try {
-                        incPath = Files.walk(searchPath.get(), 5, FileVisitOption.FOLLOW_LINKS)
-                                .filter(visited -> visited.getFileName().toString().equals(incFile.getName()))
-                                .findFirst()
-                                .orElse(null);
-                    } catch (IOException e) {
-                        log.error("Could not search included file: {}", incFile, e);
-                    }
+        // find the file
+        if (incFile.exists()) {
+            incPath = incFile.toPath().toAbsolutePath().normalize();
+        } else {
+            AtomicReference<Path> searchPath = new AtomicReference<>(path.getParent());
 
-                    searchPath.set(searchPath.get().getParent());
+            while (incPath == null
+                    && searchPath.get() != null
+                    && workspaceDir.stream().anyMatch(dir -> dir.compareTo(searchPath.get()) <= 0)) {
+                try {
+                    incPath = Files.walk(searchPath.get(), 5, FileVisitOption.FOLLOW_LINKS)
+                            .filter(visited -> visited.getFileName().toString().equals(incFile.getName()))
+                            .findFirst()
+                            .orElse(null);
+                } catch (IOException e) {
+                    log.error("Could not search included file: {}", incFile, e);
                 }
-            }
 
-            if (incPath != null) {
-                new Include(incName, path, positionOf(ctx.expression(0)), incPath)
-                        .setParent(layer.peek())
-                        .save();
-                // parse included file
-                Path tmpPath = path;
-                String tmpCode = code;
-                path = incPath;
-                code = null;
-                parse();
-                path = tmpPath;
-                code = tmpCode;
-            } else {
-                log.warn("Included file not found in workspace: {}", incFile.getName());
+                searchPath.set(searchPath.get().getParent());
             }
-
-            for (int i = 1; i < ctx.expression().size(); i++) {
-                visit(ctx.expression(i)); // consumes invalid args
-            }
-
-            return null;
         }
 
+        if (incPath != null) {
+            new Include(incName, path, positionOf(ctx.expression(0)), incPath)
+                    .setParent(layer.peek())
+                    .save();
+            // parse included file
+            Path tmpPath = path;
+            String tmpCode = code;
+            path = incPath;
+            code = null;
+            parse();
+            path = tmpPath;
+            code = tmpCode;
+        } else {
+            log.warn("Included file not found in workspace: {}", incFile.getName());
+        }
+
+        for (int i = 1; i < ctx.expression().size(); i++) {
+            visit(ctx.expression(i)); // consumes invalid args
+        }
+
+        return null;
+    }
+
+    private String visitUnknownControl(CA65Parser.ControlContext ctx) {
+        log.warn("Unknown control command: {}", ctx.command.getText());
         return visitChildren(ctx);
     }
 
