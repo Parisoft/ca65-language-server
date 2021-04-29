@@ -200,7 +200,6 @@ public abstract class Symbol {
         @SuppressWarnings({"SuspiciousMethodCalls", "Duplicates"})
         public static Stream<Path> clean(Path path) {
             Set<Symbol> invalidSymbols = all()
-                    .filter(symbol -> !(symbol instanceof Include))
                     .filter(symbol -> symbol.path.equals(path))
                     .collect(toSet());
             definitions.values().forEach(defs -> defs.removeAll(invalidSymbols));
@@ -208,7 +207,7 @@ public abstract class Symbol {
             imports.values().forEach(imps -> imps.removeAll(invalidSymbols));
             exports.values().forEach(exps -> exps.removeAll(invalidSymbols));
             globals.values().forEach(globs -> globs.removeAll(invalidSymbols));
-            includes.remove(path);
+            includes.values().forEach(incs -> incs.removeAll(invalidSymbols));
             autoimport.remove(path);
 
             return invalidSymbols.stream()

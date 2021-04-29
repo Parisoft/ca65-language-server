@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.AUTOIMPORT;
@@ -73,7 +74,7 @@ import static java.util.concurrent.CompletableFuture.runAsync;
 public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65Visitor<String>, Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(CodeParser.class);
-    public static final ExecutorService pool = ThreadPool.newThreadPool();
+    public static final ExecutorService pool = Executors.newSingleThreadExecutor();//ThreadPool.newThreadPool();
 
     private String code;
     private Path path;
@@ -142,15 +143,16 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     }
 
     private void parse() {
-        log.debug("Parsing {}", path);
-
         if (code == null) {
+            log.debug("Parsing {} w/o code", path);
             try {
                 code = Paths.read(path);
             } catch (IOException e) {
                 log.error("Could not read a file for parse: {}", path, e);
                 return;
             }
+        } else {
+            log.debug("Parsing {} with code", path);
         }
 
         CA65ErrorListener errorListener = new CA65ErrorListener();
@@ -834,17 +836,13 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                         .setParent(layer.peek())
                         .save();
                 // parse included file
-                try {
-                    Path tmpPath = path;
-                    String tmpCode = code;
-                    path = incPath;
-                    code = new String(Files.readAllBytes(incPath));
-                    parse();
-                    path = tmpPath;
-                    code = tmpCode;
-                } catch (IOException e) {
-                    log.error("Could not open included file to parse: {}", incPath, e);
-                }
+                Path tmpPath = path;
+                String tmpCode = code;
+                path = incPath;
+                code = null;
+                parse();
+                path = tmpPath;
+                code = tmpCode;
             } else {
                 log.warn("Included file not found in workspace: {}", incFile.getName());
             }
