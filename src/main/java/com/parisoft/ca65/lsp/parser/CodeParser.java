@@ -1,5 +1,6 @@
 package com.parisoft.ca65.lsp.parser;
 
+import com.parisoft.ca65.lsp.parser.exception.DefineExpansionException;
 import com.parisoft.ca65.lsp.parser.grammar.CA65Lexer;
 import com.parisoft.ca65.lsp.parser.grammar.CA65Token;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65BaseVisitor;
@@ -102,7 +103,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     public static void main(String[] args) throws IOException {
         Path path = Paths.fromURI(args[0]);
-        new CodeParser(path).parse();
+        new CodeParser(path).doParse();
     }
 
     public CodeParser(String code, Path path) {
@@ -139,14 +140,14 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 Files.walk(workspace, FileVisitOption.FOLLOW_LINKS)
                         .filter(Paths::isASM)
                         .map(CodeParser::new)
-                        .forEach(codeParser -> runAsync(codeParser::parse));
+                        .forEach(codeParser -> runAsync(codeParser::doParse));
             } catch (IOException e) {
                 log.warn("Could not read from directory {}: {}", workspace, e.toString());
             }
         });
     }
 
-    public void asyncParse() {
+    public void parse() {
         pool.submit(this);
     }
 
@@ -156,10 +157,10 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 .parallel()
                 .map(CodeParser::new)
                 .forEach(pool::submit);
-        parse();
+        doParse();
     }
 
-    private void parse() {
+    private void doParse() {
         if (code == null) {
             log.debug("Parsing {} w/o code", path);
             try {
@@ -183,7 +184,12 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         parser.removeErrorListeners();
         parser.addErrorListener(errorListener);
 
-        visit(parser.program());
+        try {
+            visit(parser.program());
+        } catch (DefineExpansionException e) {
+            String[] lines = code.split("\\r?\\n");
+            log.debug("Define expansion {} on line {}, checkpoint on {}: {}", e.getDefine().getName(), e.getPosition().getLine(), checkpoint, lines[e.getPosition().getLine()]);
+        }
     }
 
     @Override
@@ -505,12 +511,18 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     @Override
     public String visitIdentifier(CA65Parser.IdentifierContext ctx) {
         //TODO check if identifier is a macro/define
-
         if (ctx.IDENT() != null) {
             return unquote(visit(ctx.expression()));
         }
 
-        return ctx.Identifier().getSymbol().getText();
+        String name = ctx.Identifier().getSymbol().getText();
+        DefineDef define = defines.get(name);
+
+        if (define != null) {
+            throw new DefineExpansionException(define, positionOf(ctx.Identifier().getSymbol()));
+        }
+
+        return name;
     }
 
     @Override
@@ -904,7 +916,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             String tmpCode = code;
             path = incPath;
             code = null;
-            parse();
+            doParse();
             path = tmpPath;
             code = tmpCode;
         } else {
