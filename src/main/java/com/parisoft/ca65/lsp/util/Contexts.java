@@ -5,7 +5,7 @@ import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
 import org.eclipse.lsp4j.Position;
 
-public class RuleContexts {
+public class Contexts {
 
     public static String sourceText(ParserRuleContext ctx) {
         int a = ctx.start.getStartIndex();

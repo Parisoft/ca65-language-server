@@ -1,6 +1,6 @@
 package com.parisoft.ca65.lsp.parser;
 
-import com.parisoft.ca65.lsp.parser.exception.DefineExpansionException;
+import com.parisoft.ca65.lsp.parser.exception.ExpansionException;
 import com.parisoft.ca65.lsp.parser.grammar.CA65Lexer;
 import com.parisoft.ca65.lsp.parser.grammar.CA65Token;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65BaseVisitor;
@@ -9,9 +9,12 @@ import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Visitor;
 import com.parisoft.ca65.lsp.parser.lang.PseudoVar;
 import com.parisoft.ca65.lsp.parser.symbol.Constant;
 import com.parisoft.ca65.lsp.parser.symbol.DefineDef;
+import com.parisoft.ca65.lsp.parser.symbol.DefineRef;
 import com.parisoft.ca65.lsp.parser.symbol.Definition;
 import com.parisoft.ca65.lsp.parser.symbol.EnumDef;
 import com.parisoft.ca65.lsp.parser.symbol.Enumeration;
+import com.parisoft.ca65.lsp.parser.symbol.Expansible;
+import com.parisoft.ca65.lsp.parser.symbol.Expansion;
 import com.parisoft.ca65.lsp.parser.symbol.Export;
 import com.parisoft.ca65.lsp.parser.symbol.FieldDef;
 import com.parisoft.ca65.lsp.parser.symbol.Global;
@@ -26,8 +29,8 @@ import com.parisoft.ca65.lsp.parser.symbol.StructDef;
 import com.parisoft.ca65.lsp.parser.symbol.Symbol;
 import com.parisoft.ca65.lsp.parser.symbol.UnnamedRef;
 import com.parisoft.ca65.lsp.parser.symbol.VarDef;
+import com.parisoft.ca65.lsp.util.Contexts;
 import com.parisoft.ca65.lsp.util.Paths;
-import com.parisoft.ca65.lsp.util.RuleContexts;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -73,10 +76,12 @@ import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.LOBYTE;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.LOWORD;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoVar.CPU.CPU_6502;
 import static com.parisoft.ca65.lsp.server.CA65LanguageServer.workspaceDir;
-import static com.parisoft.ca65.lsp.util.RuleContexts.positionOf;
+import static com.parisoft.ca65.lsp.util.Contexts.positionOf;
+import static com.parisoft.ca65.lsp.util.Strings.splitLineBreak;
 import static com.parisoft.ca65.lsp.util.Strings.unquote;
 import static java.lang.Integer.parseInt;
 import static java.lang.String.valueOf;
+import static java.lang.System.lineSeparator;
 import static java.util.concurrent.CompletableFuture.runAsync;
 
 @SuppressWarnings("Duplicates")
@@ -186,10 +191,59 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
         try {
             visit(parser.program());
-        } catch (DefineExpansionException e) {
-            String[] lines = code.split("\\r?\\n");
-            log.debug("Define expansion {} on line {}, checkpoint on {}: {}", e.getDefine().getName(), e.getPosition().getLine(), checkpoint, lines[e.getPosition().getLine()]);
+        } catch (ExpansionException e) {
+            reParse(e);
         }
+    }
+
+    private void reParse(ExpansionException e) {
+        Position position = e.getPosition();
+        String[] lines = splitLineBreak(code);
+        String originalLine = lines[position.getLine()];
+        Expansible def = e.getExpansible();
+
+        Symbol.Table.clean(path);
+
+        // Create the define reference
+        Expansion ref = new DefineRef(def.getName(), path, position,def)
+                .setParent(layer.peek())
+                .save();
+
+        // Get the define arguments
+        Expansible.Args args = def.getArgs(originalLine, position);
+
+        if (args.isInvalid()) {
+            return;
+        }
+
+        // Parse the arguments for new references
+        for (Expansible.Arg arg : args) {
+            CA65ErrorListener errorListener = new CA65ErrorListener();
+            CodePointCharStream input = CharStreams.fromString(arg.getText());
+
+            CA65Lexer lexer = new CA65Lexer(input);
+            lexer.removeErrorListeners();
+            lexer.addErrorListener(errorListener);
+
+            CA65Parser parser = new CA65Parser(new CommonTokenStream(lexer));
+            parser.removeErrorListeners();
+            parser.addErrorListener(errorListener);
+
+//            visit(parser.expression());
+        }
+
+        // Expand the define
+        String expandedLine = ref.expand(originalLine, position, args);
+
+        if (expandedLine.equals(originalLine)){
+            return;
+        }
+
+        lines[position.getLine()] = expandedLine;
+        String expandedCode = String.join(lineSeparator(), lines);
+
+        // Parse the expanded code
+        new CodeParser(expandedCode, path).doParse();
     }
 
     @Override
@@ -286,10 +340,15 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     }
 
     @Override
+    public String visitExpression(CA65Parser.ExpressionContext ctx) {
+        return visitChildren(ctx);
+    }
+
+    @Override
     public String visitMultiplicative(CA65Parser.MultiplicativeContext ctx) {
         if (eval) {
-            int left = parseInt(visit(ctx.expression(0)));
-            int right = parseInt(visit(ctx.expression(1)));
+            int left = parseInt(visit(ctx.expr(0)));
+            int right = parseInt(visit(ctx.expr(1)));
 
             if (ctx.MUL() != null) {
                 return valueOf(left * right);
@@ -316,8 +375,8 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     @Override
     public String visitAdditive(CA65Parser.AdditiveContext ctx) {
         if (eval) {
-            int left = parseInt(visit(ctx.expression(0)));
-            int right = parseInt(visit(ctx.expression(1)));
+            int left = parseInt(visit(ctx.expr(0)));
+            int right = parseInt(visit(ctx.expr(1)));
 
             if (ctx.PLUS() != null) {
                 return valueOf(left + right);
@@ -336,8 +395,8 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     @Override
     public String visitBitwise(CA65Parser.BitwiseContext ctx) {
         if (eval) {
-            int left = parseInt(visit(ctx.expression(0)));
-            int right = parseInt(visit(ctx.expression(1)));
+            int left = parseInt(visit(ctx.expr(0)));
+            int right = parseInt(visit(ctx.expr(1)));
 
             if (ctx.AND_() != null) {
                 return valueOf(left != 0 && right != 0);
@@ -356,7 +415,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     @Override
     public String visitNegation(CA65Parser.NegationContext ctx) {
         if (eval) {
-            return parseInt(visit(ctx.expression())) == 0 ? "0" : "1";
+            return parseInt(visit(ctx.expr())) == 0 ? "0" : "1";
         }
 
         return visitChildren(ctx);
@@ -370,7 +429,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     @Override
     public String visitExtraction(CA65Parser.ExtractionContext ctx) {
         if (eval) {
-            int value = parseInt(visit(ctx.expression()));
+            int value = parseInt(visit(ctx.expr()));
 
             if (ctx.LOBYTE() != null) {
                 return valueOf(LOBYTE(value));
@@ -391,7 +450,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     @Override
     public String visitUnary(CA65Parser.UnaryContext ctx) {
         if (eval) {
-            int value = parseInt(visit(ctx.expression()));
+            int value = parseInt(visit(ctx.expr()));
 
             if (ctx.PLUS() != null) {
                 return valueOf(value);
@@ -415,8 +474,8 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     @Override
     public String visitComparative(CA65Parser.ComparativeContext ctx) {
         if (eval) {
-            int left = parseInt(visit(ctx.expression(0)));
-            int right = parseInt(visit(ctx.expression(1)));
+            int left = parseInt(visit(ctx.expr(0)));
+            int right = parseInt(visit(ctx.expr(1)));
 
             if (ctx.EQ() != null) {
                 return valueOf(left == right ? 1 : 0);
@@ -459,22 +518,23 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         for (int i = 0; i < ctx.identifier().size(); i++) {
             CA65Parser.IdentifierContext identifier = ctx.identifier(i);
             String name = visitIdentifier(identifier);
-
-            Reference ref = new Reference(name, path, positionOf(identifier), ancestor)
+            ancestor = new Reference(name, path, positionOf(identifier), ancestor)
                     .setParent(layer.peek())
                     .save();
+        }
 
-            if (eval && i == ctx.identifier().size() - 1) {
-                Definition def = ref.getDefinition();
+        if (ancestor != null) {
+            if (eval) {
+                Definition def = ancestor.getDefinition();
                 return def instanceof Constant
                         ? valueOf(((Constant) def).getValue())
                         : null;
             }
 
-            ancestor = ref;
+            return ancestor.getName();
         }
 
-        return ancestor == null ? null : ancestor.getName();
+        return null;
     }
 
     @Override
@@ -519,7 +579,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         DefineDef define = defines.get(name);
 
         if (define != null) {
-            throw new DefineExpansionException(define, positionOf(ctx.Identifier().getSymbol()));
+            throw new ExpansionException(define, positionOf(ctx.Identifier().getSymbol()));
         }
 
         return name;
@@ -774,27 +834,23 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             define.addParam(paramName);
         }
 
-        Token defineToken = ctx.DEFINE().getSymbol();
-        define.setBody(RuleContexts.sourceText(ctx.expression()));
+        CA65Parser.ExpressionContext expression = ctx.expression();
+        String body = Contexts.sourceText(expression);
+        define.setBody(body);
 
-        CodePointCharStream input = CharStreams.fromString(RuleContexts.sourceText(ctx));
+        CodePointCharStream input = CharStreams.fromString(body);
         CA65Lexer lexer = new CA65Lexer(input);
         CA65Parser parser = new CA65Parser(new CommonTokenStream(lexer));
         lexer.removeErrorListeners();
         parser.removeErrorListeners();
 
-        CA65BaseVisitor<String> paramVisitor = new CA65BaseVisitor<String>() {
-            @Override
-            public String visitDefine(CA65Parser.DefineContext ctx) {
-                return visit(ctx.expression());
-            }
-
+        CA65BaseVisitor<String> argVisitor = new CA65BaseVisitor<String>() {
             @Override
             public String visitIdentifier(CA65Parser.IdentifierContext ctx) {
                 String name = ctx.Identifier().getSymbol().getText();
 
                 if (define.getParams().contains(name)) {
-                    new Reference(name, path, positionOf(ctx, positionOf(defineToken)), null)
+                    new Reference(name, path, positionOf(ctx, positionOf(expression)), null)
                             .setParent(define)
                             .save();
                 }
@@ -803,7 +859,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             }
         };
 
-        paramVisitor.visit(parser.program());
+        argVisitor.visit(parser.expression());
 
         return name;
     }

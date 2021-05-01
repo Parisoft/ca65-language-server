@@ -148,6 +148,18 @@ public class CA65BaseListener implements CA65Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterExpression(CA65Parser.ExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpression(CA65Parser.ExpressionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterMultiplicative(CA65Parser.MultiplicativeContext ctx) { }
 	/**
 	 * {@inheritDoc}

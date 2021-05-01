@@ -77,57 +77,63 @@ public interface CA65Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitInlineLabel(CA65Parser.InlineLabelContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link CA65Parser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpression(CA65Parser.ExpressionContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code Multiplicative}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitMultiplicative(CA65Parser.MultiplicativeContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Additive}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitAdditive(CA65Parser.AdditiveContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Bitwise}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitBitwise(CA65Parser.BitwiseContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Negation}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitNegation(CA65Parser.NegationContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Primary}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitPrimary(CA65Parser.PrimaryContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Extraction}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitExtraction(CA65Parser.ExtractionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Unary}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitUnary(CA65Parser.UnaryContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code Comparative}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */

@@ -57,14 +57,18 @@ inlineLabel
 
 //https://cc65.github.io/doc/ca65.html#ss5.5
 expression
-    : primaryExpression                                                         #Primary
-    | prefix=(PLUS|MINUS|BITNOT|'<'|'>'|'^') expression                         #Unary
-    | prefix=(LOBYTE|HIBYTE|LOWORD|HIWORD|BANKBYTE) LPAREN expression RPAREN    #Extraction
-    | expression op=(MUL|DIV|MOD|BITAND|BITXOR|SHL|SHR) expression              #Multiplicative
-    | expression op=(PLUS|MINUS|BITOR) expression                               #Additive
-    | expression op=(EQ|NE|LT|GT|LE|GE) expression                              #Comparative
-    | expression op=(AND_|XOR|OR) expression                                    #Bitwise
-    | prefix=NOT expression                                                     #Negation
+    : expr
+    ;
+
+expr
+    : primaryExpression                                                 #Primary
+    | prefix=(PLUS|MINUS|BITNOT|'<'|'>'|'^') expr                       #Unary
+    | prefix=(LOBYTE|HIBYTE|LOWORD|HIWORD|BANKBYTE) LPAREN expr RPAREN  #Extraction
+    | expr op=(MUL|DIV|MOD|BITAND|BITXOR|SHL|SHR) expr                  #Multiplicative
+    | expr op=(PLUS|MINUS|BITOR) expr                                   #Additive
+    | expr op=(EQ|NE|LT|GT|LE|GE) expr                                  #Comparative
+    | expr op=(AND_|XOR|OR) expr                                        #Bitwise
+    | prefix=NOT expr                                                   #Negation
     ;
 
 primaryExpression
@@ -1028,7 +1032,7 @@ JVC: J V C;
 /* END Opcodes */
 
 COMMENT
-    : ';' ~ [\r\n]* -> channel(HIDDEN)
+    : ';' ~ [\r?\n]* -> channel(HIDDEN)
     ;
 
 C_COMMENT
@@ -1044,7 +1048,7 @@ CHAR
     ;
 
 EOL
-    : [\r\n]+
+    : [\r?\n]+
     ;
 
 WS

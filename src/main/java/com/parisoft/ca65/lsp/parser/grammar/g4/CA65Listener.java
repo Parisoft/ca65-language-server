@@ -118,98 +118,108 @@ public interface CA65Listener extends ParseTreeListener {
 	 */
 	void exitInlineLabel(CA65Parser.InlineLabelContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link CA65Parser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpression(CA65Parser.ExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CA65Parser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpression(CA65Parser.ExpressionContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code Multiplicative}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 */
 	void enterMultiplicative(CA65Parser.MultiplicativeContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code Multiplicative}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 */
 	void exitMultiplicative(CA65Parser.MultiplicativeContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code Additive}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 */
 	void enterAdditive(CA65Parser.AdditiveContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code Additive}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 */
 	void exitAdditive(CA65Parser.AdditiveContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code Bitwise}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 */
 	void enterBitwise(CA65Parser.BitwiseContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code Bitwise}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 */
 	void exitBitwise(CA65Parser.BitwiseContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code Negation}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 */
 	void enterNegation(CA65Parser.NegationContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code Negation}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 */
 	void exitNegation(CA65Parser.NegationContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code Primary}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 */
 	void enterPrimary(CA65Parser.PrimaryContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code Primary}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 */
 	void exitPrimary(CA65Parser.PrimaryContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code Extraction}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 */
 	void enterExtraction(CA65Parser.ExtractionContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code Extraction}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 */
 	void exitExtraction(CA65Parser.ExtractionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code Unary}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 */
 	void enterUnary(CA65Parser.UnaryContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code Unary}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 */
 	void exitUnary(CA65Parser.UnaryContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code Comparative}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 */
 	void enterComparative(CA65Parser.ComparativeContext ctx);
 	/**
 	 * Exit a parse tree produced by the {@code Comparative}
-	 * labeled alternative in {@link CA65Parser#expression}.
+	 * labeled alternative in {@link CA65Parser#expr}.
 	 * @param ctx the parse tree
 	 */
 	void exitComparative(CA65Parser.ComparativeContext ctx);

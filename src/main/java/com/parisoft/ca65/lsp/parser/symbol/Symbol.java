@@ -93,7 +93,7 @@ public abstract class Symbol {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "{" +
-                "name='" + name + '\'' +
+                "text='" + name + '\'' +
                 ", path=" + path +
                 ", pos=" + pos +
                 ", parent=" + parent +
