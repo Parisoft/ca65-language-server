@@ -267,8 +267,14 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
         System.arraycopy(expandedLines, 0, mergedLines, position.getLine(), expandedLines.length);
 
-        if (position.getLine() + 1 < originalLines.length && originalLines.length - position.getLine() - 1 > 0) {
-            System.arraycopy(originalLines, position.getLine() + 1, mergedLines, position.getLine() + expandedLines.length, originalLines.length - position.getLine() - 1);
+        int srcPos = position.getLine() + 1;
+        int dstPos = position.getLine() + expandedLines.length;
+        int length = originalLines.length - position.getLine() - 1;
+
+        if (length > 0
+                && srcPos + length <= originalLines.length
+                && dstPos + length <= mergedLines.length) {
+            System.arraycopy(originalLines, srcPos, mergedLines, dstPos, length);
         }
 
         String expandedCode = String.join(lineSeparator(), mergedLines);
