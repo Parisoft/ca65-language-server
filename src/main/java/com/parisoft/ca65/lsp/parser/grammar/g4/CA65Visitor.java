@@ -282,4 +282,18 @@ public interface CA65Visitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitControl(CA65Parser.ControlContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ExpansionPush}
+	 * labeled alternative in {@link CA65Parser#expansion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpansionPush(CA65Parser.ExpansionPushContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code ExpansionPop}
+	 * labeled alternative in {@link CA65Parser#expansion}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpansionPop(CA65Parser.ExpansionPopContext ctx);
 }

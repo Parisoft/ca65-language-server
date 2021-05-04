@@ -12,6 +12,7 @@ line
     | statement
     | storage
     | control
+    | expansion
     ;
 
 instruction
@@ -195,6 +196,7 @@ macline
     | define
     | storage
     | control
+    | expansion
     ;
 
 storage
@@ -203,6 +205,11 @@ storage
 
 control
     : command=Control ((expression (COMMA expression)*) | (PLUS|MINUS))?
+    ;
+
+expansion
+    : IMMEDIATE 'expansion-push' name=Identifier    #ExpansionPush
+    | IMMEDIATE 'expansion-pop' offset=NUMBER       #ExpansionPop
     ;
 
 fragment A

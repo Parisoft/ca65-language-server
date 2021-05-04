@@ -463,4 +463,28 @@ public interface CA65Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitControl(CA65Parser.ControlContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ExpansionPush}
+	 * labeled alternative in {@link CA65Parser#expansion}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpansionPush(CA65Parser.ExpansionPushContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ExpansionPush}
+	 * labeled alternative in {@link CA65Parser#expansion}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpansionPush(CA65Parser.ExpansionPushContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code ExpansionPop}
+	 * labeled alternative in {@link CA65Parser#expansion}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpansionPop(CA65Parser.ExpansionPopContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code ExpansionPop}
+	 * labeled alternative in {@link CA65Parser#expansion}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpansionPop(CA65Parser.ExpansionPopContext ctx);
 }

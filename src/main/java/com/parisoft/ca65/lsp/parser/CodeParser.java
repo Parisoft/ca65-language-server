@@ -21,6 +21,7 @@ import com.parisoft.ca65.lsp.parser.symbol.Global;
 import com.parisoft.ca65.lsp.parser.symbol.Import;
 import com.parisoft.ca65.lsp.parser.symbol.Include;
 import com.parisoft.ca65.lsp.parser.symbol.LabelDef;
+import com.parisoft.ca65.lsp.parser.symbol.MacroDef;
 import com.parisoft.ca65.lsp.parser.symbol.MacroRef;
 import com.parisoft.ca65.lsp.parser.symbol.ParamDef;
 import com.parisoft.ca65.lsp.parser.symbol.ProcDef;
@@ -51,11 +52,10 @@ import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
@@ -77,7 +77,6 @@ import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.LOBYTE;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.LOWORD;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoVar.CPU.CPU_6502;
 import static com.parisoft.ca65.lsp.server.CA65LanguageServer.workspaceDir;
-import static com.parisoft.ca65.lsp.util.Contexts.positionOf;
 import static com.parisoft.ca65.lsp.util.Strings.splitLineBreak;
 import static com.parisoft.ca65.lsp.util.Strings.unquote;
 import static java.lang.Integer.parseInt;
@@ -93,8 +92,8 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     private String code;
     private Path path;
+    private int offset = 0;
     private int checkpoint = 0;
-    private int paramcount = 0;
     private boolean eval = false;
     private int cpu = CPU_6502.value();
     private int asize = 8;
@@ -102,12 +101,13 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     private final Deque<Integer> cpuStack = new ArrayDeque<>();
     private final Deque<Integer> asizeStack = new ArrayDeque<>();
     private final Deque<Integer> isizeStack = new ArrayDeque<>();
-    private final List<String> macros = new ArrayList<>();
+    private final Map<String, MacroDef> macros = new HashMap<>();
     private final Map<String, DefineDef> defines = new HashMap<>();
+    private final Deque<String> expansion = new ArrayDeque<>();
     private final Deque<Symbol> layer = new ArrayDeque<>();
     private final Map<String, Function<CA65Parser.ControlContext, String>> controlCommands = new HashMap<>();
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         Path path = Paths.fromURI(args[0]);
         new CodeParser(path).doParse();
     }
@@ -591,7 +591,24 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 case ".VERSION": //TODO find out a way to get version
                     return "0";
                 case ".PARAMCOUNT":
-                    return valueOf(paramcount);
+                    try {
+                        String expansionName = expansion.element();
+                        DefineDef define = defines.get(expansionName);
+
+                        if (define != null) {
+                            return valueOf(define.getParams().size());
+                        }
+
+                        MacroDef macro = macros.get(expansionName);
+
+                        if (macro != null) {
+                            return valueOf(macro.getParams().size());
+                        }
+
+                        return "0";
+                    } catch (NoSuchElementException e) {
+                        return "0";
+                    }
                 default:
                     return valueOf(PseudoVar.CPU.valueOf(var).value());
             }
@@ -920,6 +937,20 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         return controlCommands.getOrDefault(command, this::visitUnknownControl).apply(ctx);
     }
 
+    @Override
+    public String visitExpansionPush(CA65Parser.ExpansionPushContext ctx) {
+        expansion.push(ctx.name.getText());
+        offset--;
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public String visitExpansionPop(CA65Parser.ExpansionPopContext ctx) {
+        expansion.pop();
+        offset -= parseInt(ctx.offset.getText());
+        return visitChildren(ctx);
+    }
+
     private String visitImport(CA65Parser.ControlContext ctx) {
         for (CA65Parser.ExpressionContext expression : ctx.expression()) {
             String name = visit(expression);
@@ -1020,6 +1051,26 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     private String visitUnknownControl(CA65Parser.ControlContext ctx) {
         log.warn("Unknown control command: {}", ctx.command.getText());
         return visitChildren(ctx);
+    }
+
+    private Position positionOf(ParserRuleContext ctx) {
+        return addOffset(Contexts.positionOf(ctx));
+    }
+
+    private Position positionOf(ParserRuleContext ctx, Position posOffset) {
+        return addOffset(Contexts.positionOf(ctx, posOffset));
+    }
+
+    private Position positionOf(Token token) {
+        return addOffset(Contexts.positionOf(token));
+    }
+
+    private Position addOffset(Position position) {
+        if (offset != 0) {
+            position.setLine(position.getLine() + offset);
+        }
+
+        return position;
     }
 
     private void setCheckpoint(ParserRuleContext ctx) {
