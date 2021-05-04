@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.parisoft.ca65.lsp.util.Strings.splitLineBreak;
+
 public class Expansion extends Reference {
 
     final Expansible definition;
@@ -17,16 +19,18 @@ public class Expansion extends Reference {
         this.definition = definition;
     }
 
-    public String expand(String line, Position position, Expansible.Args args) {
+    public String[] expand(String line, Position position, Expansible.Args args) {
         Map<String, String> argMap = new HashMap<>();
 
         for (int i = 0; i < definition.params.size(); i++) {
             argMap.put(definition.params.get(i), args.get(i).text);
         }
 
-        return text = line.substring(0, position.getCharacter())
+         text = line.substring(0, position.getCharacter())
                 + new StringSubstitutor(argMap).replace(definition.body)
                 + (args.end < line.length() ? line.substring(args.end) : "");
+
+        return splitLineBreak(text);
     }
 
     @Override
