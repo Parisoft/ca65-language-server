@@ -2,7 +2,6 @@ package com.parisoft.ca65.lsp.parser;
 
 import com.parisoft.ca65.lsp.parser.exception.ExpansionException;
 import com.parisoft.ca65.lsp.parser.grammar.CA65Lexer;
-import com.parisoft.ca65.lsp.parser.grammar.CA65Token;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65BaseVisitor;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Parser;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Visitor;
@@ -93,7 +92,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     private String code;
     private Path path;
     private int offset = 0;
-    private int checkpoint = 0;
     private boolean eval = false;
     private int cpu = CPU_6502.value();
     private int asize = 8;
@@ -169,6 +167,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     private void doParse() {
         if (code == null) {
             log.debug("Parsing {} w/o code", path);
+
             try {
                 code = Paths.read(path);
             } catch (IOException e) {
@@ -295,7 +294,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitInstruction(CA65Parser.InstructionContext ctx) {
-        setCheckpoint(ctx);
         return visitChildren(ctx);
     }
 
@@ -321,8 +319,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitLabelEqu(CA65Parser.LabelEquContext ctx) {
-        setCheckpoint(ctx);
-
         String name = visitIdentifier(ctx.identifier());
         new LabelDef(name, path, positionOf(ctx.identifier()))
                 .setParent(layer.peek())
@@ -339,8 +335,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             return visitInlineLabel(ctx.inlineLabel());
         }
 
-        setCheckpoint(ctx);
-
         String name = visit(ctx.identifier());
         new LabelDef(name, path, positionOf(ctx.identifier()))
                 .setParent(layer.peek())
@@ -351,8 +345,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitVarDef(CA65Parser.VarDefContext ctx) {
-        setCheckpoint(ctx);
-
         String name = visitIdentifier(ctx.identifier());
         int value = parseInt(eval(ctx.expression()));
         new VarDef(name, path, positionOf(ctx.identifier()), value)
@@ -364,8 +356,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitInlineLabel(CA65Parser.InlineLabelContext ctx) {
-        setCheckpoint(ctx);
-
         String name = ctx.identifier() != null ? visitIdentifier(ctx.identifier()) : "";
         Symbol symbol = new LabelDef(name, path, positionOf(ctx.identifier()))
                 .setParent(layer.peek())
@@ -663,8 +653,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitProc(CA65Parser.ProcContext ctx) {
-        setCheckpoint(ctx);
-
         String name = visitIdentifier(ctx.identifier());
         Symbol proc = new ProcDef(name, path, positionOf(ctx.identifier()))
                 .setParent(layer.peek())
@@ -679,8 +667,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitScope(CA65Parser.ScopeContext ctx) {
-        setCheckpoint(ctx);
-
         String name = ctx.identifier() != null ? visitIdentifier(ctx.identifier()) : "";
         Position position = positionOf(ctx.identifier() != null ? ctx.identifier() : ctx);
         ScopeDef scope = new ScopeDef(name, path, position)
@@ -696,8 +682,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitEnumerator(CA65Parser.EnumeratorContext ctx) {
-        setCheckpoint(ctx);
-
         if (ctx.identifier() != null) {
             String name = visitIdentifier(ctx.identifier());
             EnumDef enumDcl = new EnumDef(name, path, positionOf(ctx.identifier()))
@@ -711,8 +695,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         CA65Parser.IdentifierContext identifier;
 
         for (CA65Parser.EnumMemberContext member : ctx.enumMember()) {
-            setCheckpoint(member);
-
             if (member.labelEqu() != null) {
                 identifier = member.labelEqu().identifier();
                 value = parseInt(visit(member.labelEqu().expression()));
@@ -739,8 +721,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitStruct(CA65Parser.StructContext ctx) {
-        setCheckpoint(ctx);
-
         StructDef structDef = null;
         int structSize = 0;
 
@@ -760,7 +740,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 structSize += parseInt(visitUnion(member.union()));
             } else {
                 CA65Parser.FieldContext field = member.field();
-                setCheckpoint(field);
 
                 String name = field.identifier() != null ? visitIdentifier(field.identifier()) : null;
                 Position pos = positionOf(field.identifier() != null ? field.identifier() : field.expression());
@@ -791,8 +770,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitUnion(CA65Parser.UnionContext ctx) {
-        setCheckpoint(ctx);
-
         StructDef unionDef = null;
         int unionSize = 0;
 
@@ -811,7 +788,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 unionSize = Math.max(unionSize, parseInt(visitUnion(member.union())));
             } else {
                 CA65Parser.FieldContext field = member.field();
-                setCheckpoint(field);
 
                 String name = field.identifier() != null ? visitIdentifier(field.identifier()) : null;
                 Position pos = positionOf(field.identifier() != null ? field.identifier() : field.expression());
@@ -872,8 +848,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitDefine(CA65Parser.DefineContext ctx) {
-        setCheckpoint(ctx);
-
         String name = visitIdentifier(ctx.name);
         DefineDef define = new DefineDef(name, path, positionOf(ctx.name))
                 .setParent(layer.peekFirst())
@@ -924,16 +898,12 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitStorage(CA65Parser.StorageContext ctx) {
-        setCheckpoint(ctx);
         return visitChildren(ctx);
     }
 
     @Override
     public String visitControl(CA65Parser.ControlContext ctx) {
-        setCheckpoint(ctx);
-
         String command = ctx.command.getText().substring(1).toUpperCase();
-
         return controlCommands.getOrDefault(command, this::visitUnknownControl).apply(ctx);
     }
 
@@ -1071,10 +1041,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         }
 
         return position;
-    }
-
-    private void setCheckpoint(ParserRuleContext ctx) {
-        checkpoint = ((CA65Token) ctx.start).getPrvIndex();
     }
 
     private String eval(ParserRuleContext ctx) {
