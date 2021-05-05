@@ -1,5 +1,8 @@
 package com.parisoft.ca65.lsp.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
@@ -10,6 +13,7 @@ import java.util.Set;
 
 public class Paths {
 
+    private static final Logger log = LoggerFactory.getLogger(Paths.class);
     private static final Set<String> extensions = new HashSet<>(Arrays.asList("asm", "s", "a65", "inc", "i"));
 
     public static Path get(String s) {
@@ -31,8 +35,13 @@ public class Paths {
         return null;
     }
 
-    public static String read(Path path) throws IOException {
-        return new String(Files.readAllBytes(path));
+    public static String read(Path path) {
+        try {
+            return new String(Files.readAllBytes(path));
+        } catch (IOException e) {
+            log.error("Could not read a file for parse: {}", path, e);
+            return null;
+        }
     }
 
     public static boolean isASM(Path path) {

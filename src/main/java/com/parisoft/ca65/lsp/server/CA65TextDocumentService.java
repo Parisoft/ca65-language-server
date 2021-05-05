@@ -135,7 +135,9 @@ public class CA65TextDocumentService implements TextDocumentService {
         log.debug("didOpen({})", params);
         String code = params.getTextDocument().getText();
         Path path = Paths.fromURI(params.getTextDocument().getUri());
-        new CodeParser(code, path).parse();
+        new CodeParser(path)
+                .save(code)
+                .parse();
     }
 
     @Override
@@ -144,7 +146,9 @@ public class CA65TextDocumentService implements TextDocumentService {
         Path path = Paths.fromURI(params.getTextDocument().getUri());
 
         for (TextDocumentContentChangeEvent change : params.getContentChanges()) {
-            new CodeParser(change.getText(), path).parse();
+            new CodeParser(path)
+                    .save(change.getText())
+                    .parse();
         }
     }
 

@@ -55,6 +55,8 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
@@ -81,12 +83,12 @@ import static com.parisoft.ca65.lsp.util.Strings.unquote;
 import static java.lang.Integer.parseInt;
 import static java.lang.String.valueOf;
 import static java.lang.System.lineSeparator;
-import static java.util.concurrent.CompletableFuture.runAsync;
 
 @SuppressWarnings("Duplicates")
 public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65Visitor<String>, Runnable {
 
     private static final Logger log = LoggerFactory.getLogger(CodeParser.class);
+    private static final Map<Path, String> codeCache = new ConcurrentHashMap<>();
     public static final ExecutorService pool = Executors.newSingleThreadExecutor();//ThreadPool.newThreadPool();
 
     private String code;
@@ -107,11 +109,10 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     public static void main(String[] args) {
         Path path = Paths.fromURI(args[0]);
-        new CodeParser(path).doParse();
+        new CodeParser(path).run();
     }
 
-    public CodeParser(String code, Path path) {
-        this.code = code;
+    public CodeParser(Path path) {
         this.path = path;
 
         controlCommands.put(VOCABULARY.getSymbolicName(IMPORT), this::visitImport);
@@ -124,10 +125,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         controlCommands.put(VOCABULARY.getSymbolicName(AUTOIMPORT), this::visitAutoImport);
 
         layer.push(new ScopeDef("", path, new Position(0, 0))); // Push the global scope
-    }
-
-    public CodeParser(Path path) {
-        this(null, path);
     }
 
     public String getCode() {
@@ -144,15 +141,16 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 Files.walk(workspace, FileVisitOption.FOLLOW_LINKS)
                         .filter(Paths::isASM)
                         .map(CodeParser::new)
-                        .forEach(codeParser -> runAsync(codeParser::doParse));
+                        .forEach(CompletableFuture::runAsync);
             } catch (IOException e) {
-                log.warn("Could not read from directory {}: {}", workspace, e.toString());
+                log.warn("Could not read workspace directory {}: {}", workspace, e.toString());
             }
         });
     }
 
-    public void parse() {
-        pool.submit(this);
+    public CodeParser save(String code) {
+        codeCache.put(path, code);
+        return this;
     }
 
     @Override
@@ -161,27 +159,25 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 .parallel()
                 .map(CodeParser::new)
                 .forEach(pool::submit);
-        doParse();
+
+        parse(getCode(path));
     }
 
-    private void doParse() {
-        if (code == null) {
-            log.debug("Parsing {} w/o code", path);
+    public void parse() {
+        pool.submit(this);
+    }
 
-            try {
-                code = Paths.read(path);
-            } catch (IOException e) {
-                log.error("Could not read a file for parse: {}", path, e);
-                return;
-            }
-        } else {
-            log.debug("Parsing {} with code", path);
+    private void parse(String code) {
+        if (code == null) {
+            return;
         }
 
-        CA65Parser parser = newParser(code);
+        log.debug("Parsing {}", path);
+
+        this.code = code;
 
         try {
-            visit(parser.program());
+            visit(newParser(code).program());
         } catch (ExpansionException e) {
             reParse(e);
         }
@@ -279,7 +275,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         String expandedCode = String.join(lineSeparator(), mergedLines);
 
         // Parse the expanded code
-        new CodeParser(expandedCode, path).doParse();
+        new CodeParser(path).parse(expandedCode);
     }
 
     @Override
@@ -1003,8 +999,9 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             Path tmpPath = path;
             String tmpCode = code;
             path = incPath;
-            code = null;
-            doParse();
+
+            parse(getCode(incPath));
+
             path = tmpPath;
             code = tmpCode;
         } else {
@@ -1051,6 +1048,10 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         } finally {
             eval = false;
         }
+    }
+
+    private static String getCode(Path path) {
+        return codeCache.computeIfAbsent(path, Paths::read);
     }
 
     private static CA65Parser newParser(String code) {
