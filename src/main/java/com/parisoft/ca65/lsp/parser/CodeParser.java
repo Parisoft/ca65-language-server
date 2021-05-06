@@ -1141,11 +1141,19 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     }
 
     private Position positionOf(ParserRuleContext ctx) {
-        return addOffset(Contexts.positionOf(ctx));
+        try {
+            return expansion.element().getPos();
+        } catch (NoSuchElementException e) {
+            return addOffset(Contexts.positionOf(ctx));
+        }
     }
 
     private Position positionOf(ParserRuleContext ctx, Position posOffset) {
-        return addOffset(Contexts.positionOf(ctx, posOffset));
+        try {
+            return expansion.element().getPos();
+        } catch (NoSuchElementException e) {
+            return addOffset(Contexts.positionOf(ctx, posOffset));
+        }
     }
 
     private Position addOffset(Position position) {
