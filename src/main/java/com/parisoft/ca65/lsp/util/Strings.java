@@ -18,11 +18,28 @@ public class Strings {
         return s;
     }
 
-    public static String[] splitLineBreak(String s) {
+    public static String[] splitLines(String s) {
         return lineBreakRegex.split(s);
     }
 
     public static int countLines(String s) {
-        return lineBreakRegex.matcher(s).groupCount() + 1;
+        int count = 1;
+        int index = -1;
+
+        while ((index = s.indexOf('\n', index + 1)) >= 0) {
+            count++;
+        }
+
+        return count;
+    }
+
+    public static int indexOfNonSpace(String s, int fromIndex) {
+        int index = fromIndex;
+
+        while (index < s.length() && Character.isWhitespace(s.charAt(index))) {
+            index++;
+        }
+
+        return index;
     }
 }

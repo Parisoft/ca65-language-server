@@ -5,7 +5,8 @@ import org.eclipse.lsp4j.Position;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
+
+import static com.parisoft.ca65.lsp.util.Strings.indexOfNonSpace;
 
 public abstract class Expansible extends Definition {
 
@@ -27,10 +28,10 @@ public abstract class Expansible extends Definition {
     }
 
     public void setBody(String body) {
-        for (String param : params) {
-            Pattern pattern = Pattern.compile("([^a-zA-Z0-9_@\\\\?$])(" + param + ")([^a-zA-Z0-9_@\\\\?$])");
-            body = pattern.matcher(body).replaceAll("$1\\${" + param + "}$2");
-        }
+//        for (String param : params) {
+//            Pattern pattern = Pattern.compile("([^a-zA-Z0-9_@\\\\?$])(" + param + ")([^a-zA-Z0-9_@\\\\?$])");
+//            body = pattern.matcher(body).replaceAll("$1\\${" + param + "}$2");
+//        }
 
         this.body = body;
     }
@@ -40,34 +41,43 @@ public abstract class Expansible extends Definition {
     }
 
     public Args getArgs(String line, Position position) {
-        int startIndex = position.getCharacter() + name.length();
+        int startIndex = indexOfNonSpace(line, position.getCharacter() + name.length());
         int endIndex = startIndex;
+        int closeIndex = 0;
         int brackets = 0;
         Args args = new Args();
 
         while (endIndex < line.length() && args.size() < params.size()) {
-            switch (line.charAt(endIndex++)) {
+            switch (line.charAt(endIndex)) {
                 case '{':
                     brackets++;
                     break;
                 case '}':
                     brackets--;
+                    closeIndex = endIndex;
                     break;
                 case ',':
                     if (brackets == 0) {
-                        if (line.charAt(startIndex) == '{' && line.charAt(endIndex) == '}') {
-                            args.add(new Arg(line.substring(startIndex + 1, endIndex - 1), startIndex, endIndex));
+                        if (line.charAt(startIndex) == '{') {
+                            args.add(new Arg(line.substring(startIndex + 1, closeIndex), startIndex, endIndex));
                         } else {
                             args.add(new Arg(line.substring(startIndex, endIndex), startIndex, endIndex));
                         }
 
-                        startIndex = endIndex;
+                        startIndex = endIndex = indexOfNonSpace(line, endIndex + 1);
                     }
+                    continue;
             }
+
+            endIndex++;
         }
 
         if (endIndex == line.length() && brackets == 0) {
-            args.add(new Arg(line.substring(startIndex, endIndex), startIndex, endIndex));
+            if (line.charAt(startIndex) == '{') {
+                args.add(new Arg(line.substring(startIndex + 1, closeIndex), startIndex, endIndex));
+            } else {
+                args.add(new Arg(line.substring(startIndex, endIndex), startIndex, endIndex));
+            }
         }
 
         args.end = endIndex;

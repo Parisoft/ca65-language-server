@@ -8,7 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.parisoft.ca65.lsp.util.Strings.countLines;
-import static com.parisoft.ca65.lsp.util.Strings.splitLineBreak;
+import static com.parisoft.ca65.lsp.util.Strings.splitLines;
 import static java.lang.System.lineSeparator;
 
 public class Expansion extends Reference {
@@ -40,7 +40,7 @@ public class Expansion extends Reference {
                 + lineSeparator() + text + lineSeparator()
                 + "#expansion-pop " + countLines(text);
 
-        return splitLineBreak(expansion);
+        return splitLines(expansion);
     }
 
     @Override
@@ -50,5 +50,9 @@ public class Expansion extends Reference {
 
     public String getText() {
         return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
     }
 }

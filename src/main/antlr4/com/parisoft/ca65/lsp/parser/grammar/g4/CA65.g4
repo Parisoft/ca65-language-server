@@ -180,7 +180,7 @@ macro
 macline
     : LOCAL identifier (COMMA identifier)*
     | EXITMACRO
-    | MACRO identifier
+    | MACRO name=identifier (param+=identifier (COMMA param+=identifier)*)? (EOL macline?)+
     | instruction
     | labelEqu
     | labelDef
