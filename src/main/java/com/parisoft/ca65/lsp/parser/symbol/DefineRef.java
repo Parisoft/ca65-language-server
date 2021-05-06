@@ -6,7 +6,7 @@ import java.nio.file.Path;
 
 public class DefineRef extends Expansion {
 
-    public DefineRef(String name, Path path, Position pos,Expansible definition) {
-        super(name, path, pos, definition);
+    public DefineRef(String name, Path path, Position pos, Expansible definition, Expansible.Args args) {
+        super(name, path, pos, definition, args);
     }
 }

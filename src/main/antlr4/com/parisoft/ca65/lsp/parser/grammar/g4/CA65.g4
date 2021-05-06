@@ -208,8 +208,8 @@ control
     ;
 
 expansion
-    : IMMEDIATE 'expansion-push' name=Identifier    #ExpansionPush
-    | IMMEDIATE 'expansion-pop' offset=NUMBER       #ExpansionPop
+    : IMMEDIATE 'expansion-push' name=Identifier col=NUMBER source=STRING   #ExpansionPush
+    | IMMEDIATE 'expansion-pop' offset=NUMBER                               #ExpansionPop
     ;
 
 fragment A

@@ -11,7 +11,7 @@ import static com.parisoft.ca65.lsp.util.Strings.indexOfNonSpace;
 public abstract class Expansible extends Definition {
 
     final List<String> params = new ArrayList<>();
-    String body;
+    private String body;
 
     Expansible(String name, Path path, Position pos) {
         super(name, path, pos);
@@ -28,11 +28,6 @@ public abstract class Expansible extends Definition {
     }
 
     public void setBody(String body) {
-//        for (String param : params) {
-//            Pattern pattern = Pattern.compile("([^a-zA-Z0-9_@\\\\?$])(" + param + ")([^a-zA-Z0-9_@\\\\?$])");
-//            body = pattern.matcher(body).replaceAll("$1\\${" + param + "}$2");
-//        }
-
         this.body = body;
     }
 
@@ -58,12 +53,7 @@ public abstract class Expansible extends Definition {
                     break;
                 case ',':
                     if (brackets == 0) {
-                        if (line.charAt(startIndex) == '{') {
-                            args.add(new Arg(line.substring(startIndex + 1, closeIndex), startIndex, endIndex));
-                        } else {
-                            args.add(new Arg(line.substring(startIndex, endIndex), startIndex, endIndex));
-                        }
-
+                        args.add(line, startIndex, endIndex, closeIndex);
                         startIndex = endIndex = indexOfNonSpace(line, endIndex + 1);
                     }
                     continue;
@@ -73,11 +63,7 @@ public abstract class Expansible extends Definition {
         }
 
         if (endIndex == line.length() && brackets == 0) {
-            if (line.charAt(startIndex) == '{') {
-                args.add(new Arg(line.substring(startIndex + 1, closeIndex), startIndex, endIndex));
-            } else {
-                args.add(new Arg(line.substring(startIndex, endIndex), startIndex, endIndex));
-            }
+            args.add(line, startIndex, endIndex, closeIndex);
         }
 
         args.end = endIndex;
@@ -126,6 +112,14 @@ public abstract class Expansible extends Definition {
 
         void setInvalid(boolean invalid) {
             this.invalid = invalid;
+        }
+
+        void add(String line, int startIndex, int endIndex, int closeIndex) {
+            if (line.charAt(startIndex) == '{') {
+                add(new Arg(line.substring(startIndex + 1, closeIndex), startIndex, endIndex));
+            } else {
+                add(new Arg(line.substring(startIndex, endIndex), startIndex, endIndex));
+            }
         }
     }
 }

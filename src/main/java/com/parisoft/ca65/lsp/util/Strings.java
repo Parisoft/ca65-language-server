@@ -22,17 +22,6 @@ public class Strings {
         return lineBreakRegex.split(s);
     }
 
-    public static int countLines(String s) {
-        int count = 1;
-        int index = -1;
-
-        while ((index = s.indexOf('\n', index + 1)) >= 0) {
-            count++;
-        }
-
-        return count;
-    }
-
     public static int indexOfNonSpace(String s, int fromIndex) {
         int index = fromIndex;
 
