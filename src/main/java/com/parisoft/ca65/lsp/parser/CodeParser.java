@@ -83,6 +83,8 @@ import static com.parisoft.ca65.lsp.parser.lang.PseudoFunc.LOWORD;
 import static com.parisoft.ca65.lsp.parser.lang.PseudoVar.CPU.CPU_6502;
 import static com.parisoft.ca65.lsp.server.CA65LanguageServer.workspaceDir;
 import static com.parisoft.ca65.lsp.util.Contexts.sourceText;
+import static com.parisoft.ca65.lsp.util.Strings.isBlank;
+import static com.parisoft.ca65.lsp.util.Strings.isNotBlank;
 import static com.parisoft.ca65.lsp.util.Strings.repeat;
 import static com.parisoft.ca65.lsp.util.Strings.splitLines;
 import static com.parisoft.ca65.lsp.util.Strings.unquote;
@@ -513,9 +515,12 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         if (ancestor != null) {
             if (eval) {
                 Definition def = ancestor.getDefinition();
-                return def instanceof Constant
-                        ? valueOf(((Constant) def).getValue())
-                        : null;
+
+                if (def instanceof Constant) {
+                    return valueOf(((Constant) def).getValue());
+                }
+
+                throw new NonConstantException();
             }
 
             return ancestor.getName();
@@ -781,7 +786,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 condition = parseInt(eval(ctx.expression())) != 0;
                 break;
             case ".IFBLANK":
-                condition = unquote(eval(ctx.expression())).isEmpty();
+                condition = isBlank(unquote(visitExpression(ctx.expression())));
                 break;
             case ".IFCONST":
                 try {
@@ -795,7 +800,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 condition = macros.get(eval(ctx.expression())) instanceof DefineDef;
                 break;
             case ".IFNBLANK":
-                condition = unquote(eval(ctx.expression())).length() > 0;
+                condition = isNotBlank(unquote(visitExpression(ctx.expression())));
                 break;
             case ".IFNDEF":
                 condition = !(macros.get(eval(ctx.expression())) instanceof DefineDef);

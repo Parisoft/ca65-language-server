@@ -38,4 +38,24 @@ public class Strings {
         Arrays.fill(chars, c);
         return new String(chars);
     }
+
+    public static boolean isNotBlank(CharSequence cs) {
+        return !isBlank(cs);
+    }
+
+    public static boolean isBlank(CharSequence cs) {
+        int strLen = cs == null ? 0 : cs.length();
+
+        if (strLen == 0) {
+            return true;
+        }
+
+        for(int i = 0; i < strLen; ++i) {
+            if (!Character.isWhitespace(cs.charAt(i))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
