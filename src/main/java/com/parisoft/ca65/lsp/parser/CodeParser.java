@@ -2,6 +2,7 @@ package com.parisoft.ca65.lsp.parser;
 
 import com.parisoft.ca65.lsp.parser.exception.ExitMacroException;
 import com.parisoft.ca65.lsp.parser.exception.ExpansionException;
+import com.parisoft.ca65.lsp.parser.exception.NonConstantException;
 import com.parisoft.ca65.lsp.parser.grammar.CA65Lexer;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65BaseVisitor;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Parser;
@@ -65,6 +66,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.AUTOIMPORT;
+import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.CPU;
 import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.EXPORT;
 import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.EXPORTZP;
 import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.GLOBAL;
@@ -772,11 +774,82 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitIfStmt(CA65Parser.IfStmtContext ctx) {
-        return visitChildren(ctx);
+        boolean condition = false;
+
+        switch (ctx.type.getText().toUpperCase()) {
+            case ".IF":
+                condition = parseInt(eval(ctx.expression())) != 0;
+                break;
+            case ".IFBLANK":
+                condition = unquote(eval(ctx.expression())).isEmpty();
+                break;
+            case ".IFCONST":
+                try {
+                    eval(ctx.expression());
+                    condition = true;
+                } catch (NonConstantException e) {
+                    condition = false;
+                }
+                break;
+            case ".IFDEF":
+                condition = macros.get(eval(ctx.expression())) instanceof DefineDef;
+                break;
+            case ".IFNBLANK":
+                condition = unquote(eval(ctx.expression())).length() > 0;
+                break;
+            case ".IFNDEF":
+                condition = !(macros.get(eval(ctx.expression())) instanceof DefineDef);
+                break;
+            case ".IFNREF":
+                //TODO ifnref
+                break;
+            case ".IFP02":
+                condition = (cpu & PseudoVar.CPU.CPU_ISET_6502.value()) != 0;
+                break;
+            case ".IFP4510":
+                condition = (cpu & PseudoVar.CPU.CPU_ISET_4510.value()) != 0;
+                break;
+            case ".IFP816":
+                condition = (cpu & PseudoVar.CPU.CPU_ISET_65816.value()) != 0;
+                break;
+            case ".IFPC02":
+                condition = (cpu & PseudoVar.CPU.CPU_ISET_65C02.value()) != 0;
+                break;
+            case ".IFPDTV":
+                condition = (cpu & PseudoVar.CPU.CPU_ISET_6502DTV.value()) != 0;
+                break;
+            case ".IFPSC02":
+                condition = (cpu & PseudoVar.CPU.CPU_ISET_65SC02.value()) != 0;
+                break;
+            case ".IFREF":
+                //TODO ifref
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown if statement: " + ctx.type.getText());
+        }
+
+        if (condition) {
+            ctx.line().forEach(this::visitLine);
+            return null;
+        }
+
+        return visitElseif(ctx.elseif());
     }
 
     @Override
     public String visitElseif(CA65Parser.ElseifContext ctx) {
+        if (ctx.ELSEIF() != null) {
+            if (parseInt(eval(ctx.expression())) != 0) {
+                ctx.line().forEach(this::visitLine);
+            } else if (ctx.elseif() != null) {
+                return visitElseif(ctx.elseif());
+            } else if (ctx.elseStmt() != null) {
+                return visitElseStmt(ctx.elseStmt());
+            }
+
+            return null;
+        }
+
         return visitChildren(ctx);
     }
 
