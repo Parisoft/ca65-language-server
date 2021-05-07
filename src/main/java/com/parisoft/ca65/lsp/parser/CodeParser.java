@@ -102,8 +102,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     private final Deque<Integer> cpuStack = new ArrayDeque<>();
     private final Deque<Integer> asizeStack = new ArrayDeque<>();
     private final Deque<Integer> isizeStack = new ArrayDeque<>();
-    private final Map<String, MacroDef> macros = new HashMap<>();
-    private final Map<String, DefineDef> defines = new HashMap<>();
+    private final Map<String, Expansible> macros = new HashMap<>();
     private final Deque<Expansion> expansion = new ArrayDeque<>();
     private final Deque<Symbol> layer = new ArrayDeque<>();
     private final Map<String, Function<CA65Parser.ControlContext, String>> controlCommands = new HashMap<>();
@@ -209,13 +208,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             CA65Visitor<String> bodyVisitor = new CA65BaseVisitor<String>() {
 
                 @Override
-                public String visitExpansionPush(CA65Parser.ExpansionPushContext ctx) {
-                    lineOffset.set(Integer.MAX_VALUE);
-                    return visitChildren(ctx);
-                }
-
-                @Override
-                public String visitExpansionPop(CA65Parser.ExpansionPopContext ctx) {
+                public String visitExpansion(CA65Parser.ExpansionContext ctx) {
                     lineOffset.set(Integer.MAX_VALUE);
                     return visitChildren(ctx);
                 }
@@ -613,17 +606,13 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         }
 
         String name = ctx.Identifier().getSymbol().getText();
-        Expansible expansible = defines.get(name);
+        Expansible expansible = macros.get(name);
 
-        if (expansible == null) {
-            expansible = macros.get(name);
-
-            if (expansible == null) {
-                return name;
-            }
+        if (expansible != null) {
+            throw new ExpansionException(expansible, Contexts.positionOf(ctx.Identifier().getSymbol()));
         }
 
-        throw new ExpansionException(expansible, Contexts.positionOf(ctx.Identifier().getSymbol()));
+        return name;
     }
 
     @Override
@@ -849,7 +838,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         DefineDef define = new DefineDef(name, path, positionOf(ctx.name))
                 .setParent(layer.peekFirst())
                 .save();
-        defines.put(name, define);
+        macros.put(name, define);
 
         for (CA65Parser.IdentifierContext param : ctx.param) {
             String paramName = visitIdentifier(param);
@@ -965,8 +954,8 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     }
 
     @Override
-    public String visitExpansionPush(CA65Parser.ExpansionPushContext ctx) {
-        Expansible def = defines.get(ctx.name.getText());
+    public String visitExpansion(CA65Parser.ExpansionContext ctx) {
+        Expansible def = macros.get(ctx.name.getText());
 
         if (def == null) {
             def = macros.get(ctx.name.getText());
@@ -1027,13 +1016,14 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         ref.setParent(layer.peek()).save();
 
         expansion.push(ref);
-        return visitChildren(ctx);
-    }
 
-    @Override
-    public String visitExpansionPop(CA65Parser.ExpansionPopContext ctx) {
+        for (CA65Parser.LineContext line : ctx.line()) {
+            visitLine(line);//TODO Handle .exitmacro
+        }
+
         expansion.pop();
         offset -= parseInt(ctx.offset.getText());
+
         return visitChildren(ctx);
     }
 
