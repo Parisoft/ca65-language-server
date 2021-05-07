@@ -827,7 +827,35 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 condition = (cpu & PseudoVar.CPU.CPU_ISET_65SC02.value()) != 0;
                 break;
             case ".IFREF":
-                //TODO ifref
+                CA65Visitor<Definition> refVisitor = new CA65BaseVisitor<Definition>() {
+
+                    @Override
+                    public Definition visitLabelRef(CA65Parser.LabelRefContext ctx) {
+                        if (ctx.UnnamedLabel() != null) {
+                            return null;
+                        }
+
+                        Reference ancestor = ctx.global != null ? new Reference("", path, positionOf(ctx), null) : null;
+
+                        for (int i = 0; i < ctx.identifier().size(); i++) {
+                            CA65Parser.IdentifierContext identifier = ctx.identifier(i);
+                            String name = identifier.Identifier().getSymbol().getText();
+                            ancestor = (Reference) new Reference(name, path, positionOf(identifier), ancestor).setParent(layer.peek());
+                        }
+
+                        if (ancestor != null) {
+                            return ancestor.getDefinition();
+                        }
+
+                        return null;
+                    }
+                };
+
+                Definition def = refVisitor.visitExpression(ctx.expression());
+
+                if (def != null) {
+                    condition = Symbol.Table.references().parallel().anyMatch(def::isDefinitionOf);
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Unknown if statement: " + ctx.type.getText());
