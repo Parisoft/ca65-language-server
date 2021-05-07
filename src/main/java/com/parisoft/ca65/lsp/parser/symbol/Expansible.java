@@ -11,7 +11,7 @@ import static com.parisoft.ca65.lsp.util.Strings.indexOfNonSpace;
 public abstract class Expansible extends Definition {
 
     final List<String> params = new ArrayList<>();
-    private String body;
+    private String[] body;
 
     Expansible(String name, Path path, Position pos) {
         super(name, path, pos);
@@ -27,11 +27,11 @@ public abstract class Expansible extends Definition {
         params.add(param);
     }
 
-    public void setBody(String body) {
+    public void setBody(String[] body) {
         this.body = body;
     }
 
-    public String getBody() {
+    public String[] getBody() {
         return body;
     }
 
@@ -78,7 +78,7 @@ public abstract class Expansible extends Definition {
         final int ini;
         final int end;
 
-        Arg(String name, int ini, int end) {
+        public Arg(String name, int ini, int end) {
             this.text = name;
             this.ini = ini;
             this.end = end;
@@ -101,6 +101,14 @@ public abstract class Expansible extends Definition {
 
         int end;
         boolean invalid;
+
+        public Args() {
+            super();
+        }
+
+        public Args(Arg arg) {
+            add(arg);
+        }
 
         public int getEnd() {
             return end;

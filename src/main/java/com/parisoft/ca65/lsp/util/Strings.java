@@ -1,5 +1,6 @@
 package com.parisoft.ca65.lsp.util;
 
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 public class Strings {
@@ -30,5 +31,11 @@ public class Strings {
         }
 
         return index;
+    }
+
+    public static String repeat(char c, int n) {
+        char[] chars = new char[n];
+        Arrays.fill(chars, c);
+        return new String(chars);
     }
 }
