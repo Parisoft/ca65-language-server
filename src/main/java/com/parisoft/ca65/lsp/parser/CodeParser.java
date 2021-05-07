@@ -53,6 +53,7 @@ import java.nio.file.Path;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
@@ -222,7 +223,8 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                         for (int i = 0; i < def.getParams().size(); i++) {
                             if (def.getParams().get(i).equals(paramText)) {
                                 int paramCol = ctx.Identifier().getSymbol().getCharPositionInLine();
-                                bodyBuilder.append(line.substring(lineOffset.get(), paramCol)).append(args.get(i).getText());
+                                String arg = i < args.size() ? args.get(i).getText() : "";
+                                bodyBuilder.append(line.substring(lineOffset.get(), paramCol)).append(arg);
                                 lineOffset.set(paramCol + paramText.length());
                             }
                         }
@@ -859,13 +861,21 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitMacro(CA65Parser.MacroContext ctx) {
-        String name = visitIdentifier(ctx.name);
-        MacroDef macro = new MacroDef(name, path, positionOf(ctx.name))
-                .setParent(layer.peekFirst())
-                .save();
-        macros.put(name, macro);
+        return visitMacro(ctx.identifier, ctx.param, ctx.macline(), false);
+    }
 
-        for (CA65Parser.IdentifierContext param : ctx.param) {
+    private String visitMacro(CA65Parser.IdentifierContext identifier, List<CA65Parser.IdentifierContext> params, List<CA65Parser.MaclineContext> lines, boolean inner) {
+        String name = visitIdentifier(identifier);
+        MacroDef macro = new MacroDef(name, path, positionOf(identifier));
+
+        if (inner) {
+            macro.setParent(layer.peek()).save();
+        } else {
+            macro.setParent(layer.peekFirst()).save();
+            macros.put(name, macro);
+        }
+
+        for (CA65Parser.IdentifierContext param : params) {
             String paramName = visitIdentifier(param);
             new ParamDef(paramName, path, positionOf(param))
                     .setParent(macro)
@@ -876,14 +886,14 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         layer.push(macro);
         StringBuilder body = new StringBuilder();
 
-        for (int i = 0; i < ctx.macline().size(); i++) {
-            body.append(Contexts.sourceText(ctx.macline(i)));
+        for (int i = 0; i < lines.size(); i++) {
+            body.append(Contexts.sourceText(lines.get(i)));
 
-            if (i < ctx.macline().size() - 1) {
+            if (i < lines.size() - 1) {
                 body.append(lineSeparator());
             }
 
-            visitMacline(ctx.macline(i));
+            visitMacline(lines.get(i));
         }
 
         macro.setBody(body.toString());
@@ -907,36 +917,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
             return null;
         } else if (ctx.MACRO() != null) {
-            String name = visitIdentifier(ctx.name);
-            MacroDef macro = new MacroDef(name, path, positionOf(ctx.name))
-                    .setParent(layer.peek())
-                    .save();
-
-            for (CA65Parser.IdentifierContext param : ctx.param) {
-                String paramName = visitIdentifier(param);
-                new ParamDef(paramName, path, positionOf(param))
-                        .setParent(macro)
-                        .save();
-                macro.addParam(paramName);
-            }
-
-            layer.push(macro);
-            StringBuilder body = new StringBuilder();
-
-            for (int i = 0; i < ctx.macline().size(); i++) {
-                body.append(Contexts.sourceText(ctx.macline(i)));
-
-                if (i < ctx.macline().size() - 1) {
-                    body.append(lineSeparator());
-                }
-
-                visitMacline(ctx.macline(i));
-            }
-
-            macro.setBody(body.toString());
-            layer.poll();
-
-            return name;
+            return visitMacro(ctx.identifier, ctx.param, ctx.macline(), true);
         }
 
         return visitChildren(ctx);
@@ -1029,7 +1010,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     private String visitImport(CA65Parser.ControlContext ctx) {
         for (CA65Parser.ExpressionContext expression : ctx.expression()) {
-            String name = visit(expression);
+            String name = visitExpression(expression);
             new Import(name, path, positionOf(ctx))
                     .setParent(layer.peek())
                     .save();
@@ -1050,7 +1031,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     private String visitExport(CA65Parser.ControlContext ctx) {
         for (CA65Parser.ExpressionContext expression : ctx.expression()) {
-            String name = visit(expression);
+            String name = visitExpression(expression);
             new Export(name, path, positionOf(ctx))
                     .setParent(layer.peek())
                     .save();
@@ -1061,7 +1042,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     private String visitGlobal(CA65Parser.ControlContext ctx) {
         for (CA65Parser.ExpressionContext expression : ctx.expression()) {
-            String name = visit(expression);
+            String name = visitExpression(expression);
             new Global(name, path, positionOf(ctx))
                     .setParent(layer.peek())
                     .save();
@@ -1091,6 +1072,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 try {
                     incPath = Files.walk(searchPath.get(), 10, FileVisitOption.FOLLOW_LINKS)
                             .filter(visited -> visited.getFileName().toString().equals(incFile.getName()))
+                            .map(visited -> visited.toAbsolutePath().normalize())
                             .findFirst()
                             .orElse(null);
                 } catch (IOException e) {
@@ -1119,7 +1101,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         }
 
         for (int i = 1; i < ctx.expression().size(); i++) {
-            visit(ctx.expression(i)); // consumes invalid args
+            visitExpression(ctx.expression(i)); // consumes invalid args
         }
 
         return null;
