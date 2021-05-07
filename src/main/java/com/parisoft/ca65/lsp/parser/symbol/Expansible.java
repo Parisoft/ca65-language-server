@@ -62,7 +62,7 @@ public abstract class Expansible extends Definition {
             endIndex++;
         }
 
-        if (endIndex == line.length() && brackets == 0) {
+        if (startIndex < endIndex && endIndex == line.length() && brackets == 0) {
             args.add(line, startIndex, endIndex, closeIndex);
         }
 

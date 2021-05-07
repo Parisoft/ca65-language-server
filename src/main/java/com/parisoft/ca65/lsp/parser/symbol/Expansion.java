@@ -11,7 +11,7 @@ public class Expansion extends Reference {
     final Args args;
     String text;
 
-    Expansion(String name, Path path, Position pos, Expansible definition, Args args) {
+    public Expansion(String name, Path path, Position pos, Expansible definition, Args args) {
         super(name, path, pos, null);
         this.definition = definition;
         this.args = args;

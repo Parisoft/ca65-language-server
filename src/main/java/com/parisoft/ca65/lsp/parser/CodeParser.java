@@ -1,5 +1,6 @@
 package com.parisoft.ca65.lsp.parser;
 
+import com.parisoft.ca65.lsp.parser.exception.ExitMacroException;
 import com.parisoft.ca65.lsp.parser.exception.ExpansionException;
 import com.parisoft.ca65.lsp.parser.grammar.CA65Lexer;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65BaseVisitor;
@@ -8,7 +9,6 @@ import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Visitor;
 import com.parisoft.ca65.lsp.parser.lang.PseudoVar;
 import com.parisoft.ca65.lsp.parser.symbol.Constant;
 import com.parisoft.ca65.lsp.parser.symbol.DefineDef;
-import com.parisoft.ca65.lsp.parser.symbol.DefineRef;
 import com.parisoft.ca65.lsp.parser.symbol.Definition;
 import com.parisoft.ca65.lsp.parser.symbol.EnumDef;
 import com.parisoft.ca65.lsp.parser.symbol.Enumeration;
@@ -21,7 +21,6 @@ import com.parisoft.ca65.lsp.parser.symbol.Import;
 import com.parisoft.ca65.lsp.parser.symbol.Include;
 import com.parisoft.ca65.lsp.parser.symbol.LabelDef;
 import com.parisoft.ca65.lsp.parser.symbol.MacroDef;
-import com.parisoft.ca65.lsp.parser.symbol.MacroRef;
 import com.parisoft.ca65.lsp.parser.symbol.ParamDef;
 import com.parisoft.ca65.lsp.parser.symbol.ProcDef;
 import com.parisoft.ca65.lsp.parser.symbol.Reference;
@@ -861,7 +860,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitMacro(CA65Parser.MacroContext ctx) {
-        return visitMacro(ctx.identifier, ctx.param, ctx.macline(), false);
+        return visitMacro(ctx.name, ctx.param, ctx.macline(), false);
     }
 
     private String visitMacro(CA65Parser.IdentifierContext identifier, List<CA65Parser.IdentifierContext> params, List<CA65Parser.MaclineContext> lines, boolean inner) {
@@ -937,11 +936,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     @Override
     public String visitExpansion(CA65Parser.ExpansionContext ctx) {
         Expansible def = macros.get(ctx.name.getText());
-
-        if (def == null) {
-            def = macros.get(ctx.name.getText());
-        }
-
         Position argPos = new Position(ctx.start.getLine() - 1, parseInt(ctx.col.getText()));
         Expansible.Args args = def.getArgs(unquote(ctx.source.getText()), argPos);
 
@@ -990,22 +984,23 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
         offset--;
         Position position = new Position(ctx.start.getLine() + offset, parseInt(ctx.col.getText()));
-
-        Expansion ref = def instanceof DefineDef
-                ? new DefineRef(def.getName(), path, position, def, args)
-                : new MacroRef(def.getName(), path, position, def, args);
-        ref.setParent(layer.peek()).save();
-
+        Expansion ref = new Expansion(def.getName(), path, position, def, args)
+                .setParent(layer.peek())
+                .save();
         expansion.push(ref);
 
         for (CA65Parser.LineContext line : ctx.line()) {
-            visitLine(line);//TODO Handle .exitmacro
+            try {
+                visitLine(line);
+            } catch (ExitMacroException e) {
+                break;
+            }
         }
 
         expansion.pop();
         offset -= parseInt(ctx.offset.getText());
 
-        return visitChildren(ctx);
+        return null;
     }
 
     private String visitImport(CA65Parser.ControlContext ctx) {
