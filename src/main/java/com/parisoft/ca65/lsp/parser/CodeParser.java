@@ -2,6 +2,7 @@ package com.parisoft.ca65.lsp.parser;
 
 import com.parisoft.ca65.lsp.parser.exception.ExpansionException;
 import com.parisoft.ca65.lsp.parser.exception.NonConstantException;
+import com.parisoft.ca65.lsp.parser.exception.StopException;
 import com.parisoft.ca65.lsp.parser.grammar.CA65Lexer;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65BaseVisitor;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Parser;
@@ -101,6 +102,8 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     private static final Logger log = LoggerFactory.getLogger(CodeParser.class);
     private static final Map<Path, String> codeCache = new ConcurrentHashMap<>();
     public static final ExecutorService pool = Executors.newSingleThreadExecutor();//ThreadPool.newThreadPool();
+    private static final String EXPANSION_PUSH = "#expansion-push";
+    private static final String EXPANSION_POP = "#expansion-pop";
 
     private String code;
     private Path path;
@@ -221,9 +224,9 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         String expandedBody = replaceParams(def.getParams(), args, def.getBody());
 
         // Expand the macro
-        String expansion = String.format("#expansion-push %s %d \"%s\"%n", def.getName(), position.getCharacter(), originalLine)
+        String expansion = String.format(EXPANSION_PUSH + " %s %d \"%s\"%n", def.getName(), position.getCharacter(), originalLine)
                 + originalLine.substring(0, position.getCharacter()) + expandedBody + lineSeparator()
-                + "#expansion-pop " + def.getBody().length;
+                + EXPANSION_POP + " " + def.getBody().length;
         String[] expandedLines = splitLines(expansion);
 
         if (expandedLines.length == 3 && expandedLines[1].equals(originalLine)) {
@@ -262,9 +265,14 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitLine(CA65Parser.LineContext ctx) {
+        if (Thread.interrupted()) {
+            throw new StopException();
+        }
+
         Expansible macro = macroStack.peek();
 
-        if (macro != null) {
+        if (macro != null && ctx.expansion() == null
+                && (ctx.statement() == null || ctx.statement().endStmt() == null || ctx.statement().endStmt().ENDMACRO() == null)) {
             macro.addLine(sourceText(ctx));
         }
 
