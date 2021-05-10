@@ -58,4 +58,15 @@ public class Strings {
 
         return true;
     }
+
+    public static StringBuilder removeTrailingLineBreaks(StringBuilder builder) {
+        char lastChar;
+        int lastPos = builder.length() - 1;
+
+        while ((lastChar = builder.charAt(lastPos)) == '\n' || lastChar == '\r') {
+            builder.deleteCharAt(lastPos--);
+        }
+
+        return builder;
+    }
 }

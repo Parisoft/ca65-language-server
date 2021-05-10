@@ -85,6 +85,7 @@ import static com.parisoft.ca65.lsp.server.CA65LanguageServer.workspaceDir;
 import static com.parisoft.ca65.lsp.util.Contexts.sourceText;
 import static com.parisoft.ca65.lsp.util.Strings.isBlank;
 import static com.parisoft.ca65.lsp.util.Strings.isNotBlank;
+import static com.parisoft.ca65.lsp.util.Strings.removeTrailingLineBreaks;
 import static com.parisoft.ca65.lsp.util.Strings.repeat;
 import static com.parisoft.ca65.lsp.util.Strings.splitLines;
 import static com.parisoft.ca65.lsp.util.Strings.unquote;
@@ -998,14 +999,14 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         }
 
         layer.push(macro);
-        String[] body = new String[lines.size()];
+        StringBuilder body = new StringBuilder();
 
-        for (int i = 0; i < lines.size(); i++) {
-            body[i] = sourceText(lines.get(i));
-            visitMacline(lines.get(i));
+        for (CA65Parser.MaclineContext line : lines) {
+            body.append(sourceText(line)).append(lineSeparator());
+            visitMacline(line);
         }
 
-        macro.setBody(body);
+        macro.setBody(splitLines(removeTrailingLineBreaks(body).toString()));
         layer.poll();
 
         return name;
@@ -1026,7 +1027,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
             return null;
         } else if (ctx.MACRO() != null) {
-            return visitMacro(ctx.identifier, ctx.param, ctx.macline(), true);
+            return visitMacro(ctx.name, ctx.param, ctx.macline(), true);
         }
 
         return visitChildren(ctx);
@@ -1045,6 +1046,17 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitExpansion(CA65Parser.ExpansionContext ctx) {
+        // Skip if it's a partial block declaration under an expansion, like this:
+        // #expansion-push mc1 4 "    mc1 0"
+        //    .mac mc2 p2
+        //    lda 0
+        //    ldx p2
+        // #expansion-pop 3
+        //    .endmac
+        if (expansion.peek() != null && ctx.name == null) {
+            return null;
+        }
+
         Expansible def = macros.get(ctx.name.getText());
         Position argPos = new Position(ctx.start.getLine() - 1, parseInt(ctx.col.getText()));
         Expansible.Args args = def.getArgs(unquote(ctx.source.getText()), argPos);
@@ -1291,13 +1303,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             bodyBuilder.append(lineSeparator());
         }
 
-        char lastChar;
-        int lastPos = bodyBuilder.length() - 1;
-        while ((lastChar = bodyBuilder.charAt(lastPos)) == '\n' || lastChar == '\r') {
-            bodyBuilder.deleteCharAt(lastPos--);
-        }
-
-        return bodyBuilder.toString();
+        return removeTrailingLineBreaks(bodyBuilder).toString();
     }
 
     private static String getCode(Path path) {
