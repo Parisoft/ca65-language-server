@@ -12,7 +12,9 @@ public class UnnamedRef extends Reference {
     public UnnamedRef(String name, Path path, Position pos) {
         super(name, path, pos, null);
 
-        if (name.charAt(1) == '+') {
+        if (name.length() == 0) {
+            fwd = bwd = 0;
+        } else if (name.charAt(0) == '+') {
             fwd = name.length();
             bwd = 0;
         } else {

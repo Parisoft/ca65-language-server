@@ -114,18 +114,19 @@ statement
     | repeat
     | define
     | macro
+    | endStmt
     ;
 
 proc
-    : PROC identifier (EOL line?)+ ENDPROC
+    : PROC identifier
     ;
 
 scope
-    : SCOPE identifier? (EOL line?)+ ENDSCOPE
+    : SCOPE identifier?
     ;
 
 enumerator
-    : ENUM identifier? (EOL member+=enumMember?)+ ENDENUM
+    : ENUM identifier? (EOL member+=enumMember?)+
     ;
 
 enumMember
@@ -134,11 +135,11 @@ enumMember
     ;
 
 struct
-    : STRUCT identifier? (EOL member+=structMember?)+ ENDSTRUCT
+    : STRUCT identifier? (EOL member+=structMember?)+
     ;
 
 union
-    : UNION identifier? (EOL member+=structMember?)+ ENDUNION
+    : UNION identifier? (EOL member+=structMember?)+
     ;
 
 structMember
@@ -174,29 +175,11 @@ define
     ;
 
 macro
-    : MACRO name=identifier (param+=identifier (COMMA param+=identifier)*)? (EOL macline?)+ ENDMACRO
+    : MACRO name=identifier (param+=identifier (COMMA param+=identifier)*)?
     ;
 
-macline
-    : LOCAL identifier (COMMA identifier)*
-    | EXITMACRO
-    | MACRO name=identifier (param+=identifier (COMMA param+=identifier)*)? (EOL macline?)+
-    | instruction
-    | labelEqu
-    | labelDef
-    | varDef
-    // Exclude macro from statements cause you can declare a .mac inside a .mac, but not the .endmac
-    | proc
-    | scope
-    | enumerator
-    | struct
-    | union
-    | ifStmt
-    | repeat
-    | define
-    | storage
-    | control
-    | expansion
+endStmt
+    : end=(ENDPROC | ENDSCOPE | ENDENUM | ENDSTRUCT | ENDUNION | ENDMACRO)
     ;
 
 storage
@@ -208,7 +191,16 @@ control
     ;
 
 expansion
-    : IMMEDIATE 'expansion-push' name=Identifier col=NUMBER source=STRING (EOL line?)+ IMMEDIATE 'expansion-pop' offset=NUMBER
+    : expansionPush
+    | expansionPop
+    ;
+
+expansionPush
+    : IMMEDIATE 'expansion-push' name=Identifier col=NUMBER source=STRING
+    ;
+
+expansionPop
+    : IMMEDIATE 'expansion-pop' offset=NUMBER
     ;
 
 fragment A
@@ -574,6 +566,7 @@ Control
     | DESTRUCTOR
     | END
     | ERROR
+    | EXITMACRO
     | EXPORT
     | EXPORTZP
     | FATAL
@@ -593,6 +586,7 @@ Control
     | LINECONT
     | LIST
     | LISTBYTES
+    | LOCAL
     | LOCALCHAR
     | MACPACK
     | ORG

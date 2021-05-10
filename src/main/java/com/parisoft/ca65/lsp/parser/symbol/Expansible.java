@@ -7,10 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.parisoft.ca65.lsp.util.Strings.indexOfNonSpace;
+import static com.parisoft.ca65.lsp.util.Strings.removeTrailingLineBreaks;
+import static com.parisoft.ca65.lsp.util.Strings.splitLines;
+import static java.lang.System.lineSeparator;
 
 public abstract class Expansible extends Definition {
 
     final List<String> params = new ArrayList<>();
+    private final StringBuilder lines = new StringBuilder();
     private String[] body;
 
     Expansible(String name, Path path, Position pos) {
@@ -27,11 +31,15 @@ public abstract class Expansible extends Definition {
         params.add(param);
     }
 
-    public void setBody(String[] body) {
-        this.body = body;
+    public void addLine(String line) {
+        lines.append(line).append(lineSeparator());
     }
 
     public String[] getBody() {
+        if (body == null) {
+            body = splitLines(removeTrailingLineBreaks(lines).toString());
+        }
+
         return body;
     }
 

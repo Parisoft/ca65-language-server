@@ -434,15 +434,15 @@ public interface CA65Listener extends ParseTreeListener {
 	 */
 	void exitMacro(CA65Parser.MacroContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CA65Parser#macline}.
+	 * Enter a parse tree produced by {@link CA65Parser#endStmt}.
 	 * @param ctx the parse tree
 	 */
-	void enterMacline(CA65Parser.MaclineContext ctx);
+	void enterEndStmt(CA65Parser.EndStmtContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link CA65Parser#macline}.
+	 * Exit a parse tree produced by {@link CA65Parser#endStmt}.
 	 * @param ctx the parse tree
 	 */
-	void exitMacline(CA65Parser.MaclineContext ctx);
+	void exitEndStmt(CA65Parser.EndStmtContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CA65Parser#storage}.
 	 * @param ctx the parse tree
@@ -473,4 +473,24 @@ public interface CA65Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExpansion(CA65Parser.ExpansionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CA65Parser#expansionPush}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpansionPush(CA65Parser.ExpansionPushContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CA65Parser#expansionPush}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpansionPush(CA65Parser.ExpansionPushContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link CA65Parser#expansionPop}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpansionPop(CA65Parser.ExpansionPopContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CA65Parser#expansionPop}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpansionPop(CA65Parser.ExpansionPopContext ctx);
 }

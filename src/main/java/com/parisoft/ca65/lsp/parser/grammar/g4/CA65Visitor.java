@@ -265,11 +265,11 @@ public interface CA65Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitMacro(CA65Parser.MacroContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#macline}.
+	 * Visit a parse tree produced by {@link CA65Parser#endStmt}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMacline(CA65Parser.MaclineContext ctx);
+	T visitEndStmt(CA65Parser.EndStmtContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link CA65Parser#storage}.
 	 * @param ctx the parse tree
@@ -288,4 +288,16 @@ public interface CA65Visitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitExpansion(CA65Parser.ExpansionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#expansionPush}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpansionPush(CA65Parser.ExpansionPushContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link CA65Parser#expansionPop}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpansionPop(CA65Parser.ExpansionPopContext ctx);
 }

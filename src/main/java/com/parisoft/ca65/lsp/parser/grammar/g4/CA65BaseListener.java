@@ -508,13 +508,13 @@ public class CA65BaseListener implements CA65Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMacline(CA65Parser.MaclineContext ctx) { }
+	@Override public void enterEndStmt(CA65Parser.EndStmtContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMacline(CA65Parser.MaclineContext ctx) { }
+	@Override public void exitEndStmt(CA65Parser.EndStmtContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -551,6 +551,30 @@ public class CA65BaseListener implements CA65Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitExpansion(CA65Parser.ExpansionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpansionPush(CA65Parser.ExpansionPushContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpansionPush(CA65Parser.ExpansionPushContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpansionPop(CA65Parser.ExpansionPopContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpansionPop(CA65Parser.ExpansionPopContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

@@ -6,7 +6,7 @@ import java.nio.file.Path;
 
 public class StructDef extends Definition {
 
-    int size;
+    int size = 0;
 
     public StructDef(String name, Path path, Position pos) {
         super(name, path, pos);
@@ -18,5 +18,9 @@ public class StructDef extends Definition {
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+    public void addSize(int amount) {
+        size += amount;
     }
 }
