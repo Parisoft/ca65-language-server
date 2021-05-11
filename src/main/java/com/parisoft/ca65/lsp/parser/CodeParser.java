@@ -61,12 +61,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
 import static com.parisoft.ca65.lsp.parser.grammar.g4.CA65Lexer.AUTOIMPORT;
@@ -105,7 +106,9 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     private static final Logger log = LoggerFactory.getLogger(CodeParser.class);
     private static final Map<Path, String> codeCache = new ConcurrentHashMap<>();
-    public static final ExecutorService pool = Executors.newSingleThreadExecutor();//ThreadPool.newThreadPool();
+    public static final ExecutorService pool = Executors.newWorkStealingPool();//ThreadPool.newThreadPool();
+    private static final Map<Path, Future<?>> workers = new ConcurrentHashMap<>();
+    private static final Map<Path, ReentrantLock> lockers = new ConcurrentHashMap<>();
     private static final String EXPANSION_PUSH = "#expansion-push";
     private static final String EXPANSION_POP = "#expansion-pop";
 
@@ -139,7 +142,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     }
 
     public CodeParser(Path path) {
-        this.path = path;
+        this.path = path.toAbsolutePath().normalize();
 
         controlCommands.put(VOCABULARY.getSymbolicName(IMPORT), this::visitImport);
         controlCommands.put(VOCABULARY.getSymbolicName(IMPORTZP), this::visitImport);
@@ -169,7 +172,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 Files.walk(workspace, FileVisitOption.FOLLOW_LINKS)
                         .filter(Paths::isASM)
                         .map(CodeParser::new)
-                        .forEach(CompletableFuture::runAsync);
+                        .forEach(CodeParser::parse);
             } catch (IOException e) {
                 log.warn("Could not read workspace directory {}: {}", workspace, e.toString());
             }
@@ -183,16 +186,29 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public void run() {
-        Symbol.Table.clean(path)
-                .parallel()
-                .map(CodeParser::new)
-                .forEach(pool::submit);
+        ReentrantLock locker = lockers.computeIfAbsent(path, p -> new ReentrantLock(true));
+        locker.lock();
 
-        parse(getCode(path));
+        try {
+            Symbol.Table.clean(path)
+                    .parallel()
+                    .map(CodeParser::new)
+                    .forEach(CodeParser::parse);
+
+            parse(getCode(path));
+        } finally {
+            locker.unlock();
+        }
     }
 
     public void parse() {
-        pool.submit(this);
+        workers.compute(path, (p, future) -> {
+            if (future != null) {
+                future.cancel(true);
+            }
+
+            return pool.submit(this);
+        });
     }
 
     private void parse(String code) {
@@ -1209,7 +1225,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                             .findFirst()
                             .orElse(null);
                 } catch (IOException e) {
-                    log.error("Could not search included file: {}", incFile, e);
+                    log.error("[{}] Could not search included file: {}", path.getFileName(), incFile, e);
                 }
 
                 searchPath.set(searchPath.get().getParent());
@@ -1228,7 +1244,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             path = tmpPath;
             code = tmpCode;
         } else {
-            log.warn("Included file not found in workspace: {}", incFile.getName());
+            log.warn("[{}] Included file not found in workspace: {}", path.getFileName(), incFile.getName());
         }
 
         for (int i = 1; i < ctx.expression().size(); i++) {
@@ -1263,7 +1279,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     }
 
     private String visitUnknownControl(ControlContext ctx) {
-        log.warn("Unknown control command: {}", ctx.command.getText());
+        log.warn("[{}] Unknown control command: {}", path.getFileName(), ctx.command.getText());
         return visitChildren(ctx);
     }
 
@@ -1372,12 +1388,8 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         return removeTrailingLineBreaks(bodyBuilder).toString();
     }
 
-    private static String getCode(Path path) {
-        return codeCache.computeIfAbsent(path, Paths::read);
-    }
-
-    private static CA65Parser newParser(String code) {
-        CA65ErrorListener errorListener = new CA65ErrorListener();
+    private CA65Parser newParser(String code) {
+        CA65ErrorListener errorListener = new CA65ErrorListener(path);
         CodePointCharStream input = CharStreams.fromString(code);
 
         CA65Lexer lexer = new CA65Lexer(input);
@@ -1391,11 +1403,21 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         return parser;
     }
 
+    private static String getCode(Path path) {
+        return codeCache.computeIfAbsent(path, Paths::read);
+    }
+
     static class CA65ErrorListener extends BaseErrorListener {
+
+        final Path path;
+
+        CA65ErrorListener(Path path) {
+            this.path = path;
+        }
 
         @Override
         public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
-            log.warn("line " + line + ":" + charPositionInLine + " " + msg);
+            log.warn("file " + path + "line " + line + ":" + charPositionInLine + " " + msg);
         }
     }
 }
