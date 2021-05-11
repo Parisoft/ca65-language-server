@@ -224,6 +224,10 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             visit(newParser(code).program());
         } catch (ExpansionException e) {
             reParse(e);
+        } catch (StopException e) {
+            log.debug("[{}] Interrupted", path.getFileName());
+        } catch (Exception e) {
+            log.error("[{}] Unexpected exception", path.getFileName(), e);
         }
     }
 
