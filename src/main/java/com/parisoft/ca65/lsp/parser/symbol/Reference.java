@@ -27,8 +27,8 @@ public class Reference extends Symbol {
         return !fake;
     }
 
-    public void setFake() {
-        this.fake = true;
+    public void setFake(boolean fake) {
+        this.fake = fake;
     }
 
     public Definition getDefinition() {

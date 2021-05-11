@@ -229,23 +229,26 @@ public interface CA65Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitField(CA65Parser.FieldContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#ifStmt}.
+	 * Visit a parse tree produced by the {@code If}
+	 * labeled alternative in {@link CA65Parser#ifStmt}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitIfStmt(CA65Parser.IfStmtContext ctx);
+	T visitIf(CA65Parser.IfContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#elseif}.
+	 * Visit a parse tree produced by the {@code ElseIf}
+	 * labeled alternative in {@link CA65Parser#ifStmt}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitElseif(CA65Parser.ElseifContext ctx);
+	T visitElseIf(CA65Parser.ElseIfContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link CA65Parser#elseStmt}.
+	 * Visit a parse tree produced by the {@code Else}
+	 * labeled alternative in {@link CA65Parser#ifStmt}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitElseStmt(CA65Parser.ElseStmtContext ctx);
+	T visitElse(CA65Parser.ElseContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link CA65Parser#repeat}.
 	 * @param ctx the parse tree

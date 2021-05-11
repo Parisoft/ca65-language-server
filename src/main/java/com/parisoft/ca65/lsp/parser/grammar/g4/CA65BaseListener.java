@@ -436,37 +436,37 @@ public class CA65BaseListener implements CA65Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIfStmt(CA65Parser.IfStmtContext ctx) { }
+	@Override public void enterIf(CA65Parser.IfContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIfStmt(CA65Parser.IfStmtContext ctx) { }
+	@Override public void exitIf(CA65Parser.IfContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterElseif(CA65Parser.ElseifContext ctx) { }
+	@Override public void enterElseIf(CA65Parser.ElseIfContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitElseif(CA65Parser.ElseifContext ctx) { }
+	@Override public void exitElseIf(CA65Parser.ElseIfContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterElseStmt(CA65Parser.ElseStmtContext ctx) { }
+	@Override public void enterElse(CA65Parser.ElseContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitElseStmt(CA65Parser.ElseStmtContext ctx) { }
+	@Override public void exitElse(CA65Parser.ElseContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

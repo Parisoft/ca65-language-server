@@ -153,17 +153,9 @@ field
     ;
 
 ifStmt
-    : type=IF expression (EOL line?)+ elseif
-    ;
-
-elseif
-    : ELSEIF expression (EOL line?)+ elseif
-    | elseStmt
-    ;
-
-elseStmt
-    : ELSE (EOL line?)+ ENDIF
-    | ENDIF
+    : type=IF expression    #If
+    | ELSEIF expression     #ElseIf
+    | ELSE                  #Else
     ;
 
 repeat
@@ -179,7 +171,7 @@ macro
     ;
 
 endStmt
-    : end=(ENDPROC | ENDSCOPE | ENDENUM | ENDSTRUCT | ENDUNION | ENDMACRO)
+    : end=(ENDPROC | ENDSCOPE | ENDENUM | ENDSTRUCT | ENDUNION | ENDMACRO | ENDIF)
     ;
 
 storage

@@ -374,35 +374,41 @@ public interface CA65Listener extends ParseTreeListener {
 	 */
 	void exitField(CA65Parser.FieldContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CA65Parser#ifStmt}.
+	 * Enter a parse tree produced by the {@code If}
+	 * labeled alternative in {@link CA65Parser#ifStmt}.
 	 * @param ctx the parse tree
 	 */
-	void enterIfStmt(CA65Parser.IfStmtContext ctx);
+	void enterIf(CA65Parser.IfContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link CA65Parser#ifStmt}.
+	 * Exit a parse tree produced by the {@code If}
+	 * labeled alternative in {@link CA65Parser#ifStmt}.
 	 * @param ctx the parse tree
 	 */
-	void exitIfStmt(CA65Parser.IfStmtContext ctx);
+	void exitIf(CA65Parser.IfContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CA65Parser#elseif}.
+	 * Enter a parse tree produced by the {@code ElseIf}
+	 * labeled alternative in {@link CA65Parser#ifStmt}.
 	 * @param ctx the parse tree
 	 */
-	void enterElseif(CA65Parser.ElseifContext ctx);
+	void enterElseIf(CA65Parser.ElseIfContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link CA65Parser#elseif}.
+	 * Exit a parse tree produced by the {@code ElseIf}
+	 * labeled alternative in {@link CA65Parser#ifStmt}.
 	 * @param ctx the parse tree
 	 */
-	void exitElseif(CA65Parser.ElseifContext ctx);
+	void exitElseIf(CA65Parser.ElseIfContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CA65Parser#elseStmt}.
+	 * Enter a parse tree produced by the {@code Else}
+	 * labeled alternative in {@link CA65Parser#ifStmt}.
 	 * @param ctx the parse tree
 	 */
-	void enterElseStmt(CA65Parser.ElseStmtContext ctx);
+	void enterElse(CA65Parser.ElseContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link CA65Parser#elseStmt}.
+	 * Exit a parse tree produced by the {@code Else}
+	 * labeled alternative in {@link CA65Parser#ifStmt}.
 	 * @param ctx the parse tree
 	 */
-	void exitElseStmt(CA65Parser.ElseStmtContext ctx);
+	void exitElse(CA65Parser.ElseContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CA65Parser#repeat}.
 	 * @param ctx the parse tree
