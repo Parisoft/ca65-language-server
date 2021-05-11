@@ -95,6 +95,7 @@ import static java.lang.Integer.parseInt;
 import static java.lang.String.valueOf;
 import static java.lang.System.lineSeparator;
 import static java.util.Collections.singletonList;
+import static java.util.Comparator.comparingInt;
 
 @SuppressWarnings("Duplicates")
 public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65Visitor<String>, Runnable {
@@ -782,7 +783,20 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 condition = !(macros.get(eval(ctx.expression())) instanceof DefineDef);
                 break;
             case ".IFNREF":
-                //TODO ifnref
+                visitExpression(ctx.expression());
+
+                Position exprPos = positionOf(ctx.expression());
+
+                Definition def = Symbol.Table.references(path)
+                        .filter(ref -> ref.getPos().getLine() == exprPos.getLine())
+                        .peek(Reference::setFake)
+                        .max(comparingInt(ref -> ref.getPos().getCharacter()))
+                        .map(Reference::getDefinition)
+                        .orElse(null);
+
+                if (def != null) {
+                    condition = Symbol.Table.references().parallel().filter(Reference::isNotFake).noneMatch(def::isDefinitionOf);
+                }
                 break;
             case ".IFP02":
                 condition = (cpu & PseudoVar.CPU.CPU_ISET_6502.value()) != 0;
@@ -803,34 +817,19 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 condition = (cpu & PseudoVar.CPU.CPU_ISET_65SC02.value()) != 0;
                 break;
             case ".IFREF":
-                CA65Visitor<Definition> refVisitor = new CA65BaseVisitor<Definition>() {
+                visitExpression(ctx.expression());
 
-                    @Override
-                    public Definition visitLabelRef(CA65Parser.LabelRefContext ctx) {
-                        if (ctx.UnnamedLabel() != null) {
-                            return null;
-                        }
+                exprPos = positionOf(ctx.expression());
 
-                        Reference ancestor = ctx.global != null ? new Reference("", path, positionOf(ctx), null) : null;
-
-                        for (int i = 0; i < ctx.identifier().size(); i++) {
-                            CA65Parser.IdentifierContext identifier = ctx.identifier(i);
-                            String name = identifier.Identifier().getSymbol().getText();
-                            ancestor = (Reference) new Reference(name, path, positionOf(identifier), ancestor).setParent(layer.peek());
-                        }
-
-                        if (ancestor != null) {
-                            return ancestor.getDefinition();
-                        }
-
-                        return null;
-                    }
-                };
-
-                Definition def = refVisitor.visitExpression(ctx.expression());
+                def = Symbol.Table.references(path)
+                        .filter(ref -> ref.getPos().getLine() == exprPos.getLine())
+                        .peek(Reference::setFake)
+                        .max(comparingInt(ref -> ref.getPos().getCharacter()))
+                        .map(Reference::getDefinition)
+                        .orElse(null);
 
                 if (def != null) {
-                    condition = Symbol.Table.references().parallel().anyMatch(def::isDefinitionOf);
+                    condition = Symbol.Table.references().parallel().filter(Reference::isNotFake).anyMatch(def::isDefinitionOf);
                 }
                 break;
             default:

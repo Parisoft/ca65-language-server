@@ -12,10 +12,23 @@ import static java.util.concurrent.ConcurrentHashMap.newKeySet;
 public class Reference extends Symbol {
 
     private final Reference ancestor;
+    private boolean fake = false; // it's a .ifref argument
 
     public Reference(String name, Path path, Position pos, Reference ancestor) {
         super(name, path, pos);
         this.ancestor = ancestor;
+    }
+
+    public boolean isFake() {
+        return fake;
+    }
+
+    public boolean isNotFake() {
+        return !fake;
+    }
+
+    public void setFake() {
+        this.fake = true;
     }
 
     public Definition getDefinition() {
