@@ -7,6 +7,8 @@ public class Strings {
 
     private static final Pattern lineBreakRegex = Pattern.compile("\\r?\\n");
 
+    public static final String EMPTY = "";
+
     public static String unquote(String s) {
         if (s == null) {
             return null;

@@ -6,6 +6,7 @@ import com.parisoft.ca65.lsp.parser.exception.StopException;
 import com.parisoft.ca65.lsp.parser.grammar.CA65Lexer;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65BaseVisitor;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Parser;
+import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Parser.ControlContext;
 import com.parisoft.ca65.lsp.parser.grammar.g4.CA65Visitor;
 import com.parisoft.ca65.lsp.parser.lang.PseudoVar;
 import com.parisoft.ca65.lsp.parser.symbol.Constant;
@@ -34,6 +35,7 @@ import com.parisoft.ca65.lsp.parser.symbol.UnnamedRef;
 import com.parisoft.ca65.lsp.parser.symbol.VarDef;
 import com.parisoft.ca65.lsp.util.Contexts;
 import com.parisoft.ca65.lsp.util.Paths;
+import com.parisoft.ca65.lsp.util.Strings;
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
@@ -58,6 +60,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -110,7 +113,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     private Path path;
     private int offset = 0;
     private boolean eval = false;
-    private boolean exitmacro = false;
     private int cpu = CPU_6502.value();
     private int asize = 8;
     private int isize = 8;
@@ -124,9 +126,10 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     private final Deque<MacroDef> macroStack = new ArrayDeque<>();
     private final Deque<Integer> repeatStack = new ArrayDeque<>();
     private final Deque<Expansion> expansionStack = new ArrayDeque<>();
-    private final Map<String, Expansible> macros = new HashMap<>();
+    private final Deque<Expansion> exitmacroStack = new ArrayDeque<>();
     private final Deque<Symbol> layer = new ArrayDeque<>();
-    private final Map<String, Function<CA65Parser.ControlContext, String>> controlCommands = new HashMap<>();
+    private final Map<String, Expansible> macros = new HashMap<>();
+    private final Map<String, Function<ControlContext, String>> controlCommands = new HashMap<>();
 
     public static void main(String[] args) {
         Path path = Paths.fromURI(args[0]);
@@ -147,7 +150,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         controlCommands.put(VOCABULARY.getSymbolicName(LOCAL), this::visitLocal);
         controlCommands.put(VOCABULARY.getSymbolicName(EXITMACRO), this::visitExitMacro);
 
-        layer.push(new ScopeDef("", path, new Position(0, 0))); // Push the global scope
+        layer.push(new ScopeDef(Strings.EMPTY, path, new Position(0, 0))); // Push the global scope
     }
 
     public String getCode() {
@@ -270,6 +273,10 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             throw new StopException();
         }
 
+        if (exitmacroStack.size() > 0 && ctx.expansion() == null) {
+            return null;
+        }
+
         Expansible macro = macroStack.peek();
 
         if (macro != null && ctx.expansion() == null
@@ -338,7 +345,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitInlineLabel(CA65Parser.InlineLabelContext ctx) {
-        String name = ctx.identifier() != null ? visitIdentifier(ctx.identifier()) : "";
+        String name = ctx.identifier() != null ? visitIdentifier(ctx.identifier()) : Strings.EMPTY;
         Symbol symbol = cache(new LabelDef(name, path, positionOf(ctx.identifier() != null ? ctx.identifier() : ctx)));
 
         layer.push(symbol);
@@ -518,7 +525,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             return name;
         }
 
-        Reference ancestor = ctx.global != null ? new Reference("", path, positionOf(ctx), null) : null;
+        Reference ancestor = ctx.global != null ? new Reference(Strings.EMPTY, path, positionOf(ctx), null) : null;
 
         for (int i = 0; i < ctx.identifier().size(); i++) {
             CA65Parser.IdentifierContext identifier = ctx.identifier(i);
@@ -629,7 +636,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitScope(CA65Parser.ScopeContext ctx) {
-        String name = ctx.identifier() != null ? visitIdentifier(ctx.identifier()) : "";
+        String name = ctx.identifier() != null ? visitIdentifier(ctx.identifier()) : Strings.EMPTY;
         Position position = positionOf(ctx.identifier() != null ? ctx.identifier() : ctx);
         ScopeDef scope = cache(new ScopeDef(name, path, position));
 
@@ -648,7 +655,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             enumerator = cache(new EnumDef(name, path, positionOf(ctx.identifier())));
             layer.push(enumerator);
         } else {
-            enumerator = cache(new EnumDef("", path, positionOf(ctx)));
+            enumerator = cache(new EnumDef(Strings.EMPTY, path, positionOf(ctx)));
         }
 
         enumStack.push(enumerator);
@@ -693,7 +700,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             struct = cache(new StructDef(name, path, positionOf(ctx.identifier())));
             layer.push(struct);
         } else {
-            struct = cache(new StructDef("", path, positionOf(ctx.identifier())));
+            struct = cache(new StructDef(Strings.EMPTY, path, positionOf(ctx.identifier())));
         }
 
         structStack.push(struct);
@@ -712,7 +719,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             union = cache(new UnionDef(name, path, positionOf(ctx.identifier())));
             layer.push(union);
         } else {
-            union = cache(new UnionDef("", path, positionOf(ctx.identifier())));
+            union = cache(new UnionDef(Strings.EMPTY, path, positionOf(ctx.identifier())));
         }
 
         structStack.push(union);
@@ -838,10 +845,20 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
         if (condition) {
             ctx.line().forEach(this::visitLine);
-            return null;
-        }
 
-        return visitElseif(ctx.elseif());
+            if (expansionStack.size() > 0) {
+                new ExpansionConsumer().visitElseif(ctx.elseif());
+            }
+
+            return null;
+        } else {
+            if (expansionStack.size() > 0) {
+                ExpansionConsumer expansionConsumer = new ExpansionConsumer();
+                ctx.line().forEach(expansionConsumer::visitLine);
+            }
+
+            return visitElseif(ctx.elseif());
+        }
     }
 
     @Override
@@ -849,16 +866,23 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         if (ctx.ELSEIF() != null) {
             if (parseInt(eval(ctx.expression())) != 0) {
                 ctx.line().forEach(this::visitLine);
-            } else if (ctx.elseif() != null) {
-                return visitElseif(ctx.elseif());
-            } else if (ctx.elseStmt() != null) {
-                return visitElseStmt(ctx.elseStmt());
-            }
 
-            return null;
+                if (expansionStack.size() > 0) {
+                    new ExpansionConsumer().visitElseif(ctx.elseif());
+                }
+
+                return null;
+            } else {
+                if (expansionStack.size() > 0) {
+                    ExpansionConsumer expansionConsumer = new ExpansionConsumer();
+                    ctx.line().forEach(expansionConsumer::visitLine);
+                }
+
+                return visitElseif(ctx.elseif());
+            }
         }
 
-        return visitChildren(ctx);
+        return visitElseStmt(ctx.elseStmt());
     }
 
     @Override
@@ -1036,7 +1060,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     }
 
     @Override
-    public String visitControl(CA65Parser.ControlContext ctx) {
+    public String visitControl(ControlContext ctx) {
         String command = ctx.command.getText().substring(1).toUpperCase();
         return controlCommands.getOrDefault(command, this::visitUnknownControl).apply(ctx);
     }
@@ -1082,7 +1106,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                         return name;
                     }
 
-                    Reference ancestor = ctx.global != null ? new Reference("", path, positionOf(ctx), null) : null;
+                    Reference ancestor = ctx.global != null ? new Reference(Strings.EMPTY, path, positionOf(ctx), null) : null;
 
                     for (int i = 0; i < ctx.identifier().size(); i++) {
                         CA65Parser.IdentifierContext identifier = ctx.identifier(i);
@@ -1107,13 +1131,17 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitExpansionPop(CA65Parser.ExpansionPopContext ctx) {
-        expansionStack.pop();
+        Expansion expansion = expansionStack.poll();
         offset -= parseInt(ctx.offset.getText());
-        exitmacro = false;
+
+        if (Objects.equals(expansion, exitmacroStack.peek())) {
+            exitmacroStack.poll();
+        }
+
         return null;
     }
 
-    private String visitImport(CA65Parser.ControlContext ctx) {
+    private String visitImport(ControlContext ctx) {
         for (CA65Parser.ExpressionContext expression : ctx.expression()) {
             String name = visitExpression(expression);
             cache(new Import(name, path, positionOf(ctx)));
@@ -1122,7 +1150,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         return null;
     }
 
-    private String visitAutoImport(CA65Parser.ControlContext ctx) {
+    private String visitAutoImport(ControlContext ctx) {
         if (ctx.PLUS() != null) {
             Symbol.Table.autoimport.add(path);
         } else if (ctx.MINUS() != null) {
@@ -1132,7 +1160,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         return null;
     }
 
-    private String visitExport(CA65Parser.ControlContext ctx) {
+    private String visitExport(ControlContext ctx) {
         for (CA65Parser.ExpressionContext expression : ctx.expression()) {
             String name = visitExpression(expression);
             cache(new Export(name, path, positionOf(ctx)));
@@ -1141,7 +1169,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         return null;
     }
 
-    private String visitGlobal(CA65Parser.ControlContext ctx) {
+    private String visitGlobal(ControlContext ctx) {
         for (CA65Parser.ExpressionContext expression : ctx.expression()) {
             String name = visitExpression(expression);
             cache(new Global(name, path, positionOf(ctx)));
@@ -1150,12 +1178,12 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         return null;
     }
 
-    private String visitInclude(CA65Parser.ControlContext ctx) {
+    private String visitInclude(ControlContext ctx) {
         if (ctx.expression().isEmpty()) {
             return visitChildren(ctx);
         }
 
-        String incName = unquote(visit(ctx.expression(0)));
+        String incName = unquote(visitExpression(ctx.expression(0)));
         File incFile = new File(incName);
         Path incPath = null;
 
@@ -1204,7 +1232,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         return null;
     }
 
-    private String visitLocal(CA65Parser.ControlContext ctx) {
+    private String visitLocal(ControlContext ctx) {
         MacroDef macro = macroStack.peek();
 
         if (macro != null) {
@@ -1218,12 +1246,17 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         return visitChildren(ctx);
     }
 
-    private String visitExitMacro(CA65Parser.ControlContext ctx) {
-        exitmacro = true;
+    private String visitExitMacro(ControlContext ctx) {
+        Expansion expansion = expansionStack.peek();
+
+        if (expansion != null) {
+            exitmacroStack.push(expansion);
+        }
+
         return visitChildren(ctx);
     }
 
-    private String visitUnknownControl(CA65Parser.ControlContext ctx) {
+    private String visitUnknownControl(ControlContext ctx) {
         log.warn("Unknown control command: {}", ctx.command.getText());
         return visitChildren(ctx);
     }
@@ -1286,7 +1319,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                         for (int i = 0; i < params.size(); i++) {
                             if (params.get(i).equals(paramText)) {
                                 int paramCol = ctx.Identifier().getSymbol().getCharPositionInLine();
-                                String arg = i < args.size() ? args.get(i).getText() : "";
+                                String arg = i < args.size() ? args.get(i).getText() : Strings.EMPTY;
                                 bodyBuilder.append(line.substring(lineOffset.get(), paramCol)).append(arg);
                                 lineOffset.set(paramCol + paramText.length());
                             }
@@ -1326,6 +1359,21 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         parser.addErrorListener(errorListener);
 
         return parser;
+    }
+
+    class ExpansionConsumer extends CA65BaseVisitor<String> {
+
+        @Override
+        public String visitExpansionPush(CA65Parser.ExpansionPushContext ctx) {
+            offset--;
+            expansionStack.push(new Expansion(ctx.name.getText(), path, null, null, null));
+            return null;
+        }
+
+        @Override
+        public String visitExpansionPop(CA65Parser.ExpansionPopContext ctx) {
+            return CodeParser.this.visitExpansionPop(ctx);
+        }
     }
 
     static class CA65ErrorListener extends BaseErrorListener {
