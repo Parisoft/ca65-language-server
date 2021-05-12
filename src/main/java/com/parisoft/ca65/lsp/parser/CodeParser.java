@@ -15,6 +15,8 @@ import com.parisoft.ca65.lsp.parser.symbol.Definition;
 import com.parisoft.ca65.lsp.parser.symbol.EnumDef;
 import com.parisoft.ca65.lsp.parser.symbol.Enumeration;
 import com.parisoft.ca65.lsp.parser.symbol.Expansible;
+import com.parisoft.ca65.lsp.parser.symbol.Expansible.Arg;
+import com.parisoft.ca65.lsp.parser.symbol.Expansible.Args;
 import com.parisoft.ca65.lsp.parser.symbol.Expansion;
 import com.parisoft.ca65.lsp.parser.symbol.Export;
 import com.parisoft.ca65.lsp.parser.symbol.FieldDef;
@@ -106,9 +108,9 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     private static final Logger log = LoggerFactory.getLogger(CodeParser.class);
     private static final Map<Path, String> codeCache = new ConcurrentHashMap<>();
-    public static final ExecutorService pool = Executors.newWorkStealingPool();//ThreadPool.newThreadPool();
     private static final Map<Path, Future<?>> workers = new ConcurrentHashMap<>();
     private static final Map<Path, ReentrantLock> lockers = new ConcurrentHashMap<>();
+    public static final ExecutorService pool = Executors.newWorkStealingPool();
     private static final String EXPANSION_PUSH = "#expansion-push";
     private static final String EXPANSION_POP = "#expansion-pop";
 
@@ -127,7 +129,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     private final Deque<EnumDef> enumStack = new ArrayDeque<>();
     private final Deque<StructDef> structStack = new ArrayDeque<>();
     private final Deque<MacroDef> macroStack = new ArrayDeque<>();
-    private final Deque<Integer> repeatStack = new ArrayDeque<>();
+    private final Deque<RepeatDef> repeatStack = new ArrayDeque<>();
     private final Deque<Boolean> ifStack = new ArrayDeque<>();
     private final Deque<Boolean> refStack = new ArrayDeque<>();
     private final Deque<Expansion> expansionStack = new ArrayDeque<>();
@@ -240,7 +242,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         Symbol.Table.clean(path);
 
         // Get the macro arguments
-        Expansible.Args args = def.getArgs(originalLine, position);
+        Args args = def.getArgs(originalLine, position);
 
         if (args.isInvalid()) {
             return;
@@ -308,10 +310,18 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             return null;
         }
 
-        boolean isNotEndingMacro = ctx.statement() == null || ctx.statement().endStmt() == null || ctx.statement().endStmt().ENDMACRO() == null;
+        if (isDefiningMacro()) {
+            boolean isNotEndingMacro = ctx.statement() == null || ctx.statement().endStmt() == null || ctx.statement().endStmt().ENDMACRO() == null;
 
-        if (isDefiningMacro() && isNotEndingMacro && isNotExpanding) {
-            macroStack.peek().addLine(sourceText(ctx));
+            if (isNotEndingMacro && isNotExpanding) {
+                macroStack.peek().addLine(sourceText(ctx));
+            }
+        } else {
+            RepeatDef repeat = repeatStack.peek();
+
+            if (repeat != null && repeat.hasParam()) {
+                repeat.getLines().add(repeat(' ', ctx.start.getCharPositionInLine()) + sourceText(ctx));
+            }
         }
 
         return visitChildren(ctx);
@@ -914,58 +924,14 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitRepeat(CA65Parser.RepeatContext ctx) {
-        int repN = parseInt(eval(ctx.expression()));
+        int n = parseInt(eval(ctx.expression()));
+        String i = ctx.identifier() != null ? visitIdentifier(ctx.identifier()) : Strings.EMPTY;
+        RepeatDef repeat = cache(new RepeatDef(i, path, positionOf(ctx), n, offset));
+        repeatStack.push(repeat);
+        layer.push(repeat);
 
         if (ctx.identifier() != null) {
-            int tmpOffset = offset;
-            String repI = visitIdentifier(ctx.identifier());
-
-            Symbol repeatDef = cache(new RepeatDef(path, positionOf(ctx)));
-
-            new ParamDef(repI, path, positionOf(ctx.identifier()))
-                    .setParent(repeatDef)
-                    .save();
-
-            CA65Visitor<String> iVisitor = new CA65BaseVisitor<String>() {
-
-                @Override
-                public String visitLabelRef(CA65Parser.LabelRefContext ctx) {
-                    if (ctx.identifier().size() == 1
-                            && ctx.identifier(0).IDENT() == null
-                            && ctx.identifier(0).Identifier().getSymbol().getText().equals(repI)) {
-                        new Reference(repI, path, positionOf(ctx.identifier(0)), null)
-                                .setParent(repeatDef)
-                                .save();
-                    }
-
-                    return visitChildren(ctx);
-                }
-            };
-
-            ctx.line().forEach(iVisitor::visitLine);
-
-            for (int i = 0; i < repN; i++) {
-                repeatStack.push(i);
-                offset = tmpOffset + ctx.start.getLine();
-
-                String[] body = ctx.line().stream()
-                        .map(line -> repeat(' ', line.start.getCharPositionInLine()) + sourceText(line))
-                        .toArray(String[]::new);
-                Expansible.Args args = new Expansible.Args(new Expansible.Arg(valueOf(i), 0, 0));
-                List<String> params = singletonList(repI);
-                String expandedBody = replaceParams(params, args, body);
-
-                visit(newParser(expandedBody).program());
-                repeatStack.poll();
-            }
-
-            offset = tmpOffset;
-        } else {
-            for (int i = 0; i < repN; i++) {
-                repeatStack.push(i);
-                ctx.line().forEach(this::visitLine);
-                repeatStack.poll();
-            }
+            cache(new ParamDef(i, path, positionOf(ctx.identifier())).setParent(repeat));
         }
 
         return null;
@@ -1071,9 +1037,42 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 macroStack.poll();
                 layer.poll();
                 break;
-
             case "ENDIF":
                 ifStack.poll();
+                break;
+            case "ENDREPEAT":
+            case "ENDREP":
+                RepeatDef repeat = repeatStack.peek();
+
+                if (repeat != null) {
+                    layer.poll();
+
+                    if (isNotDefiningMacro()) {// doesn't loop inside a macro definition
+                        int tmpOffset = offset;
+
+                        while (repeat.incI() < repeat.getN()) { // repeat has exhausted
+                            offset = repeat.getOffset();
+                            String expandedBody;
+
+                            if (repeat.hasParam()) {
+                                offset += repeat.getPos().getLine() + 1;
+                                String[] body = repeat.getLines().toArray(new String[]{});
+                                Args args = new Args(new Arg(valueOf(repeat.getI()), 0, 0));
+                                List<String> params = singletonList(repeat.getName());
+                                expandedBody = replaceParams(params, args, body);
+                            } else {
+                                expandedBody = String.join(lineSeparator(), repeat.getLines());
+                            }
+
+                            visit(newParser(expandedBody).program());
+                        }
+
+                        offset = tmpOffset;
+                    }
+
+                    repeatStack.poll();
+                }
+
                 break;
         }
 
@@ -1093,9 +1092,9 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitExpansion(CA65Parser.ExpansionContext ctx) {
-        Integer repeatI = repeatStack.peek();
+        RepeatDef repeat = repeatStack.peek();
 
-        if (repeatI != null && repeatI > 0) {// Only process an Expansion once inside a repeat loop
+        if (repeat != null && repeat.getI() > 0) {// Only process an Expansion once inside a repeat loop
             return null;
         }
 
@@ -1106,10 +1105,10 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     public String visitExpansionPush(CA65Parser.ExpansionPushContext ctx) {
         Expansible def = macros.get(ctx.name.getText());
         Position argPos = new Position(ctx.start.getLine() - 1, parseInt(ctx.col.getText()));
-        Expansible.Args args = def.getArgs(unquote(ctx.source.getText()), argPos);
+        Args args = def.getArgs(unquote(ctx.source.getText()), argPos);
 
         // Parse the arguments for new references
-        for (Expansible.Arg arg : args) {
+        for (Arg arg : args) {
             CA65Visitor<String> argVisitor = new CA65BaseVisitor<String>() {
 
                 @Override
@@ -1346,7 +1345,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         return symbol.setParent(layer.peek()).save();
     }
 
-    private String replaceParams(List<String> params, Expansible.Args args, String[] body) {
+    private String replaceParams(List<String> params, Args args, String[] body) {
         StringBuilder bodyBuilder = new StringBuilder();
         AtomicInteger lineOffset = new AtomicInteger(0);
 

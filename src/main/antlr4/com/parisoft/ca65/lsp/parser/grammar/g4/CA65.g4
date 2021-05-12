@@ -159,7 +159,7 @@ ifStmt
     ;
 
 repeat
-    : REPEAT expression (COMMA identifier)? (EOL line?)+ ENDREPEAT
+    : REPEAT expression (COMMA identifier)?
     ;
 
 define
@@ -171,7 +171,7 @@ macro
     ;
 
 endStmt
-    : end=(ENDPROC | ENDSCOPE | ENDENUM | ENDSTRUCT | ENDUNION | ENDMACRO | ENDIF)
+    : end=(ENDPROC | ENDSCOPE | ENDENUM | ENDSTRUCT | ENDUNION | ENDMACRO | ENDIF | ENDREPEAT)
     ;
 
 storage
