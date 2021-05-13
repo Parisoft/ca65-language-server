@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.Collections.emptySet;
@@ -35,12 +36,12 @@ public abstract class Symbol {
         return this.path.equals(path)
                 && pos.getLine() == position.getLine()
                 && pos.getCharacter() <= position.getCharacter()
-                && pos.getCharacter() + name.length() >= position.getCharacter();
+                && pos.getCharacter() + name.length() + (isUnnamed() ? 1 : 0) >= position.getCharacter();
     }
 
     public Location toLocation() {
         Position end = new Position(pos.getLine(), pos.getCharacter());
-        end.setCharacter(end.getCharacter() + name.length());
+        end.setCharacter(end.getCharacter() + name.length() + (isUnnamed() ? 1 : 0));
         return new Location(path.toUri().toString(), new Range(pos, end));
     }
 
@@ -76,7 +77,7 @@ public abstract class Symbol {
     }
 
     public boolean isUnnamed() {
-        return name.isEmpty();
+        return name.isEmpty() || IntStream.range(0, name.length()).map(name::charAt).allMatch(c -> c == '+' || c == '-');
     }
 
     public boolean isNotUnnamed() {

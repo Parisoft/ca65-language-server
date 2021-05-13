@@ -6,8 +6,8 @@ import java.nio.file.Path;
 
 public class UnnamedRef extends Reference {
 
-    final int fwd;
-    final int bwd;
+    private final int fwd;
+    private final int bwd;
 
     public UnnamedRef(String name, Path path, Position pos) {
         super(name, path, pos, null);
@@ -29,5 +29,28 @@ public class UnnamedRef extends Reference {
 
     public int getBwd() {
         return bwd;
+    }
+
+    @Override
+    public Definition getDefinition() {
+        if (fwd > 0) {
+            Definition[] definitions = Table.definitions()
+                    .filter(def -> def.compareLine(this) > 0)
+                    .sorted(Definition::compareLine)
+                    .toArray(Definition[]::new);
+            if (definitions.length >= fwd) {
+                return definitions[fwd - 1];
+            }
+        } else if (bwd > 0) {
+            Definition[] definitions = Table.definitions()
+                    .filter(def -> def.compareLine(this) < 0)
+                    .sorted(Definition::compareLine)
+                    .toArray(Definition[]::new);
+            if (definitions.length >= bwd) {
+                return definitions[definitions.length - bwd];
+            }
+        }
+
+        return null;
     }
 }

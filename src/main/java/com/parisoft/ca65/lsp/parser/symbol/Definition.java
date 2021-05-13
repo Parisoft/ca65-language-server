@@ -3,6 +3,7 @@ package com.parisoft.ca65.lsp.parser.symbol;
 import org.eclipse.lsp4j.Position;
 
 import java.nio.file.Path;
+import java.util.Objects;
 import java.util.stream.Stream;
 
 import static java.util.concurrent.ConcurrentHashMap.newKeySet;
@@ -35,6 +36,19 @@ public abstract class Definition extends Symbol {
         }
 
         return false;
+    }
+
+    public int compareLine(Symbol that) {
+        if (this.path.equals(that.path)) {
+            return Integer.compare(this.pos.getLine(), that.pos.getLine());
+        }
+
+        return Table.includes(path)
+                .filter(include -> include.isOrIncludes(that.path))
+                .mapToInt(include -> Integer.compare(this.pos.getLine(), include.pos.getLine()))
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(0);
     }
 
     boolean isExported() {
