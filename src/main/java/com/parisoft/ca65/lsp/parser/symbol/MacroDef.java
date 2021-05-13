@@ -19,6 +19,10 @@ public class MacroDef extends Expansible {
         args.setInvalid(false);
     }
 
+    public List<String> getLocals() {
+        return locals;
+    }
+
     public void addLocal(String local) {
         locals.add(local);
     }

@@ -24,6 +24,7 @@ import com.parisoft.ca65.lsp.parser.symbol.Global;
 import com.parisoft.ca65.lsp.parser.symbol.Import;
 import com.parisoft.ca65.lsp.parser.symbol.Include;
 import com.parisoft.ca65.lsp.parser.symbol.LabelDef;
+import com.parisoft.ca65.lsp.parser.symbol.LocalDef;
 import com.parisoft.ca65.lsp.parser.symbol.MacroDef;
 import com.parisoft.ca65.lsp.parser.symbol.ParamDef;
 import com.parisoft.ca65.lsp.parser.symbol.ProcDef;
@@ -356,6 +357,14 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         }
 
         String name = visitIdentifier(ctx.identifier());
+        Expansion expansion = expansionStack.peek();
+
+        if (expansion != null
+                && expansion.getDefinition() instanceof MacroDef
+                && ((MacroDef) expansion.getDefinition()).getLocals().contains(name)) {
+            return name;
+        }
+
         LabelDef label = cache(new LabelDef(name, path, positionOf(ctx.identifier())));
 
         if (label.isCheap()) {
@@ -379,6 +388,14 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     @Override
     public String visitInlineLabel(CA65Parser.InlineLabelContext ctx) {
         String name = ctx.identifier() != null ? visitIdentifier(ctx.identifier()) : Strings.EMPTY;
+        Expansion expansion = expansionStack.peek();
+
+        if (expansion != null
+                && expansion.getDefinition() instanceof MacroDef
+                && ((MacroDef) expansion.getDefinition()).getLocals().contains(name)) {
+            return name;
+        }
+
         LabelDef label = cache(new LabelDef(name, path, positionOf(ctx.identifier() != null ? ctx.identifier() : ctx)));
 
         if (label.isCheap()) {
@@ -569,6 +586,15 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         for (int i = 0; i < ctx.identifier().size(); i++) {
             CA65Parser.IdentifierContext identifier = ctx.identifier(i);
             String name = visitIdentifier(identifier);
+            Expansion expansion;
+
+            if (ctx.identifier().size() == 1
+                    && (expansion = expansionStack.peek()) != null
+                    && expansion.getDefinition() instanceof MacroDef
+                    && ((MacroDef) expansion.getDefinition()).getLocals().contains(name)) {
+                return name;
+            }
+
             ancestor = cache(new Reference(name, path, positionOf(identifier), ancestor));
             ancestor.setFake(fake);
 
@@ -1244,17 +1270,19 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     }
 
     private String visitLocal(ControlContext ctx) {
-        MacroDef macro = macroStack.peek();
+        try {
+            MacroDef macro = macroStack.element();
 
-        if (macro != null) {
             for (CA65Parser.ExpressionContext expression : ctx.expression()) {
-                macro.addLocal(visitExpression(expression));
+                String name = visitExpression(expression);
+                cache(new LocalDef(name, path, positionOf(expression)));
+                macro.addLocal(name);
             }
 
             return null;
+        } catch (NoSuchElementException e) {
+            return visitChildren(ctx);
         }
-
-        return visitChildren(ctx);
     }
 
     private String visitExitMacro(ControlContext ctx) {
