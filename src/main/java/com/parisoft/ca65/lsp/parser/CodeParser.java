@@ -282,7 +282,6 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         }
 
         String expandedCode = String.join(lineSeparator(), mergedLines);
-        log.debug("Expansion\n{}", expandedCode);
 
         // Parse the expanded code
         new CodeParser(path).parse(expandedCode);
@@ -573,9 +572,8 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         boolean fake = isDefiningMacro() || isDefiningRepeat() || isEvaluatingRef();
 
         if (ctx.UnnamedLabel() != null) {
-            Token symbol = ctx.UnnamedLabel().getSymbol();
-            String name = symbol.getText().substring(1);
-            Position pos = new Position(symbol.getLine() - 1, symbol.getCharPositionInLine());
+            String name = ctx.UnnamedLabel().getSymbol().getText().substring(1);
+            Position pos = positionOf(ctx);
             cache(new UnnamedRef(name, path, pos)).setFake(fake);
 
             return name;

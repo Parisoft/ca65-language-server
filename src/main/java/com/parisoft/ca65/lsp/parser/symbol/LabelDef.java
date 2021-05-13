@@ -9,4 +9,9 @@ public class LabelDef extends Definition {
     public LabelDef(String name, Path path, Position pos) {
         super(name, path, pos);
     }
+
+    @Override
+    public boolean isUnnamed() {
+        return name.isEmpty();
+    }
 }

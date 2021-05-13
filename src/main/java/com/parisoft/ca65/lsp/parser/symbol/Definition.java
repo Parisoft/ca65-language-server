@@ -19,7 +19,8 @@ public abstract class Definition extends Symbol {
             return false;
         }
 
-        if (this.name.equals(reference.name)) {
+        if (this.name.equals(reference.name)
+                || (this.isUnnamed() && reference.isUnnamed())) {
             Definition that = reference.getDefinition();
 
             if (this == that) {
@@ -43,12 +44,25 @@ public abstract class Definition extends Symbol {
             return Integer.compare(this.pos.getLine(), that.pos.getLine());
         }
 
-        return Table.includes(path)
-                .filter(include -> include.isOrIncludes(that.path))
-                .mapToInt(include -> Integer.compare(this.pos.getLine(), include.pos.getLine()))
-                .filter(Objects::nonNull)
-                .findFirst()
-                .orElse(0);
+        if (this.getRoot().path.equals(that.path)) {
+            return Table.includes(that.path)
+                    .filter(include -> include.isOrIncludes(this.path))
+                    .mapToInt(include -> Integer.compare(include.pos.getLine(), that.pos.getLine()))
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse(0);
+        }
+
+        if (that.getRoot().path.equals(this.path)) {
+            return Table.includes(this.path)
+                    .filter(include -> include.isOrIncludes(that.path))
+                    .mapToInt(include -> Integer.compare(this.pos.getLine(), include.pos.getLine()))
+                    .filter(Objects::nonNull)
+                    .findFirst()
+                    .orElse(0);
+        }
+
+        return 0;
     }
 
     boolean isExported() {

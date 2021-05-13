@@ -77,7 +77,7 @@ public abstract class Symbol {
     }
 
     public boolean isUnnamed() {
-        return name.isEmpty() || IntStream.range(0, name.length()).map(name::charAt).allMatch(c -> c == '+' || c == '-');
+        return false;
     }
 
     public boolean isNotUnnamed() {

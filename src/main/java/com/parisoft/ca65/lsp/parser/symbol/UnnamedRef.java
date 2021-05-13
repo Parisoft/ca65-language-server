@@ -3,6 +3,7 @@ package com.parisoft.ca65.lsp.parser.symbol;
 import org.eclipse.lsp4j.Position;
 
 import java.nio.file.Path;
+import java.util.Arrays;
 
 public class UnnamedRef extends Reference {
 
@@ -23,18 +24,11 @@ public class UnnamedRef extends Reference {
         }
     }
 
-    public int getFwd() {
-        return fwd;
-    }
-
-    public int getBwd() {
-        return bwd;
-    }
-
     @Override
     public Definition getDefinition() {
         if (fwd > 0) {
             Definition[] definitions = Table.definitions()
+                    .filter(Symbol::isUnnamed)
                     .filter(def -> def.compareLine(this) > 0)
                     .sorted(Definition::compareLine)
                     .toArray(Definition[]::new);
@@ -43,7 +37,9 @@ public class UnnamedRef extends Reference {
             }
         } else if (bwd > 0) {
             Definition[] definitions = Table.definitions()
-                    .filter(def -> def.compareLine(this) < 0)
+                    .filter(Symbol::isUnnamed)
+                    .filter(def -> def.compareLine(this) < 0
+                            || (def.pos.getLine() == this.pos.getLine() && def.path.equals(this.path)))
                     .sorted(Definition::compareLine)
                     .toArray(Definition[]::new);
             if (definitions.length >= bwd) {
@@ -52,5 +48,10 @@ public class UnnamedRef extends Reference {
         }
 
         return null;
+    }
+
+    @Override
+    public boolean isUnnamed() {
+        return true;
     }
 }
