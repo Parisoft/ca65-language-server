@@ -298,30 +298,20 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             throw new StopException();
         }
 
-        boolean isNotExpanding = ctx.expansion() == null;
-
-        if (exitMacro() && isNotExpanding) {
-            return null;
-        }
-
-        boolean isNotEvaluatingIf = ctx.statement() == null || ctx.statement().ifStmt() == null;
-
-        if (isIfConditionFalse() && isNotEvaluatingIf && isNotExpanding) {
-            return null;
-        }
-
         if (isDefiningMacro()) {
-            boolean isNotEndingMacro = ctx.statement() == null || ctx.statement().endStmt() == null || ctx.statement().endStmt().ENDMACRO() == null;
-
-            if (isNotEndingMacro && isNotExpanding) {
+            if (isNotEndingMacro(ctx) && isNotExpanding(ctx)) {
                 macroStack.peek().addLine(sourceText(ctx));
             }
-        } else {
+        } else if (isDefiningRepeat()) {
             RepeatDef repeat = repeatStack.peek();
 
-            if (repeat != null && repeat.hasParam()) {
+            if (repeat.hasParam()) {
                 repeat.getLines().add(repeat(' ', ctx.start.getCharPositionInLine()) + sourceText(ctx));
             }
+        } else if (isExitingMacro() && isNotExpanding(ctx)) {
+            return null;
+        } else if (isIfConditionFalse() && isNotEvaluatingIf(ctx) && isNotExpanding(ctx)) {
+            return null;
         }
 
         return visitChildren(ctx);
@@ -556,7 +546,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitLabelRef(CA65Parser.LabelRefContext ctx) {
-        boolean fake = isDefiningMacro() || isEvaluatingRef();
+        boolean fake = isDefiningMacro() || isDefiningRepeat() || isEvaluatingRef();
 
         if (ctx.UnnamedLabel() != null) {
             Token symbol = ctx.UnnamedLabel().getSymbol();
@@ -991,37 +981,31 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitEndStmt(CA65Parser.EndStmtContext ctx) {
-        switch (ctx.end.getText().substring(1).toUpperCase()) {
-            case "ENDPROC":
-                ProcDef proc = procStack.poll();
+        try {
+            switch (ctx.end.getText().substring(1).toUpperCase()) {
+                case "ENDPROC":
+                    if (isNotBlank(procStack.pop().getName())) {
+                        layer.poll();
+                    }
 
-                if (proc != null && isNotBlank(proc.getName())) {
-                    layer.poll();
-                }
+                    break;
+                case "ENDSCOPE":
+                    if (isNotBlank(scopeStack.pop().getName())) {
+                        layer.poll();
+                    }
 
-                break;
-            case "ENDSCOPE":
-                ScopeDef scope = scopeStack.poll();
+                    break;
+                case "ENDENUM":
+                    if (isNotBlank(enumStack.pop().getName())) {
+                        layer.poll();
+                    }
 
-                if (scope != null && isNotBlank(scope.getName())) {
-                    layer.poll();
-                }
+                    break;
+                case "ENDSTRUCT":
+                case "ENDUNION":
+                    StructDef struct = structStack.pop();
+                    StructDef parent = structStack.peek();
 
-                break;
-            case "ENDENUM":
-                EnumDef enumerator = enumStack.poll();
-
-                if (enumerator != null && isNotBlank(enumerator.getName())) {
-                    layer.poll();
-                }
-
-                break;
-            case "ENDSTRUCT":
-            case "ENDUNION":
-                StructDef struct = structStack.poll();
-                StructDef parent = structStack.peek();
-
-                if (struct != null) {
                     if (isNotBlank(struct.getName())) {
                         layer.poll();
                     }
@@ -1029,22 +1013,20 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                     if (parent != null) {
                         parent.addSize(struct.getSize());
                     }
-                }
 
-                break;
-            case "ENDMACRO":
-            case "ENDMAC":
-                macroStack.poll();
-                layer.poll();
-                break;
-            case "ENDIF":
-                ifStack.poll();
-                break;
-            case "ENDREPEAT":
-            case "ENDREP":
-                RepeatDef repeat = repeatStack.peek();
+                    break;
+                case "ENDMACRO":
+                case "ENDMAC":
+                    macroStack.pop();
+                    layer.poll();
+                    break;
+                case "ENDIF":
+                    ifStack.pop();
+                    break;
+                case "ENDREPEAT":
+                case "ENDREP":
+                    RepeatDef repeat = repeatStack.pop();
 
-                if (repeat != null) {
                     layer.poll();
 
                     if (isNotDefiningMacro()) {// doesn't loop inside a macro definition
@@ -1070,10 +1052,10 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                         offset = tmpOffset;
                     }
 
-                    repeatStack.poll();
-                }
-
-                break;
+                    break;
+            }
+        } catch (NoSuchElementException e) {
+            log.warn("[{}] Unexpected {} at {}:{}", path.getFileName(), ctx.end.getText(), ctx.start.getLine(), ctx.start.getCharPositionInLine());
         }
 
         return null;
@@ -1294,6 +1276,10 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         return macroStack.isEmpty();
     }
 
+    private boolean isDefiningRepeat() {
+        return repeatStack.size() > 0;
+    }
+
     private boolean isIfConditionFalse() {
         try {
             return !ifStack.element();
@@ -1306,8 +1292,20 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         return refStack.size() > 0;
     }
 
-    private boolean exitMacro() {
+    private boolean isExitingMacro() {
         return exitmacroStack.size() > 0;
+    }
+
+    private boolean isNotEvaluatingIf(CA65Parser.LineContext ctx) {
+        return ctx.statement() == null || ctx.statement().ifStmt() == null;
+    }
+
+    private boolean isNotEndingMacro(CA65Parser.LineContext ctx) {
+        return ctx.statement() == null || ctx.statement().endStmt() == null || ctx.statement().endStmt().ENDMACRO() == null;
+    }
+
+    private boolean isNotExpanding(CA65Parser.LineContext ctx) {
+        return ctx.expansion() == null;
     }
 
     private Position positionOf(ParserRuleContext ctx) {
