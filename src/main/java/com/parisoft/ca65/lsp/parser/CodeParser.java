@@ -135,6 +135,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     private final Deque<Expansion> expansionStack = new ArrayDeque<>();
     private final Deque<Expansion> exitmacroStack = new ArrayDeque<>();
     private final Deque<Symbol> layer = new ArrayDeque<>();
+    private final Map<Symbol, Symbol> cheapParent = new HashMap<>();
     private final Map<String, Expansible> macros = new HashMap<>();
     private final Map<String, Function<ControlContext, String>> controlCommands = new HashMap<>();
 
@@ -192,7 +193,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         locker.lock();
 
         try {
-            Symbol.Table.clean(path)
+            Symbol.Table.clear(path)
                     .parallel()
                     .map(CodeParser::new)
                     .forEach(CodeParser::parse);
@@ -239,7 +240,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         String originalLine = originalLines[position.getLine()];
         Expansible def = e.getExpansible();
 
-        Symbol.Table.clean(path);
+        Symbol.Table.clear(path);
 
         // Get the macro arguments
         Args args = def.getArgs(originalLine, position);
@@ -354,8 +355,14 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             return visitInlineLabel(ctx.inlineLabel());
         }
 
-        String name = visit(ctx.identifier());
-        cache(new LabelDef(name, path, positionOf(ctx.identifier())));
+        String name = visitIdentifier(ctx.identifier());
+        LabelDef label = cache(new LabelDef(name, path, positionOf(ctx.identifier())));
+
+        if (label.isCheap()) {
+            label.setParent(cheapParent.getOrDefault(label.getParent(), label.getParent()));
+        } else if (label.isNotUnnamed()) {
+            cheapParent.put(layer.peek(), label);
+        }
 
         return name;
     }
@@ -372,9 +379,13 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     @Override
     public String visitInlineLabel(CA65Parser.InlineLabelContext ctx) {
         String name = ctx.identifier() != null ? visitIdentifier(ctx.identifier()) : Strings.EMPTY;
-        Symbol symbol = cache(new LabelDef(name, path, positionOf(ctx.identifier() != null ? ctx.identifier() : ctx)));
+        LabelDef label = cache(new LabelDef(name, path, positionOf(ctx.identifier() != null ? ctx.identifier() : ctx)));
 
-        layer.push(symbol);
+        if (label.isCheap()) {
+            label.setParent(cheapParent.getOrDefault(label.getParent(), label.getParent()));
+        } else if (label.isNotUnnamed()) {
+            cheapParent.put(layer.peek(), label);
+        }
 
         return name;
     }
@@ -560,6 +571,10 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
             String name = visitIdentifier(identifier);
             ancestor = cache(new Reference(name, path, positionOf(identifier), ancestor));
             ancestor.setFake(fake);
+
+            if (ancestor.isCheap()) {
+                ancestor.setParent(cheapParent.getOrDefault(ancestor.getParent(), ancestor.getParent()));
+            }
         }
 
         if (ancestor != null) {
@@ -1415,7 +1430,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
         @Override
         public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
-            log.warn("file " + path + "line " + line + ":" + charPositionInLine + " " + msg);
+            log.warn("file " + path + " line " + line + ":" + charPositionInLine + " " + msg);
         }
     }
 }

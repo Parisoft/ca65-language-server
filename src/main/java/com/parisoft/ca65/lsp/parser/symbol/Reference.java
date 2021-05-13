@@ -12,7 +12,7 @@ import static java.util.concurrent.ConcurrentHashMap.newKeySet;
 public class Reference extends Symbol {
 
     private final Reference ancestor;
-    private boolean fake = false; // it's a .ifref argument
+    private boolean fake = false; // it's a .ifref argument or under a macro definition
 
     public Reference(String name, Path path, Position pos, Reference ancestor) {
         super(name, path, pos);
@@ -39,6 +39,10 @@ public class Reference extends Symbol {
     }
 
     private boolean canReference(Definition def) {
+        if (this.isCheap() && def.isCheap()) {
+            return this.parent.equals(def.parent);
+        }
+
         if (canAccess(def)) { // reference and definition in same file
             if (def instanceof LabelDef || def instanceof ProcDef) {
                 return true; // labels can have forward reference

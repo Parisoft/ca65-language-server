@@ -67,6 +67,22 @@ public abstract class Symbol {
         return this;
     }
 
+    public boolean isCheap() {
+        return name.length() > 0 && (name.charAt(0) == '@' || name.charAt(0) == '$');
+    }
+
+    public boolean isNotCheap() {
+        return !isCheap();
+    }
+
+    public boolean isUnnamed() {
+        return name.isEmpty();
+    }
+
+    public boolean isNotUnnamed() {
+        return !isUnnamed();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -116,7 +132,6 @@ public abstract class Symbol {
         return thatParent == null;
     }
 
-
     Symbol getRoot() {
         Symbol root = this;
 
@@ -153,14 +168,6 @@ public abstract class Symbol {
             return references.values().stream().flatMap(Set::stream);
         }
 
-        public static Stream<Symbol> symbols(Path path) {
-            return Stream.concat(definitions(path), references(path));
-        }
-
-        public static Stream<Symbol> symbols() {
-            return Stream.concat(definitions(), references());
-        }
-
         public static Stream<Import> imports(Path path) {
             return imports.getOrDefault(path, emptySet()).stream();
         }
@@ -193,28 +200,26 @@ public abstract class Symbol {
             return includes.values().stream().flatMap(Set::stream);
         }
 
-        public static Stream<Symbol> all() {
-            return Stream.concat(definitions(), Stream.concat(references(), Stream.concat(imports(), Stream.concat(exports(), Stream.concat(globals(), includes())))));
+        public static Stream<Symbol> all(Path path) {
+            return Stream.concat(definitions(path), Stream.concat(references(path), Stream.concat(imports(path), Stream.concat(exports(path), Stream.concat(globals(path), includes(path))))));
         }
 
-        @SuppressWarnings({"SuspiciousMethodCalls", "Duplicates"})
-        public static Stream<Path> clean(Path path) {
-            Set<Symbol> invalidSymbols = all()
-                    .filter(symbol -> symbol.path.equals(path))
-                    .collect(toSet());
-            definitions.values().forEach(defs -> defs.removeAll(invalidSymbols));
-            references.values().forEach(refs -> refs.removeAll(invalidSymbols));
-            imports.values().forEach(imps -> imps.removeAll(invalidSymbols));
-            exports.values().forEach(exps -> exps.removeAll(invalidSymbols));
-            globals.values().forEach(globs -> globs.removeAll(invalidSymbols));
-            includes.values().forEach(incs -> incs.removeAll(invalidSymbols));
-            autoimport.remove(path);
-
-            return invalidSymbols.stream()
+        @SuppressWarnings({"Duplicates"})
+        public static Stream<Path> clear(Path path) {
+            Set<Path> affectedPaths = all(path)
                     .map(Symbol::getRoot)
                     .map(Symbol::getPath)
                     .filter(root -> !root.equals(path))
-                    .distinct();
+                    .collect(toSet());
+            definitions.remove(path);
+            references.remove(path);
+            imports.remove(path);
+            exports.remove(path);
+            globals.remove(path);
+            includes.remove(path);
+            autoimport.remove(path);
+
+            return affectedPaths.stream();
         }
     }
 }
