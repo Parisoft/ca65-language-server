@@ -303,11 +303,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 macroStack.peek().addLine(sourceText(ctx));
             }
         } else if (isDefiningRepeat()) {
-            RepeatDef repeat = repeatStack.peek();
-
-            if (repeat.hasParam()) {
-                repeat.getLines().add(repeat(' ', ctx.start.getCharPositionInLine()) + sourceText(ctx));
-            }
+            repeatStack.peek().getLines().add(repeat(' ', ctx.start.getCharPositionInLine()) + sourceText(ctx));
         } else if (isExitingMacro() && isNotExpanding(ctx)) {
             return null;
         } else if (isIfConditionFalse() && isNotEvaluatingIf(ctx) && isNotExpanding(ctx)) {
@@ -367,7 +363,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
     @Override
     public String visitVarDef(CA65Parser.VarDefContext ctx) {
         String name = visitIdentifier(ctx.identifier());
-        int value = parseInt(eval(ctx.expression()));
+        int value = evalToInt(ctx.expression());
         cache(new VarDef(name, path, positionOf(ctx.identifier()), value));
 
         return name;
@@ -800,7 +796,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
         switch (ctx.type.getText().toUpperCase()) {
             case ".IF":
-                condition = parseInt(eval(ctx.expression())) != 0;
+                condition = evalToBool(ctx.expression());
                 break;
             case ".IFBLANK":
                 condition = isBlank(unquote(visitExpression(ctx.expression())));
@@ -878,25 +874,20 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
                 throw new IllegalArgumentException("Unknown if statement: " + ctx.type.getText());
         }
 
-        if (isNotDefiningMacro()) {
-            ifStack.push(condition);
-        }
+        ifStack.push(condition);
 
         return null;
     }
 
     @Override
     public String visitElseIf(CA65Parser.ElseIfContext ctx) {
-        boolean elseifCondition = parseInt(eval(ctx.expression())) != 0;
+        boolean elseifCondition = evalToBool(ctx.expression());
+        Boolean ifCondition = ifStack.poll();
 
-        if (isNotDefiningMacro()) {
-            Boolean ifCondition = ifStack.poll();
-
-            if (ifCondition != null && ifCondition) {
-                ifStack.push(false);
-            } else {
-                ifStack.push(elseifCondition);
-            }
+        if (ifCondition == null || ifCondition) {
+            ifStack.push(false);
+        } else {
+            ifStack.push(elseifCondition);
         }
 
         return null;
@@ -904,17 +895,15 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
     @Override
     public String visitElse(CA65Parser.ElseContext ctx) {
-        if (isNotDefiningMacro()) {
-            Boolean ifCondition = ifStack.poll();
-            ifStack.push(ifCondition == null || !ifCondition);
-        }
+        Boolean ifCondition = ifStack.poll();
+        ifStack.push(ifCondition != null && !ifCondition);
 
         return null;
     }
 
     @Override
     public String visitRepeat(CA65Parser.RepeatContext ctx) {
-        int n = parseInt(eval(ctx.expression()));
+        int n = evalToInt(ctx.expression());
         String i = ctx.identifier() != null ? visitIdentifier(ctx.identifier()) : Strings.EMPTY;
         RepeatDef repeat = cache(new RepeatDef(i, path, positionOf(ctx), n, offset));
         repeatStack.push(repeat);
@@ -1329,14 +1318,22 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         return position;
     }
 
-    private String eval(ParserRuleContext ctx) {
+    private String eval(CA65Parser.ExpressionContext expression) {
         eval = true;
 
         try {
-            return visit(ctx);
+            return visitExpression(expression);
         } finally {
             eval = false;
         }
+    }
+
+    private int evalToInt(CA65Parser.ExpressionContext expression) {
+        return parseInt(eval(expression));
+    }
+
+    private boolean evalToBool(CA65Parser.ExpressionContext expression) {
+        return parseInt(eval(expression)) != 0;
     }
 
     private <T extends Symbol> T cache(T symbol) {
