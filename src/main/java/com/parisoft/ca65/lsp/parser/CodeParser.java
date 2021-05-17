@@ -46,7 +46,6 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
-import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.eclipse.lsp4j.Position;
 import org.slf4j.Logger;
@@ -101,7 +100,6 @@ import static com.parisoft.ca65.lsp.util.Strings.unquote;
 import static java.lang.Integer.parseInt;
 import static java.lang.String.valueOf;
 import static java.lang.System.lineSeparator;
-import static java.util.Collections.singletonList;
 import static java.util.Comparator.comparingInt;
 
 @SuppressWarnings("Duplicates")
@@ -674,13 +672,21 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
         String text = ctx.getText();
 
         if (ctx.NUMBER() != null) {
-            if (text.contains("$") || text.contains("h") || text.contains("H")) {
-                return valueOf(parseInt(text, 16));
-            } else if (text.contains("%")) {
-                return valueOf(parseInt(text, 2));
-            } else {
-                return valueOf(parseInt(text));
+            char c = text.charAt(0);
+
+            if (c == '$') {
+                return valueOf(parseInt(text.substring(1), 16));
+            } else if (c == '%') {
+                return valueOf(parseInt(text.substring(1), 2));
             }
+
+            c = text.charAt(text.length() - 1);
+
+            if (c == 'h' || c == 'H') {
+                return valueOf(parseInt(text.substring(0, text.length() - 1), 16));
+            }
+
+            return valueOf(parseInt(text));
         }
 
         return text;
@@ -1057,28 +1063,28 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
                     layer.poll();
 
-                    if (isNotDefiningMacro()) {// doesn't loop inside a macro definition
-                        int tmpOffset = offset;
-
-                        while (repeat.incI() < repeat.getN()) { // repeat has exhausted
-                            offset = repeat.getOffset();
-                            String expandedBody;
-
-                            if (repeat.hasParam()) {
-                                offset += repeat.getPos().getLine() + 1;
-                                String[] body = repeat.getLines().toArray(new String[]{});
-                                Args args = new Args(new Arg(valueOf(repeat.getI()), 0, 0));
-                                List<String> params = singletonList(repeat.getName());
-                                expandedBody = replaceParams(params, args, body);
-                            } else {
-                                expandedBody = String.join(lineSeparator(), repeat.getLines());
-                            }
-
-                            visit(newParser(expandedBody).program());
-                        }
-
-                        offset = tmpOffset;
-                    }
+//                    if (isNotDefiningMacro()) {// doesn't loop inside a macro definition
+//                        int tmpOffset = offset;
+//
+//                        while (repeat.incI() < repeat.getN()) { // repeat has exhausted
+//                            offset = repeat.getOffset();
+//                            String expandedBody;
+//
+//                            if (repeat.hasParam()) {
+//                                offset += repeat.getPos().getLine() + 1;
+//                                String[] body = repeat.getLines().toArray(new String[]{});
+//                                Args args = new Args(new Arg(valueOf(repeat.getI()), 0, 0));
+//                                List<String> params = singletonList(repeat.getName());
+//                                expandedBody = replaceParams(params, args, body);
+//                            } else {
+//                                expandedBody = String.join(lineSeparator(), repeat.getLines());
+//                            }
+//
+//                            visit(newParser(expandedBody).program());
+//                        }
+//
+//                        offset = tmpOffset;
+//                    }
 
                     break;
             }
@@ -1456,7 +1462,7 @@ public class CodeParser extends AbstractParseTreeVisitor<String> implements CA65
 
         @Override
         public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
-            log.warn("file " + path + " line " + line + ":" + charPositionInLine + " " + msg);
+            log.warn("[{}] line {}:{} - {}", path.getFileName(), line, charPositionInLine, msg);
         }
     }
 }
